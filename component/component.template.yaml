@@ -12,12 +12,12 @@ icons:
 publisher-url: http://www.github.com/jamesmontemagno/GeolocatorPlugin
 is_shell: true
 packages:
-  ios: Xam.Plugins.Geolocator, Version={VERSION}
-  ios-unified: Xam.Plugins.Geolocator, Version={VERSION}
-  android: Xam.Plugins.Geolocator, Version={VERSION}
-  winphone-8.0: Xam.Plugins.Geolocator, Version={VERSION}
-  winphone-8.1: Xam.Plugins.Geolocator, Version={VERSION}
-  winuniversal-10.0: Xam.Plugins.Geolocator, Version={VERSION}
+  ios: Xam.Plugin.Geolocator, Version={VERSION}
+  ios-unified: Xam.Plugin.Geolocator, Version={VERSION}
+  android: Xam.Plugin.Geolocator, Version={VERSION}
+  winphone-8.0: Xam.Plugin.Geolocator, Version={VERSION}
+  winphone-8.1: Xam.Plugin.Geolocator, Version={VERSION}
+  winuniversal-10.0: Xam.Plugin.Geolocator, Version={VERSION}
 summary: Easily access the geolocation features of any device.
 details: Details.md
 getting-started: GettingStarted.md
@@ -33,16 +33,16 @@ samples:
     installNuGets:
       - project: GeolocatorSample
         packages: 
-          - Xam.Plugins.Geolocator
+          - Xam.Plugin.Geolocator
       - project: GeolocatorSample.iOS
         packages: 
-          - Xam.Plugins.Geolocator
+          - Xam.Plugin.Geolocator
       - project: GeolocatorSample.Droid
         packages: 
-          - Xam.Plugins.Geolocator
+          - Xam.Plugin.Geolocator
       - project: GeolocatorSample.WinPhone
         packages: 
-          - Xam.Plugins.Geolocator
+          - Xam.Plugin.Geolocator
     no_build: true
     skip_docs: true  
 local-nuget-repo: ../Build/nuget
