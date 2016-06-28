@@ -1,4 +1,4 @@
-## ![](http://www.refractored.com/images/plugin_icon_geolocator.png) Geolocator Plugin for Xamarin and Windows
+## Geolocator Plugin for Xamarin and Windows
 
 Simple cross platform plugin to get GPS location including heading, speed, and more. Additionally, you can track geolocation changes :)
 
@@ -9,6 +9,8 @@ Ported from [Xamarin.Mobile](http://www.github.com/xamarin/xamarin.mobile) to a 
 ### Setup
 * Available on NuGet: http://www.nuget.org/packages/Xam.Plugin.Geolocator [![NuGet](https://img.shields.io/nuget/v/Xam.Plugin.Geolocator.svg?label=NuGet)](https://www.nuget.org/packages/Xam.Plugin.Geolocator/)
 * Install into your PCL project and Client projects.
+
+Build Status: [![Build status](https://ci.appveyor.com/api/projects/status/nan2cxlgeo11sc5u?svg=true)](https://ci.appveyor.com/project/JamesMontemagno/geolocatorplugin)
 
 **Platform Support**
 
