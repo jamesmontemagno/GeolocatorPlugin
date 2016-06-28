@@ -23,7 +23,7 @@ details: Details.md
 getting-started: GettingStarted.md
 samples: 
   - name: Geolocator Samples (iOS, Android, and Windows)
-    path: "../Samples/GeolocatorSample.sln"
+    path: "../samples/GeolocatorSample.sln"
     removeProjects: 
       - Geolocator.Plugin
       - Geolocator.Plugin.Abstractions
