@@ -149,7 +149,7 @@ namespace Plugin.Geolocator
 				if (UIDevice.CurrentDevice.CheckSystemVersion(9, 0))
 				{
 					NSArray backgroundModes = NSBundle.MainBundle.InfoDictionary[(NSString)"UIBackgroundModes"] as NSArray;
-					m.AllowsBackgroundLocationUpdates = backgroundModes.Contains((NSString)"Location") || backgroundModes.Contains((NSString)"location");
+					m.AllowsBackgroundLocationUpdates = backgroundModes != null && (backgroundModes.Contains((NSString)"Location") || backgroundModes.Contains((NSString)"location"));
 				}
 					
                 // always prevent location update pausing since we're only listening for a single update.
