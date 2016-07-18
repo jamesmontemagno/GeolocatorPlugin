@@ -137,7 +137,7 @@ Task<bool> StartListeningAsync(int minTime, double minDistance, bool includeHead
 
 ```csharp
 /// <summary>
-/// Stop linstening
+/// Stop listening
 /// </summary>
 Task<bool> StopListeningAsync();
 ```
