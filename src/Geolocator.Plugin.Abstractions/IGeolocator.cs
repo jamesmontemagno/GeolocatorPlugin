@@ -63,7 +63,7 @@ namespace Plugin.Geolocator.Abstractions
         Task<bool> StartListeningAsync(int minTime, double minDistance, bool includeHeading = false, ListenerSettings settings = null);
 
         /// <summary>
-        /// Stop linstening
+        /// Stop listening
         /// </summary>
         Task<bool> StopListeningAsync();
     }
