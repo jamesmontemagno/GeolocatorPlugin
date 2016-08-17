@@ -47,20 +47,20 @@ namespace Plugin.Geolocator.Abstractions
         /// <summary>
         /// Gets position async with specified parameters
         /// </summary>
-        /// <param name="timeoutMilliseconds">Timeout in milliseconds to wait, Default Infinite</param>
+        /// <param name="timeout">Timeout to wait, Default Infinite</param>
         /// <param name="token">Cancelation token</param>
         /// <param name="includeHeading">If you would like to include heading</param>
         /// <returns>Position</returns>
-        Task<Position> GetPositionAsync(int timeoutMilliseconds = Timeout.Infinite, CancellationToken? token = null, bool includeHeading = false);
+        Task<Position> GetPositionAsync(TimeSpan? timeout = null, CancellationToken? token = null, bool includeHeading = false);
 
-        /// <summary>
-        /// Start listening for changes
-        /// </summary>
-        /// <param name="minTime">Time</param>
-        /// <param name="minDistance">Distance</param>
-        /// <param name="includeHeading">Include heading or not</param>
-        /// <param name="settings">Optional settings (iOS only)</param>
-        Task<bool> StartListeningAsync(int minTime, double minDistance, bool includeHeading = false, ListenerSettings settings = null);
+		/// <summary>
+		/// Start listening for changes
+		/// </summary>
+		/// <param name="minimumTime">Time</param>
+		/// <param name="minimumDistance">Distance</param>
+		/// <param name="includeHeading">Include heading or not</param>
+		/// <param name="listenerSettings">Optional settings (iOS only)</param>
+		Task<bool> StartListeningAsync(TimeSpan minimumTime, double minimumDistance, bool includeHeading = false, ListenerSettings listenerSettings = null);
 
         /// <summary>
         /// Stop listening
