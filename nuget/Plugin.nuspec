@@ -12,7 +12,7 @@
      
        <requireLicenseAcceptance>false</requireLicenseAcceptance>
        <description>
-         Easly access geolocation across Xamarin.iOS, Xamarin.Android, and Windows.
+         Easily access geolocation across Xamarin.iOS, Xamarin.Android, and Windows.
 
         Example:
         var locator = CrossGeolocator.Current;
