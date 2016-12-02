@@ -154,6 +154,17 @@ By adding these permissions [Google Play will automatically filter out devices](
 [assembly: UsesFeature("android.hardware.location.network", Required = false)]
 ```
 
+### Android specific in your BaseActivity or MainActivity (for Xamarin.Forms) add this code:
+```csharp
+public override void OnRequestPermissionsResult(int requestCode, string[] permissions, Permission[] grantResults)
+{
+    PermissionsImplementation.Current.OnRequestPermissionsResult(requestCode, permissions, grantResults);
+}
+```
+
+You MUST set your Target version to API 23+ and Compile against API 23+:
+![image](https://cloud.githubusercontent.com/assets/1676321/17110560/7279341c-5252-11e6-89be-8c10b38c0ea6.png)
+
 #### iOS:
 In iOS 8 you now have to call either RequestWhenInUseAuthorization or RequestAlwaysAuthorization on the location manager (the plugin does this automatically for you, however, need to add either the concisely named NSLocationWhenInUseUsageDescription or NSLocationAlwaysUsageDescription to your Info.plist. 
 
