@@ -282,7 +282,14 @@ namespace Plugin.Geolocator
         private static readonly DateTime Epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
         internal static DateTimeOffset GetTimestamp(Location location)
         {
-            return new DateTimeOffset(Epoch.AddMilliseconds(location.Time));
+            try
+            {
+                return new DateTimeOffset(Epoch.AddMilliseconds(location.Time));
+            }
+            catch (Exception e)
+            {
+                return new DateTimeOffset(Epoch);
+            }
         }
     }
 }
