@@ -40,10 +40,7 @@ namespace Plugin.Geolocator
         public event EventHandler<PositionErrorEventArgs> PositionError;
 
         /// <inheritdoc/>
-        public bool SupportsHeading
-        {
-            get { return false; }
-        }
+        public bool SupportsHeading => false;
 
         /// <inheritdoc/>
         public bool IsGeolocationAvailable
@@ -61,6 +58,7 @@ namespace Plugin.Geolocator
                 return status != PositionStatus.NotAvailable;
             }
         }
+
         /// <inheritdoc/>
         public bool IsGeolocationEnabled
         {
@@ -77,6 +75,7 @@ namespace Plugin.Geolocator
                 return status != PositionStatus.Disabled && status != PositionStatus.NotAvailable;
             }
         }
+
         /// <inheritdoc/>
         public double DesiredAccuracy
         {
@@ -87,23 +86,24 @@ namespace Plugin.Geolocator
                 GetGeolocator().DesiredAccuracy = (value < 100) ? PositionAccuracy.High : PositionAccuracy.Default;
             }
         }
-        /// <inheritdoc/>
-        public bool IsListening
-        {
-            get { return isListening; }
-        }
 
         /// <inheritdoc/>
-        public Task<Position> GetPositionAsync(int timeoutMilliseconds = Timeout.Infite, CancellationToken? token = null, bool includeHeading = false)
+        public bool IsListening => isListening;
+
+
+        /// <inheritdoc/>
+        public Task<Position> GetPositionAsync(TimeSpan? timeout, CancellationToken? cancelToken = null, bool includeHeading = false)
         {
+            var timeoutMilliseconds = timeout.HasValue ? (int)timeout.Value.TotalMilliseconds : Timeout.Infite;
+
             if (timeoutMilliseconds < 0 && timeoutMilliseconds != Timeout.Infite)
-                throw new ArgumentOutOfRangeException("timeoutMilliseconds");
+                throw new ArgumentOutOfRangeException(nameof(timeout));
 
-            if (!token.HasValue)
-                token = CancellationToken.None;
+            if (!cancelToken.HasValue)
+                cancelToken = CancellationToken.None;
 
             IAsyncOperation<Geoposition> pos = GetGeolocator().GetGeopositionAsync(TimeSpan.FromTicks(0), TimeSpan.FromDays(365));
-            token.Value.Register(o => ((IAsyncOperation<Geoposition>)o).Cancel(), pos);
+            cancelToken.Value.Register(o => ((IAsyncOperation<Geoposition>)o).Cancel(), pos);
 
 
             var timer = new Timeout(timeoutMilliseconds, pos.Cancel);
@@ -135,9 +135,10 @@ namespace Plugin.Geolocator
             return tcs.Task;
         }
         /// <inheritdoc/>
-        public Task<bool> StartListeningAsync(int minTime, double minDistance, bool includeHeading = false, ListenerSettings settings = null)
+        public Task<bool> StartListeningAsync(TimeSpan minTime, double minDistance, bool includeHeading = false, ListenerSettings settings = null)
         {
-            if (minTime < 0)
+            
+            if (minTime.TotalMilliseconds < 0)
                 throw new ArgumentOutOfRangeException("minTime");
             if (minDistance < 0)
                 throw new ArgumentOutOfRangeException("minDistance");
@@ -147,7 +148,7 @@ namespace Plugin.Geolocator
             isListening = true;
 
             var loc = GetGeolocator();
-            loc.ReportInterval = (uint)minTime;
+            loc.ReportInterval = (uint)minTime.TotalMilliseconds;
             loc.MovementThreshold = minDistance;
             loc.PositionChanged += OnLocatorPositionChanged;
             loc.StatusChanged += OnLocatorStatusChanged;
@@ -202,19 +203,11 @@ namespace Plugin.Geolocator
             OnPositionChanged(new PositionEventArgs(GetPosition(e.Position)));
         }
 
-        private void OnPositionChanged(PositionEventArgs e)
-        {
-            var handler = PositionChanged;
-            if (handler != null)
-                handler(this, e);
-        }
+        private void OnPositionChanged(PositionEventArgs e) => PositionChanged?.Invoke(this, e);
+        
 
-        private void OnPositionError(PositionErrorEventArgs e)
-        {
-            var handler = PositionError;
-            if (handler != null)
-                handler(this, e);
-        }
+        private void OnPositionError(PositionErrorEventArgs e) => PositionError?.Invoke(this, e);
+        
 
         private Windows.Devices.Geolocation.Geolocator GetGeolocator()
         {

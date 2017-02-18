@@ -32,6 +32,15 @@ namespace Plugin.Geolocator
     /// </summary>
     public class GeolocatorImplementation : IGeolocator
     {
+        string[] providers;
+        readonly LocationManager manager;
+        string headingProvider;
+
+        GeolocationContinuousListener listener;
+
+        readonly object positionSync = new object();
+        Position lastPosition;
+
         /// <summary>
         /// Default constructor
         /// </summary>
@@ -41,15 +50,15 @@ namespace Plugin.Geolocator
             manager = (LocationManager)Application.Context.GetSystemService(Context.LocationService);
             providers = manager.GetProviders(enabledOnly: false).Where(s => s != LocationManager.PassiveProvider).ToArray();
         }
+
         /// <inheritdoc/>
         public event EventHandler<PositionErrorEventArgs> PositionError;
         /// <inheritdoc/>
         public event EventHandler<PositionEventArgs> PositionChanged;
         /// <inheritdoc/>
-        public bool IsListening
-        {
-            get { return listener != null; }
-        }
+        public bool IsListening => listener != null;
+
+
         /// <inheritdoc/>
         public double DesiredAccuracy
         {
@@ -58,28 +67,23 @@ namespace Plugin.Geolocator
         }
 
         /// <inheritdoc/>
-        public bool SupportsHeading
-        {
-            get
-            {
-                return true; //Kind of, you should use the  Compass plugin for better results
-            }
-        }
-        /// <inheritdoc/>
-        public bool IsGeolocationAvailable
-        {
-            get { return providers.Length > 0; }
-        }
-        /// <inheritdoc/>
-        public bool IsGeolocationEnabled
-        {
-            get { return providers.Any(manager.IsProviderEnabled); }
-        }
+        public bool SupportsHeading => true;
 
 
         /// <inheritdoc/>
-        public async Task<Position> GetPositionAsync(int timeoutMilliseconds = Timeout.Infinite, CancellationToken? cancelToken = null, bool includeHeading = false)
+        public bool IsGeolocationAvailable => providers.Length > 0;
+
+
+        /// <inheritdoc/>
+        public bool IsGeolocationEnabled => providers.Any(manager.IsProviderEnabled);
+
+
+
+        /// <inheritdoc/>
+        public async Task<Position> GetPositionAsync(TimeSpan? timeout, CancellationToken? cancelToken = null, bool includeHeading = false)
         {
+            var timeoutMilliseconds = timeout.HasValue ? (int)timeout.Value.TotalMilliseconds : Timeout.Infinite;
+
             var status = await CrossPermissions.Current.CheckPermissionStatusAsync(Permissions.Abstractions.Permission.Location).ConfigureAwait(false);
             if (status != Permissions.Abstractions.PermissionStatus.Granted)
             {
@@ -102,7 +106,7 @@ namespace Plugin.Geolocator
 
 
             if (timeoutMilliseconds <= 0 && timeoutMilliseconds != Timeout.Infinite)
-                throw new ArgumentOutOfRangeException("timeoutMilliseconds", "timeout must be greater than or equal to 0");
+                throw new ArgumentOutOfRangeException(nameof(timeout), "timeout must be greater than or equal to 0");
 
             if (!cancelToken.HasValue)
                 cancelToken = CancellationToken.None;
@@ -191,7 +195,7 @@ namespace Plugin.Geolocator
         }
 
         /// <inheritdoc/>
-        public async Task<bool> StartListeningAsync(int minTime, double minDistance, bool includeHeading = false, ListenerSettings settings = null)
+        public async Task<bool> StartListeningAsync(TimeSpan minTime, double minDistance, bool includeHeading = false, ListenerSettings settings = null)
         {
             var status = await CrossPermissions.Current.CheckPermissionStatusAsync(Permissions.Abstractions.Permission.Location).ConfigureAwait(false);
             if (status != Permissions.Abstractions.PermissionStatus.Granted)
@@ -213,20 +217,21 @@ namespace Plugin.Geolocator
                 providers = manager.GetProviders(enabledOnly: false).Where(s => s != LocationManager.PassiveProvider).ToArray();
             }
 
-            if (minTime < 0)
+            var minTimeMilliseconds = minTime.TotalMilliseconds;
+            if (minTimeMilliseconds < 0)
                 throw new ArgumentOutOfRangeException("minTime");
             if (minDistance < 0)
                 throw new ArgumentOutOfRangeException("minDistance");
             if (IsListening)
                 throw new InvalidOperationException("This Geolocator is already listening");
 
-            listener = new GeolocationContinuousListener(manager, TimeSpan.FromMilliseconds(minTime), providers);
+            listener = new GeolocationContinuousListener(manager, minTime, providers);
             listener.PositionChanged += OnListenerPositionChanged;
             listener.PositionError += OnListenerPositionError;
 
             Looper looper = Looper.MyLooper() ?? Looper.MainLooper;
             for (int i = 0; i < providers.Length; ++i)
-                manager.RequestLocationUpdates(providers[i], minTime, (float)minDistance, listener, looper);
+                manager.RequestLocationUpdates(providers[i], (long)minTimeMilliseconds, (float)minDistance, listener, looper);
 
             return true;
         }
@@ -246,14 +251,7 @@ namespace Plugin.Geolocator
             return Task.FromResult(true);
         }
 
-        private string[] providers;
-        private readonly LocationManager manager;
-        private string headingProvider;
 
-        private GeolocationContinuousListener listener;
-
-        private readonly object positionSync = new object();
-        private Position lastPosition;
         /// <inheritdoc/>
         private void OnListenerPositionChanged(object sender, PositionEventArgs e)
         {

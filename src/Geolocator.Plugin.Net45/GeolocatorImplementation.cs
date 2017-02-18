@@ -50,11 +50,11 @@ namespace Plugin.Geolocator
         /// <summary>
         /// Get position
         /// </summary>
-        /// <param name="timeoutMilliseconds"></param>
+        /// <param name="timeout"></param>
         /// <param name="token"></param>
         /// <param name="includeHeading"></param>
         /// <returns></returns>
-        public Task<Position> GetPositionAsync(int timeoutMilliseconds = -1, CancellationToken? token = default(CancellationToken?), bool includeHeading = false)
+        public Task<Position> GetPositionAsync(TimeSpan? timeout, CancellationToken? token = default(CancellationToken?), bool includeHeading = false)
             => Task.FromResult<Position>(null);
 
         /// <summary>
@@ -64,7 +64,7 @@ namespace Plugin.Geolocator
         /// <param name="minDistance"></param>
         /// <param name="includeHeading"></param>
         /// <returns></returns>
-        public Task<bool> StartListeningAsync(int minTime, double minDistance, bool includeHeading = false, ListenerSettings settings = null)
+        public Task<bool> StartListeningAsync(TimeSpan minTime, double minDistance, bool includeHeading = false, ListenerSettings settings = null)
             => Task.FromResult(false);
 
         /// <summary>

@@ -1,40 +1,32 @@
-//
-//  Copyright 2011-2013, Xamarin Inc.
-//
-//    Licensed under the Apache License, Version 2.0 (the "License");
-//    you may not use this file except in compliance with the License.
-//    You may obtain a copy of the License at
-//
-//        http://www.apache.org/licenses/LICENSE-2.0
-//
-//    Unless required by applicable law or agreed to in writing, software
-//    distributed under the License is distributed on an "AS IS" BASIS,
-//    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-//    See the License for the specific language governing permissions and
-//    limitations under the License.
-//
 
 using System;
-#if __UNIFIED__
 using CoreLocation;
 using Foundation;
-#else
-using MonoTouch.CoreLocation;
-using MonoTouch.Foundation;
-#endif
 using System.Threading.Tasks;
 using System.Threading;
 using Plugin.Geolocator.Abstractions;
 
 namespace Plugin.Geolocator
 {
-    internal class GeolocationSingleUpdateDelegate
-      : CLLocationManagerDelegate
+    [Preserve(AllMembers = true)]
+    internal class GeolocationSingleUpdateDelegate : CLLocationManagerDelegate
     {
+
+
+        bool haveHeading;
+        bool haveLocation;
+        readonly Position position = new Position();
+        CLHeading bestHeading;
+
+        readonly double desiredAccuracy;
+        readonly bool includeHeading;
+        readonly TaskCompletionSource<Position> tcs;
+        readonly CLLocationManager manager;
+
         public GeolocationSingleUpdateDelegate(CLLocationManager manager, double desiredAccuracy, bool includeHeading, int timeout, CancellationToken cancelToken)
         {
             this.manager = manager;
-            this.tcs = new TaskCompletionSource<Position>(manager);
+            tcs = new TaskCompletionSource<Position>(manager);
             this.desiredAccuracy = desiredAccuracy;
             this.includeHeading = includeHeading;
 
@@ -43,10 +35,10 @@ namespace Plugin.Geolocator
                 Timer t = null;
                 t = new Timer(s =>
                 {
-                    if (this.haveLocation)
-                        this.tcs.TrySetResult(new Position(this.position));
+                    if (haveLocation)
+                        tcs.TrySetResult(new Position(this.position));
                     else
-                        this.tcs.TrySetCanceled();
+                        tcs.TrySetCanceled();
 
                     StopListening();
                     t.Dispose();
@@ -56,14 +48,12 @@ namespace Plugin.Geolocator
             cancelToken.Register(() =>
             {
                 StopListening();
-                this.tcs.TrySetCanceled();
+                tcs.TrySetCanceled();
             });
         }
 
-        public Task<Position> Task
-        {
-            get { return this.tcs.Task; }
-        }
+        public Task<Position> Task => tcs?.Task;
+
 
         public override void AuthorizationChanged(CLLocationManager manager, CLAuthorizationStatus status)
         {
@@ -71,7 +61,7 @@ namespace Plugin.Geolocator
             if (status == CLAuthorizationStatus.Denied || status == CLAuthorizationStatus.Restricted)
             {
                 StopListening();
-                this.tcs.TrySetException(new GeolocationException(GeolocationError.Unauthorized));
+                tcs.TrySetException(new GeolocationException(GeolocationError.Unauthorized));
             }
         }
 
@@ -81,41 +71,38 @@ namespace Plugin.Geolocator
             {
                 case CLError.Network:
                     StopListening();
-                    this.tcs.SetException(new GeolocationException(GeolocationError.PositionUnavailable));
+                    tcs.SetException(new GeolocationException(GeolocationError.PositionUnavailable));
                     break;
                 case CLError.LocationUnknown:
                     StopListening();
-                    this.tcs.TrySetException(new GeolocationException(GeolocationError.PositionUnavailable));
+                    tcs.TrySetException(new GeolocationException(GeolocationError.PositionUnavailable));
                     break;
             }
         }
 
-        public override bool ShouldDisplayHeadingCalibration(CLLocationManager manager)
-        {
-            return true;
-        }
+        public override bool ShouldDisplayHeadingCalibration(CLLocationManager manager) => true;
 
         public override void UpdatedLocation(CLLocationManager manager, CLLocation newLocation, CLLocation oldLocation)
         {
             if (newLocation.HorizontalAccuracy < 0)
                 return;
 
-            if (this.haveLocation && newLocation.HorizontalAccuracy > this.position.Accuracy)
+            if (haveLocation && newLocation.HorizontalAccuracy > position.Accuracy)
                 return;
 
-            this.position.Accuracy = newLocation.HorizontalAccuracy;
-            this.position.Altitude = newLocation.Altitude;
-            this.position.AltitudeAccuracy = newLocation.VerticalAccuracy;
-            this.position.Latitude = newLocation.Coordinate.Latitude;
-            this.position.Longitude = newLocation.Coordinate.Longitude;
-            this.position.Speed = newLocation.Speed;
-            this.position.Timestamp = new DateTimeOffset((DateTime) newLocation.Timestamp);
+            position.Accuracy = newLocation.HorizontalAccuracy;
+            position.Altitude = newLocation.Altitude;
+            position.AltitudeAccuracy = newLocation.VerticalAccuracy;
+            position.Latitude = newLocation.Coordinate.Latitude;
+            position.Longitude = newLocation.Coordinate.Longitude;
+            position.Speed = newLocation.Speed;
+            position.Timestamp = new DateTimeOffset((DateTime)newLocation.Timestamp);
 
-            this.haveLocation = true;
+            haveLocation = true;
 
-            if ((!this.includeHeading || this.haveHeading) && this.position.Accuracy <= this.desiredAccuracy)
+            if ((!includeHeading || haveHeading) && position.Accuracy <= desiredAccuracy)
             {
-                this.tcs.TrySetResult(new Position(this.position));
+                tcs.TrySetResult(new Position(position));
                 StopListening();
             }
         }
@@ -124,36 +111,27 @@ namespace Plugin.Geolocator
         {
             if (newHeading.HeadingAccuracy < 0)
                 return;
-            if (this.bestHeading != null && newHeading.HeadingAccuracy >= this.bestHeading.HeadingAccuracy)
+            if (bestHeading != null && newHeading.HeadingAccuracy >= bestHeading.HeadingAccuracy)
                 return;
 
-            this.bestHeading = newHeading;
-            this.position.Heading = newHeading.TrueHeading;
-            this.haveHeading = true;
+            bestHeading = newHeading;
+            position.Heading = newHeading.TrueHeading;
+            haveHeading = true;
 
-            if (this.haveLocation && this.position.Accuracy <= this.desiredAccuracy)
+            if (haveLocation && position.Accuracy <= desiredAccuracy)
             {
-                this.tcs.TrySetResult(new Position(this.position));
+                tcs.TrySetResult(new Position(position));
                 StopListening();
             }
         }
 
-        private bool haveHeading;
-        private bool haveLocation;
-        private readonly Position position = new Position();
-        private CLHeading bestHeading;
-
-        private readonly double desiredAccuracy;
-        private readonly bool includeHeading;
-        private readonly TaskCompletionSource<Position> tcs;
-        private readonly CLLocationManager manager;
 
         private void StopListening()
         {
             if (CLLocationManager.HeadingAvailable)
-                this.manager.StopUpdatingHeading();
+                manager.StopUpdatingHeading();
 
-            this.manager.StopUpdatingLocation();
+            manager.StopUpdatingLocation();
         }
     }
 }

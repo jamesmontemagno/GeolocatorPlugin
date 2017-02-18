@@ -1,35 +1,10 @@
-
-//
-//  Copyright 2011-2013, Xamarin Inc.
-//
-//    Licensed under the Apache License, Version 2.0 (the "License");
-//    you may not use this file except in compliance with the License.
-//    You may obtain a copy of the License at
-//
-//        http://www.apache.org/licenses/LICENSE-2.0
-//
-//    Unless required by applicable law or agreed to in writing, software
-//    distributed under the License is distributed on an "AS IS" BASIS,
-//    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-//    See the License for the specific language governing permissions and
-//    limitations under the License.
-//
-
 using System;
 
 using System.Threading.Tasks;
 using System.Threading;
-
-#if __UNIFIED__
 using CoreLocation;
 using Foundation;
 using UIKit;
-
-#else
-using MonoTouch.CoreLocation;
-using MonoTouch.Foundation;
-using MonoTouch.UIKit;
-#endif
 using Plugin.Geolocator.Abstractions;
 
 
@@ -38,9 +13,14 @@ namespace Plugin.Geolocator
     /// <summary>
     /// Implementation for Geolocator
     /// </summary>
+    [Preserve(AllMembers = true)]
     public class GeolocatorImplementation : IGeolocator
     {
         bool deferringUpdates;
+        readonly CLLocationManager manager;
+        bool isListening;
+        Position position;
+        ListenerSettings listenerSettings;
 
         public GeolocatorImplementation()
         {
@@ -61,25 +41,10 @@ namespace Plugin.Geolocator
             RequestAuthorization();
         }
 
-        void OnDeferredUpdatedFinished (object sender, NSErrorEventArgs e)
-        {
-            deferringUpdates = false;
-        }
+        void OnDeferredUpdatedFinished (object sender, NSErrorEventArgs e) => deferringUpdates = false;
 
-        void RequestAuthorization()
-        {
-            var info = NSBundle.MainBundle.InfoDictionary;
+        bool CanDeferLocationUpdate => UIDevice.CurrentDevice.CheckSystemVersion(6, 0);
 
-            if (UIDevice.CurrentDevice.CheckSystemVersion(8, 0))
-            {
-                if (info.ContainsKey(new NSString("NSLocationWhenInUseUsageDescription")))
-                    manager.RequestWhenInUseAuthorization();
-                else if (info.ContainsKey(new NSString("NSLocationAlwaysUsageDescription")))
-                    manager.RequestAlwaysAuthorization();
-                else
-                    throw new UnauthorizedAccessException("On iOS 8.0 and higher you must set either NSLocationWhenInUseUsageDescription or NSLocationAlwaysUsageDescription in your Info.plist file to enable Authorization Requests for Location updates!");
-            }
-        }
 
         /// <inheritdoc/>
         public event EventHandler<PositionErrorEventArgs> PositionError;
@@ -94,24 +59,15 @@ namespace Plugin.Geolocator
         }
 
         /// <inheritdoc/>
-        public bool IsListening
-        {
-            get { return isListening; }
-        }
+        public bool IsListening => isListening;
 
         /// <inheritdoc/>
-        public bool SupportsHeading
-        {
-            get { return CLLocationManager.HeadingAvailable; }
-        }
+        public bool SupportsHeading =>  CLLocationManager.HeadingAvailable;
+        
 
-        ListenerSettings listenerSettings;
 
         /// <inheritdoc/>
-        public bool IsGeolocationAvailable
-        {
-            get { return true; } // all iOS devices support at least wifi geolocation
-        }
+        public bool IsGeolocationAvailable => true; //all iOS devices support Geolocation
 
         /// <inheritdoc/>
         public bool IsGeolocationEnabled
@@ -130,12 +86,29 @@ namespace Plugin.Geolocator
             }
         }
 
+        void RequestAuthorization()
+        {
+            var info = NSBundle.MainBundle.InfoDictionary;
+
+            if (UIDevice.CurrentDevice.CheckSystemVersion(8, 0))
+            {
+                if (info.ContainsKey(new NSString("NSLocationWhenInUseUsageDescription")))
+                    manager.RequestWhenInUseAuthorization();
+                else if (info.ContainsKey(new NSString("NSLocationAlwaysUsageDescription")))
+                    manager.RequestAlwaysAuthorization();
+                else
+                    throw new UnauthorizedAccessException("On iOS 8.0 and higher you must set either NSLocationWhenInUseUsageDescription or NSLocationAlwaysUsageDescription in your Info.plist file to enable Authorization Requests for Location updates!");
+            }
+        }
+
 
         /// <inheritdoc/>
-		public Task<Position> GetPositionAsync(int timeoutMilliseconds = Timeout.Infinite, CancellationToken? cancelToken = null, bool includeHeading = false)
+		public Task<Position> GetPositionAsync(TimeSpan? timeout, CancellationToken? cancelToken = null, bool includeHeading = false)
         {
+            var timeoutMilliseconds = timeout.HasValue ? (int)timeout.Value.TotalMilliseconds : Timeout.Infinite;
+
             if (timeoutMilliseconds <= 0 && timeoutMilliseconds != Timeout.Infinite)
-                throw new ArgumentOutOfRangeException("timeoutMilliseconds", "Timeout must be positive or Timeout.Infinite");
+                throw new ArgumentOutOfRangeException(nameof(timeout), "Timeout must be positive or Timeout.Infinite");
 
             if (!cancelToken.HasValue)
                 cancelToken = CancellationToken.None;
@@ -196,13 +169,10 @@ namespace Plugin.Geolocator
             return tcs.Task;
         }
 
-        bool CanDeferLocationUpdate { get { return UIDevice.CurrentDevice.CheckSystemVersion(6, 0); } }
 
         /// <inheritdoc/>
-		public Task<bool> StartListeningAsync(int minTime, double minDistance, bool includeHeading = false, ListenerSettings settings = null)
+		public Task<bool> StartListeningAsync(TimeSpan minTime, double minDistance, bool includeHeading = false, ListenerSettings settings = null)
         {
-            if (minTime < 0)
-                throw new ArgumentOutOfRangeException("minTime");
             if (minDistance < 0)
                 throw new ArgumentOutOfRangeException("minDistance");
             if (isListening)
@@ -217,7 +187,7 @@ namespace Plugin.Geolocator
 			// keep reference to settings so that we can stop the listener appropriately later
 			listenerSettings = settings;
 
-            double desiredAccuracy = DesiredAccuracy;
+            var desiredAccuracy = DesiredAccuracy;
 
 			#region apply settings to location manager
 			// set background flag
@@ -252,7 +222,7 @@ namespace Plugin.Geolocator
             manager.DesiredAccuracy = desiredAccuracy;
             manager.DistanceFilter = minDistance;
 
-            if (settings?.ListenForSignificantChanges ?? false)
+            if (settings.ListenForSignificantChanges)
                 manager.StartMonitoringSignificantLocationChanges();
             else
                 manager.StartUpdatingLocation();
@@ -288,10 +258,6 @@ namespace Plugin.Geolocator
             return Task.FromResult(true);
         }
 
-        readonly CLLocationManager manager;
-        bool isListening;
-        Position position;
-
         CLLocationManager GetManager()
         {
             CLLocationManager m = null;
@@ -304,11 +270,11 @@ namespace Plugin.Geolocator
             if (e.NewHeading.TrueHeading == -1)
                 return;
 
-            var p = (position == null) ? new Position() : new Position(this.position);
+            var p = (position == null) ? new Position() : new Position(position);
 
             p.Heading = e.NewHeading.TrueHeading;
 
-            this.position = p;
+            position = p;
 
             OnPositionChanged(new PositionEventArgs(p));
         }
@@ -328,10 +294,8 @@ namespace Plugin.Geolocator
             }			
         }
 
-        void OnUpdatedLocation(object sender, CLLocationUpdatedEventArgs e)
-        {
-            UpdatePosition(e.NewLocation);
-        }
+        void OnUpdatedLocation(object sender, CLLocationUpdatedEventArgs e) => UpdatePosition(e.NewLocation);
+        
 
         void UpdatePosition(CLLocation location)
         {
