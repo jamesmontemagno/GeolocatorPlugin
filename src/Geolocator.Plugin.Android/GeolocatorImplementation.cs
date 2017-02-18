@@ -262,9 +262,7 @@ namespace Plugin.Geolocator
             {
                 lastPosition = e.Position;
 
-                var changed = PositionChanged;
-                if (changed != null)
-                    changed(this, e);
+                PositionChanged?.Invoke(this, e);
             }
         }
         /// <inheritdoc/>
@@ -272,9 +270,7 @@ namespace Plugin.Geolocator
         {
             await StopListeningAsync();
 
-            var error = PositionError;
-            if (error != null)
-                error(this, e);
+            PositionError?.Invoke(this, e);
         }
 
         private static readonly DateTime Epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);

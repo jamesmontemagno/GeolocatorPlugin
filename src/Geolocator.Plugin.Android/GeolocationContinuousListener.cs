@@ -27,6 +27,14 @@ namespace Plugin.Geolocator
     internal class GeolocationContinuousListener
       : Java.Lang.Object, ILocationListener
     {
+        IList<string> providers;
+        readonly HashSet<string> activeProviders = new HashSet<string>();
+        readonly LocationManager manager;
+
+        string activeProvider;
+        Location lastLocation;
+        TimeSpan timePeriod;
+
         public GeolocationContinuousListener(LocationManager manager, TimeSpan timePeriod, IList<string> providers)
         {
             this.manager = manager;
@@ -36,7 +44,7 @@ namespace Plugin.Geolocator
             foreach (string p in providers)
             {
                 if (manager.IsProviderEnabled(p))
-                    this.activeProviders.Add(p);
+                    activeProviders.Add(p);
             }
         }
 
@@ -45,14 +53,14 @@ namespace Plugin.Geolocator
 
         public void OnLocationChanged(Location location)
         {
-            if (location.Provider != this.activeProvider)
+            if (location.Provider != activeProvider)
             {
-                if (this.activeProvider != null && this.manager.IsProviderEnabled(this.activeProvider))
+                if (activeProvider != null && manager.IsProviderEnabled(activeProvider))
                 {
-                    LocationProvider pr = this.manager.GetProvider(location.Provider);
-                    TimeSpan lapsed = GetTimeSpan(location.Time) - GetTimeSpan(this.lastLocation.Time);
+                    var pr = manager.GetProvider(location.Provider);
+                    var lapsed = GetTimeSpan(location.Time) - GetTimeSpan(lastLocation.Time);
 
-                    if (pr.Accuracy > this.manager.GetProvider(this.activeProvider).Accuracy
+                    if (pr.Accuracy > this.manager.GetProvider(activeProvider).Accuracy
                       && lapsed < timePeriod.Add(timePeriod))
                     {
                         location.Dispose();
@@ -60,10 +68,10 @@ namespace Plugin.Geolocator
                     }
                 }
 
-                this.activeProvider = location.Provider;
+                activeProvider = location.Provider;
             }
 
-            var previous = Interlocked.Exchange(ref this.lastLocation, location);
+            var previous = Interlocked.Exchange(ref lastLocation, location);
             if (previous != null)
                 previous.Dispose();
 
@@ -81,9 +89,7 @@ namespace Plugin.Geolocator
             p.Latitude = location.Latitude;
             p.Timestamp = GeolocatorImplementation.GetTimestamp(location);
 
-            var changed = PositionChanged;
-            if (changed != null)
-                changed(this, new PositionEventArgs(p));
+            PositionChanged?.Invoke(this, new PositionEventArgs(p));
         }
 
         public void OnProviderDisabled(string provider)
@@ -91,9 +97,9 @@ namespace Plugin.Geolocator
             if (provider == LocationManager.PassiveProvider)
                 return;
 
-            lock (this.activeProviders)
+            lock (activeProviders)
             {
-                if (this.activeProviders.Remove(provider) && this.activeProviders.Count == 0)
+                if (activeProviders.Remove(provider) && activeProviders.Count == 0)
                     OnPositionError(new PositionErrorEventArgs(GeolocationError.PositionUnavailable));
             }
         }
@@ -103,8 +109,8 @@ namespace Plugin.Geolocator
             if (provider == LocationManager.PassiveProvider)
                 return;
 
-            lock (this.activeProviders)
-              this.activeProviders.Add(provider);
+            lock (activeProviders)
+              activeProviders.Add(provider);
         }
 
         public void OnStatusChanged(string provider, Availability status, Bundle extras)
@@ -121,24 +127,10 @@ namespace Plugin.Geolocator
             }
         }
 
-        private IList<string> providers;
-        private readonly HashSet<string> activeProviders = new HashSet<string>();
-        private readonly LocationManager manager;
+        private TimeSpan GetTimeSpan(long time) =>  new TimeSpan(TimeSpan.TicksPerMillisecond * time);
+        
 
-        private string activeProvider;
-        private Location lastLocation;
-        private TimeSpan timePeriod;
-
-        private TimeSpan GetTimeSpan(long time)
-        {
-            return new TimeSpan(TimeSpan.TicksPerMillisecond * time);
-        }
-
-        private void OnPositionError(PositionErrorEventArgs e)
-        {
-            var error = PositionError;
-            if (error != null)
-                error(this, e);
-        }
+        private void OnPositionError(PositionErrorEventArgs e) => PositionError?.Invoke(this, e);
+        
     }
 }

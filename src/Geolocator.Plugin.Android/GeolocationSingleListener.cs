@@ -26,6 +26,16 @@ namespace Plugin.Geolocator
     internal class GeolocationSingleListener
        : Java.Lang.Object, ILocationListener
     {
+
+        readonly object locationSync = new object();
+        Location bestLocation;
+
+        readonly Action finishedCallback;
+        readonly float desiredAccuracy;
+        readonly Timer timer;
+        readonly TaskCompletionSource<Position> completionSource = new TaskCompletionSource<Position>();
+        HashSet<string> activeProviders = new HashSet<string>();
+
         public GeolocationSingleListener(float desiredAccuracy, int timeout, IEnumerable<string> activeProviders, Action finishedCallback)
         {
             this.desiredAccuracy = desiredAccuracy;
@@ -34,42 +44,40 @@ namespace Plugin.Geolocator
             this.activeProviders = new HashSet<string>(activeProviders);
 
             if (timeout != Timeout.Infinite)
-                this.timer = new Timer(TimesUp, null, timeout, 0);
+                timer = new Timer(TimesUp, null, timeout, 0);
         }
 
-        public Task<Position> Task
-        {
-            get { return this.completionSource.Task; }
-        }
+        public Task<Position> Task => completionSource.Task; 
+        
 
         public void OnLocationChanged(Location location)
         {
-            if (location.Accuracy <= this.desiredAccuracy)
+            if (location.Accuracy <= desiredAccuracy)
             {
                 Finish(location);
                 return;
             }
 
-            lock (this.locationSync)
+            lock (locationSync)
             {
-                if (this.bestLocation == null || location.Accuracy <= this.bestLocation.Accuracy)
-                    this.bestLocation = location;
+                if (bestLocation == null || location.Accuracy <= bestLocation.Accuracy)
+                    bestLocation = location;
             }
         }
 
         public void OnProviderDisabled(string provider)
         {
-            lock (this.activeProviders)
+            lock (activeProviders)
             {
-                if (this.activeProviders.Remove(provider) && this.activeProviders.Count == 0)
-                    this.completionSource.TrySetException(new GeolocationException(GeolocationError.PositionUnavailable));
+                if (activeProviders.Remove(provider) && activeProviders.Count == 0)
+                    completionSource.TrySetException(new GeolocationException(GeolocationError.PositionUnavailable));
             }
         }
 
         public void OnProviderEnabled(string provider)
         {
-            lock (this.activeProviders)
-              this.activeProviders.Add(provider);
+            lock (activeProviders)
+              activeProviders.Add(provider);
         }
 
         public void OnStatusChanged(string provider, Availability status, Bundle extras)
@@ -86,31 +94,21 @@ namespace Plugin.Geolocator
             }
         }
 
-        public void Cancel()
-        {
-            this.completionSource.TrySetCanceled();
-        }
-
-        private readonly object locationSync = new object();
-        private Location bestLocation;
-
-        private readonly Action finishedCallback;
-        private readonly float desiredAccuracy;
-        private readonly Timer timer;
-        private readonly TaskCompletionSource<Position> completionSource = new TaskCompletionSource<Position>();
-        private HashSet<string> activeProviders = new HashSet<string>();
+        public void Cancel() =>  completionSource.TrySetCanceled();
 
         private void TimesUp(object state)
         {
-            lock (this.locationSync)
+            lock (locationSync)
             {
-                if (this.bestLocation == null)
+                if (bestLocation == null)
                 {
-                    if (this.completionSource.TrySetCanceled() && this.finishedCallback != null)
-                        this.finishedCallback();
+                    if (completionSource.TrySetCanceled())
+                        finishedCallback?.Invoke();
                 }
                 else
-                    Finish(this.bestLocation);
+                {
+                    Finish(bestLocation);
+                }
             }
         }
 
@@ -130,10 +128,9 @@ namespace Plugin.Geolocator
             p.Latitude = location.Latitude;
             p.Timestamp = GeolocatorImplementation.GetTimestamp(location);
 
-            if (this.finishedCallback != null)
-                this.finishedCallback();
+            finishedCallback?.Invoke();
 
-            this.completionSource.TrySetResult(p);
+            completionSource.TrySetResult(p);
         }
     }
 }
