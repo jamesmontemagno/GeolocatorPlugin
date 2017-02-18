@@ -28,21 +28,35 @@ namespace Plugin.Geolocator
     /// </summary>
     public class GeolocatorImplementation : IGeolocator
     {
+
+        bool isListening;
+        double desiredAccuracy;
+        Windows.Devices.Geolocation.Geolocator locator = new Windows.Devices.Geolocation.Geolocator();
+
+
         public GeolocatorImplementation()
         {
             DesiredAccuracy = 100;
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Position error event handler
+        /// </summary>
         public event EventHandler<PositionEventArgs> PositionChanged;
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Position changed event handler
+        /// </summary>
         public event EventHandler<PositionErrorEventArgs> PositionError;
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Gets if device supports heading
+        /// </summary>
         public bool SupportsHeading => false;
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Gets if geolocation is available on device
+        /// </summary>
         public bool IsGeolocationAvailable
         {
             get
@@ -59,7 +73,9 @@ namespace Plugin.Geolocator
             }
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Gets if geolocation is enabled on device
+        /// </summary>
         public bool IsGeolocationEnabled
         {
             get
@@ -76,7 +92,9 @@ namespace Plugin.Geolocator
             }
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Desired accuracy in meters
+        /// </summary>
         public double DesiredAccuracy
         {
             get { return desiredAccuracy; }
@@ -87,11 +105,29 @@ namespace Plugin.Geolocator
             }
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Gets if you are listening for location changes
+        /// </summary>
         public bool IsListening => isListening;
 
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Gets the last known and most accurate location.
+        /// This is usually cached and best to display first before querying for full position.
+        /// </summary>
+        /// <returns>Best and most recent location or null if none found</returns>
+        public Task<Position> GetLastKnownLocationAsync()
+        {
+            return null;
+        }
+
+        /// <summary>
+        /// Gets position async with specified parameters
+        /// </summary>
+        /// <param name="timeout">Timeout to wait, Default Infinite</param>
+        /// <param name="token">Cancelation token</param>
+        /// <param name="includeHeading">If you would like to include heading</param>
+        /// <returns>Position</returns>
         public Task<Position> GetPositionAsync(TimeSpan? timeout, CancellationToken? cancelToken = null, bool includeHeading = false)
         {
             var timeoutMilliseconds = timeout.HasValue ? (int)timeout.Value.TotalMilliseconds : Timeout.Infite;
@@ -134,8 +170,15 @@ namespace Plugin.Geolocator
 
             return tcs.Task;
         }
-        /// <inheritdoc/>
-        public Task<bool> StartListeningAsync(TimeSpan minTime, double minDistance, bool includeHeading = false, ListenerSettings settings = null)
+
+        /// <summary>
+		/// Start listening for changes
+		/// </summary>
+		/// <param name="minimumTime">Time</param>
+		/// <param name="minimumDistance">Distance</param>
+		/// <param name="includeHeading">Include heading or not</param>
+		/// <param name="listenerSettings">Optional settings (iOS only)</param>
+		public Task<bool> StartListeningAsync(TimeSpan minTime, double minDistance, bool includeHeading = false, ListenerSettings settings = null)
         {
             
             if (minTime.TotalMilliseconds < 0)
@@ -155,7 +198,10 @@ namespace Plugin.Geolocator
 
             return Task.FromResult(true);
         }
-        /// <inheritdoc/>
+
+        /// <summary>
+        /// Stop listening
+        /// </summary>
         public Task<bool> StopListeningAsync()
         {
             if (!isListening)
@@ -168,10 +214,7 @@ namespace Plugin.Geolocator
             return Task.FromResult(true);
         }
 
-        private bool isListening;
-        private double desiredAccuracy;
-        private Windows.Devices.Geolocation.Geolocator locator = new Windows.Devices.Geolocation.Geolocator();
-
+      
         private async void OnLocatorStatusChanged(Windows.Devices.Geolocation.Geolocator sender, StatusChangedEventArgs e)
         {
             GeolocationError error;

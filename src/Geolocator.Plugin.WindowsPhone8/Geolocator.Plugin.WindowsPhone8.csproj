@@ -87,6 +87,7 @@
       <Link>CrossGeolocator.cs</Link>
     </Compile>
     <Compile Include="GeolocatorImplementation.cs" />
+    <Compile Include="GeolocatorUtils.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SinglePositionListener.cs" />
   </ItemGroup>

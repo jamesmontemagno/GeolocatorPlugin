@@ -17,19 +17,26 @@ namespace GeolocatorTests
 
             var button = new Button
             {
-                    Text = "Get Location"
+                Text = "Get Location"
             };
 
-            button.Clicked += async (sender, e) => 
+            button.Clicked += async (sender, e) =>
                 {
                     try
                     {
                         button.IsEnabled = false;
                         label.Text = "Getting...";
-                        var test = await CrossGeolocator.Current.GetPositionAsync(10000);
-                        label.Text = "Lat: " + test.Latitude.ToString() + " Long: " + test.Longitude.ToString();
+
+                        var cached = await CrossGeolocator.Current.GetLastKnownLocationAsync();
+                        if (cached == null)
+                            label.Text += "No cached";
+                        else
+                            label.Text += "\n" + "Cached: Lat: " + cached.Latitude.ToString() + " Long: " + cached.Longitude.ToString();
+
+                        var test = await CrossGeolocator.Current.GetPositionAsync(TimeSpan.FromMinutes(2));
+                        label.Text += "\n" + "Full: Lat: " + test.Latitude.ToString() + " Long: " + test.Longitude.ToString();
                     }
-                    catch(Exception ex)
+                    catch (Exception ex)
                     {
                         label.Text = ex.Message;
                     }

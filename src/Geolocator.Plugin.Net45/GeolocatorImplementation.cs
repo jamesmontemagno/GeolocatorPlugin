@@ -14,27 +14,27 @@ namespace Plugin.Geolocator
     public class GeolocatorImplementation : IGeolocator
     {
         /// <summary>
-        /// Accuracy
+        /// Desired accuracy in meters
         /// </summary>
         public double DesiredAccuracy { get; set; } = 100;
 
         /// <summary>
-        /// Is Available
+        /// Gets if geolocation is available on device
         /// </summary>
         public bool IsGeolocationAvailable => false;
 
         /// <summary>
-        /// Is Enabled
+        /// Gets if geolocation is enabled on device
         /// </summary>
         public bool IsGeolocationEnabled => false;
 
         /// <summary>
-        /// Is Listening
+        /// Gets if you are listening for location changes
         /// </summary>
         public bool IsListening => false;
 
         /// <summary>
-        /// Supports heading
+        /// Gets if device supports heading
         /// </summary>
         public bool SupportsHeading => false;
 
@@ -48,12 +48,12 @@ namespace Plugin.Geolocator
         public event EventHandler<PositionErrorEventArgs> PositionError;
 
         /// <summary>
-        /// Get position
+        /// Gets position async with specified parameters
         /// </summary>
-        /// <param name="timeout"></param>
-        /// <param name="token"></param>
-        /// <param name="includeHeading"></param>
-        /// <returns></returns>
+        /// <param name="timeout">Timeout to wait, Default Infinite</param>
+        /// <param name="token">Cancelation token</param>
+        /// <param name="includeHeading">If you would like to include heading</param>
+        /// <returns>Position</returns>
         public Task<Position> GetPositionAsync(TimeSpan? timeout, CancellationToken? token = default(CancellationToken?), bool includeHeading = false)
             => Task.FromResult<Position>(null);
 
@@ -73,5 +73,12 @@ namespace Plugin.Geolocator
         /// <returns></returns>
         public Task<bool> StopListeningAsync()
             => Task.FromResult(false);
+
+        /// <summary>
+        /// Gets the last known and most accurate location.
+        /// This is usually cached and best to display first before querying for full position.
+        /// </summary>
+        /// <returns>Best and most recent location or null if none found</returns>
+        public Task<Position> GetLastKnownLocationAsync() => null;
     }
 }

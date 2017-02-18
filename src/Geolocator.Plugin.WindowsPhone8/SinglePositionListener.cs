@@ -25,62 +25,60 @@ namespace Plugin.Geolocator
 {
     internal class SinglePositionListener
     {
+        GeoPosition<GeoCoordinate> bestPosition;
+        GeoCoordinateWatcher watcher;
+        readonly double desiredAccuracy;
+        readonly DateTimeOffset start;
+        readonly Timer timer;
+        readonly int timeout;
+        readonly TaskCompletionSource<Position> tcs = new TaskCompletionSource<Position>();
+
+
         internal SinglePositionListener(double accuracy, int timeout, CancellationToken cancelToken)
         {
             cancelToken.Register(HandleTimeout, true);
-            this.desiredAccuracy = accuracy;
-            this.start = DateTime.Now;
+            desiredAccuracy = accuracy;
+            start = DateTime.Now;
             this.timeout = timeout;
 
             System.Threading.Tasks.Task.Factory.StartNew(() =>
             {
-                this.watcher = new GeoCoordinateWatcher(GeolocatorImplementation.GetAccuracy(accuracy));
-                this.watcher.PositionChanged += WatcherOnPositionChanged;
-                this.watcher.StatusChanged += WatcherOnStatusChanged;
+                watcher = new GeoCoordinateWatcher(accuracy.ToAccuracy());
+                watcher.PositionChanged += WatcherOnPositionChanged;
+                watcher.StatusChanged += WatcherOnStatusChanged;
 
-                this.watcher.Start();
+                watcher.Start();
             });
 
             if (timeout != Timeout.Infinite)
-                this.timer = new Timer(HandleTimeout, null, timeout, Timeout.Infinite);
+                timer = new Timer(HandleTimeout, null, timeout, Timeout.Infinite);
 
             Task.ContinueWith(Cleanup);
         }
 
-        public Task<Position> Task
-        {
-            get { return this.tcs.Task; }
-        }
+        public Task<Position> Task =>  tcs.Task;
 
-        private GeoPosition<GeoCoordinate> bestPosition;
-        private GeoCoordinateWatcher watcher;
-        private readonly double desiredAccuracy;
-        private readonly DateTimeOffset start;
-        private readonly Timer timer;
-        private readonly int timeout;
-        private readonly TaskCompletionSource<Position> tcs = new TaskCompletionSource<Position>();
-
+      
         private void Cleanup(Task task)
         {
-            this.watcher.PositionChanged -= WatcherOnPositionChanged;
-            this.watcher.StatusChanged -= WatcherOnStatusChanged;
+            watcher.PositionChanged -= WatcherOnPositionChanged;
+            watcher.StatusChanged -= WatcherOnStatusChanged;
 
-            this.watcher.Stop();
-            this.watcher.Dispose();
+            watcher.Stop();
+            watcher.Dispose();
 
-            if (this.timer != null)
-                this.timer.Dispose();
+            timer?.Dispose();
         }
 
         private void HandleTimeout(object state)
         {
             if (state != null && (bool)state)
-                this.tcs.TrySetCanceled();
+                tcs.TrySetCanceled();
 
-            if (this.bestPosition != null)
-                this.tcs.TrySetResult(GeolocatorImplementation.GetPosition(this.bestPosition));
+            if (bestPosition != null)
+                tcs.TrySetResult(bestPosition.ToPosition());
             else
-                this.tcs.TrySetCanceled();
+                tcs.TrySetCanceled();
         }
 
         private void WatcherOnStatusChanged(object sender, GeoPositionStatusChangedEventArgs e)
@@ -88,11 +86,11 @@ namespace Plugin.Geolocator
             switch (e.Status)
             {
                 case GeoPositionStatus.NoData:
-                    this.tcs.TrySetException(new GeolocationException(GeolocationError.PositionUnavailable));
+                    tcs.TrySetException(new GeolocationException(GeolocationError.PositionUnavailable));
                     break;
 
                 case GeoPositionStatus.Disabled:
-                    this.tcs.TrySetException(new GeolocationException(GeolocationError.Unauthorized));
+                    tcs.TrySetException(new GeolocationException(GeolocationError.Unauthorized));
                     break;
             }
         }
@@ -104,11 +102,11 @@ namespace Plugin.Geolocator
 
             bool isRecent = timeout == Timeout.Infinite || (e.Position.Timestamp - this.start).TotalMilliseconds < this.timeout;
 
-            if (e.Position.Location.HorizontalAccuracy <= this.desiredAccuracy && isRecent)
-                this.tcs.TrySetResult(GeolocatorImplementation.GetPosition(e.Position));
+            if (e.Position.Location.HorizontalAccuracy <= desiredAccuracy && isRecent)
+                tcs.TrySetResult(e.Position.ToPosition());
 
-            if (this.bestPosition == null || e.Position.Location.HorizontalAccuracy < this.bestPosition.Location.HorizontalAccuracy)
-                this.bestPosition = e.Position;
+            if (bestPosition == null || e.Position.Location.HorizontalAccuracy < this.bestPosition.Location.HorizontalAccuracy)
+                bestPosition = e.Position;
         }
     }
 }

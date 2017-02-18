@@ -21,9 +21,11 @@ using Android.OS;
 using System.Collections.Generic;
 
 using Plugin.Geolocator.Abstractions;
+using Android.Runtime;
 
 namespace Plugin.Geolocator
 {
+    [Preserve(AllMembers = true)]
     internal class GeolocationContinuousListener
       : Java.Lang.Object, ILocationListener
     {
@@ -60,7 +62,7 @@ namespace Plugin.Geolocator
                     var pr = manager.GetProvider(location.Provider);
                     var lapsed = GetTimeSpan(location.Time) - GetTimeSpan(lastLocation.Time);
 
-                    if (pr.Accuracy > this.manager.GetProvider(activeProvider).Accuracy
+                    if (pr.Accuracy > manager.GetProvider(activeProvider).Accuracy
                       && lapsed < timePeriod.Add(timePeriod))
                     {
                         location.Dispose();
@@ -74,22 +76,9 @@ namespace Plugin.Geolocator
             var previous = Interlocked.Exchange(ref lastLocation, location);
             if (previous != null)
                 previous.Dispose();
+            
 
-            var p = new Position();
-            if (location.HasAccuracy)
-                p.Accuracy = location.Accuracy;
-            if (location.HasAltitude)
-                p.Altitude = location.Altitude;
-            if (location.HasBearing)
-                p.Heading = location.Bearing;
-            if (location.HasSpeed)
-                p.Speed = location.Speed;
-
-            p.Longitude = location.Longitude;
-            p.Latitude = location.Latitude;
-            p.Timestamp = GeolocatorImplementation.GetTimestamp(location);
-
-            PositionChanged?.Invoke(this, new PositionEventArgs(p));
+            PositionChanged?.Invoke(this, new PositionEventArgs(location.ToPosition()));
         }
 
         public void OnProviderDisabled(string provider)

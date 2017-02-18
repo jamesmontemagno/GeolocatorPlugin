@@ -20,7 +20,7 @@ namespace Plugin.Geolocator.Abstractions
         event EventHandler<PositionEventArgs> PositionChanged;
 
         /// <summary>
-        /// Desired accuracy in meteres
+        /// Desired accuracy in meters
         /// </summary>
         double DesiredAccuracy { get; set; }
 
@@ -44,6 +44,15 @@ namespace Plugin.Geolocator.Abstractions
         /// </summary>
         bool IsGeolocationEnabled { get; }
 
+
+
+        /// <summary>
+        /// Gets the last known and most accurate location.
+        /// This is usually cached and best to display first before querying for full position.
+        /// </summary>
+        /// <returns>Best and most recent location or null if none found</returns>
+        Task<Position> GetLastKnownLocationAsync();
+
         /// <summary>
         /// Gets position async with specified parameters
         /// </summary>
@@ -61,6 +70,7 @@ namespace Plugin.Geolocator.Abstractions
 		/// <param name="includeHeading">Include heading or not</param>
 		/// <param name="listenerSettings">Optional settings (iOS only)</param>
 		Task<bool> StartListeningAsync(TimeSpan minimumTime, double minimumDistance, bool includeHeading = false, ListenerSettings listenerSettings = null);
+
 
         /// <summary>
         /// Stop listening

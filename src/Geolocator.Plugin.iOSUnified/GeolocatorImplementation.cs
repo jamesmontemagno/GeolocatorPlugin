@@ -46,30 +46,44 @@ namespace Plugin.Geolocator
         bool CanDeferLocationUpdate => UIDevice.CurrentDevice.CheckSystemVersion(6, 0);
 
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Position error event handler
+        /// </summary>
         public event EventHandler<PositionErrorEventArgs> PositionError;
-        /// <inheritdoc/>
+
+        /// <summary>
+        /// Position changed event handler
+        /// </summary>
         public event EventHandler<PositionEventArgs> PositionChanged;
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Desired accuracy in meters
+        /// </summary>
         public double DesiredAccuracy
         {
             get;
             set;
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Gets if you are listening for location changes
+        ///
         public bool IsListening => isListening;
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Gets if device supports heading
+        /// </summary>
         public bool SupportsHeading =>  CLLocationManager.HeadingAvailable;
         
 
-
-        /// <inheritdoc/>
+        /// <summary>
+        /// Gets if geolocation is available on device
+        /// </summary>
         public bool IsGeolocationAvailable => true; //all iOS devices support Geolocation
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Gets if geolocation is enabled on device
+        /// </summary>
         public bool IsGeolocationEnabled
         {
             get
@@ -101,8 +115,40 @@ namespace Plugin.Geolocator
             }
         }
 
+        /// <summary>
+        /// Gets the last known and most accurate location.
+        /// This is usually cached and best to display first before querying for full position.
+        /// </summary>
+        /// <returns>Best and most recent location or null if none found</returns>
+        public Task<Position> GetLastKnownLocationAsync()
+        {
+            var m = GetManager();
+            var newLocation = m?.Location;
 
-        /// <inheritdoc/>
+            if (newLocation == null)
+                return null;
+
+            var position = new Position();
+            position.Accuracy = newLocation.HorizontalAccuracy;
+            position.Altitude = newLocation.Altitude;
+            position.AltitudeAccuracy = newLocation.VerticalAccuracy;
+            position.Latitude = newLocation.Coordinate.Latitude;
+            position.Longitude = newLocation.Coordinate.Longitude;
+            position.Speed = newLocation.Speed;
+            position.Timestamp = new DateTimeOffset((DateTime)newLocation.Timestamp);
+
+            return Task.FromResult(position);
+        }
+
+
+
+        /// <summary>
+        /// Gets position async with specified parameters
+        /// </summary>
+        /// <param name="timeout">Timeout to wait, Default Infinite</param>
+        /// <param name="token">Cancelation token</param>
+        /// <param name="includeHeading">If you would like to include heading</param>
+        /// <returns>Position</returns>
 		public Task<Position> GetPositionAsync(TimeSpan? timeout, CancellationToken? cancelToken = null, bool includeHeading = false)
         {
             var timeoutMilliseconds = timeout.HasValue ? (int)timeout.Value.TotalMilliseconds : Timeout.Infinite;
@@ -170,8 +216,14 @@ namespace Plugin.Geolocator
         }
 
 
-        /// <inheritdoc/>
-		public Task<bool> StartListeningAsync(TimeSpan minTime, double minDistance, bool includeHeading = false, ListenerSettings settings = null)
+        /// <summary>
+        /// Start listening for changes
+        /// </summary>
+        /// <param name="minimumTime">Time</param>
+        /// <param name="minimumDistance">Distance</param>
+        /// <param name="includeHeading">Include heading or not</param>
+        /// <param name="listenerSettings">Optional settings (iOS only)</param>
+        public Task<bool> StartListeningAsync(TimeSpan minTime, double minDistance, bool includeHeading = false, ListenerSettings settings = null)
         {
             if (minDistance < 0)
                 throw new ArgumentOutOfRangeException("minDistance");
@@ -233,7 +285,9 @@ namespace Plugin.Geolocator
             return Task.FromResult(true);
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Stop listening
+        /// </summary>
         public Task<bool> StopListeningAsync()
         {
             if (!isListening)

@@ -24,17 +24,18 @@ using System.Linq;
 using Android.Content;
 using Android.Content.PM;
 using Plugin.Permissions;
+using Android.Runtime;
 
 namespace Plugin.Geolocator
 {
     /// <summary>
     /// Implementation for Feature
     /// </summary>
+    [Preserve(AllMembers = true)]
     public class GeolocatorImplementation : IGeolocator
     {
-        string[] providers;
-        readonly LocationManager manager;
-        string headingProvider;
+        string[] allProviders;
+        LocationManager locationManager;
 
         GeolocationContinuousListener listener;
 
@@ -47,8 +48,28 @@ namespace Plugin.Geolocator
         public GeolocatorImplementation()
         {
             DesiredAccuracy = 100;
-            manager = (LocationManager)Application.Context.GetSystemService(Context.LocationService);
-            providers = manager.GetProviders(enabledOnly: false).Where(s => s != LocationManager.PassiveProvider).ToArray();
+        }
+
+        string[] Providers
+        {
+            get
+            {
+                if((allProviders?.Length ?? 0) == 0)
+                    allProviders = Manager.GetProviders(enabledOnly: false).ToArray();
+
+                return allProviders;
+            }
+        }
+
+        LocationManager Manager
+        {
+            get
+            {
+                if(locationManager == null)
+                    locationManager = (LocationManager)Application.Context.GetSystemService(Context.LocationService);
+
+                return locationManager;
+            }
         }
 
         /// <inheritdoc/>
@@ -71,19 +92,33 @@ namespace Plugin.Geolocator
 
 
         /// <inheritdoc/>
-        public bool IsGeolocationAvailable => providers.Length > 0;
+        public bool IsGeolocationAvailable => Providers.Length > 0;
 
 
         /// <inheritdoc/>
-        public bool IsGeolocationEnabled => providers.Any(manager.IsProviderEnabled);
+        public bool IsGeolocationEnabled => Providers.Any(Manager.IsProviderEnabled);
 
 
-
-        /// <inheritdoc/>
-        public async Task<Position> GetPositionAsync(TimeSpan? timeout, CancellationToken? cancelToken = null, bool includeHeading = false)
+        public async Task<Position> GetLastKnownLocationAsync()
         {
-            var timeoutMilliseconds = timeout.HasValue ? (int)timeout.Value.TotalMilliseconds : Timeout.Infinite;
+            var hasPermission = await CheckPermissions();
+            if (!hasPermission)
+                return null;
 
+            Location bestLocation = null;
+            foreach (var provider in Providers)
+            {
+                var location = Manager.GetLastKnownLocation(provider);
+                if (location != null && GeolocationUtils.IsBetterLocation(location, bestLocation))
+                    bestLocation = location;
+            }
+
+            return bestLocation == null ? null : bestLocation.ToPosition();
+
+        }
+
+        async Task<bool> CheckPermissions()
+        {
             var status = await CrossPermissions.Current.CheckPermissionStatusAsync(Permissions.Abstractions.Permission.Location).ConfigureAwait(false);
             if (status != Permissions.Abstractions.PermissionStatus.Granted)
             {
@@ -94,15 +129,20 @@ namespace Plugin.Geolocator
                 if (request[Permissions.Abstractions.Permission.Location] != Permissions.Abstractions.PermissionStatus.Granted)
                 {
                     Console.WriteLine("Location permission denied, can not get positions async.");
-                    return null;
+                    return false;
+
                 }
-                providers = manager.GetProviders(enabledOnly: false).Where(s => s != LocationManager.PassiveProvider).ToArray();
             }
 
-            if (providers.Length == 0)
-            {
-                providers = manager.GetProviders(enabledOnly: false).Where(s => s != LocationManager.PassiveProvider).ToArray();
-            }
+            return true;
+        }
+
+
+        /// <inheritdoc/>
+        public async Task<Position> GetPositionAsync(TimeSpan? timeout, CancellationToken? cancelToken = null, bool includeHeading = false)
+        {
+            var timeoutMilliseconds = timeout.HasValue ? (int)timeout.Value.TotalMilliseconds : Timeout.Infinite;
+
 
 
             if (timeoutMilliseconds <= 0 && timeoutMilliseconds != Timeout.Infinite)
@@ -111,17 +151,22 @@ namespace Plugin.Geolocator
             if (!cancelToken.HasValue)
                 cancelToken = CancellationToken.None;
 
+            var hasPermission = await CheckPermissions();
+            if (!hasPermission)
+                return null;
+
+
 
             var tcs = new TaskCompletionSource<Position>();
 
             if (!IsListening)
             {
                 GeolocationSingleListener singleListener = null;
-                singleListener = new GeolocationSingleListener((float)DesiredAccuracy, timeoutMilliseconds, providers.Where(manager.IsProviderEnabled),
+                singleListener = new GeolocationSingleListener(Manager, (float)DesiredAccuracy, timeoutMilliseconds, Providers.Where(Manager.IsProviderEnabled),
                     finishedCallback: () =>
                 {
-                    for (int i = 0; i < providers.Length; ++i)
-                        manager.RemoveUpdates(singleListener);
+                    for (int i = 0; i < Providers.Length; ++i)
+                        Manager.RemoveUpdates(singleListener);
                 });
 
                 if (cancelToken != CancellationToken.None)
@@ -130,40 +175,40 @@ namespace Plugin.Geolocator
                     {
                         singleListener.Cancel();
 
-                        for (int i = 0; i < providers.Length; ++i)
-                            manager.RemoveUpdates(singleListener);
+                        for (int i = 0; i < Providers.Length; ++i)
+                            Manager.RemoveUpdates(singleListener);
                     }, true);
                 }
 
                 try
                 {
-                    Looper looper = Looper.MyLooper() ?? Looper.MainLooper;
+                    var looper = Looper.MyLooper() ?? Looper.MainLooper;
 
                     int enabled = 0;
-                    for (int i = 0; i < providers.Length; ++i)
+                    for (int i = 0; i < Providers.Length; ++i)
                     {
-                        if (manager.IsProviderEnabled(providers[i]))
+                        if (Manager.IsProviderEnabled(Providers[i]))
                             enabled++;
 
-                        manager.RequestLocationUpdates(providers[i], 0, 0, singleListener, looper);
+                        Manager.RequestLocationUpdates(Providers[i], 0, 0, singleListener, looper);
                     }
 
                     if (enabled == 0)
                     {
-                        for (int i = 0; i < providers.Length; ++i)
-                            manager.RemoveUpdates(singleListener);
+                        for (int i = 0; i < Providers.Length; ++i)
+                            Manager.RemoveUpdates(singleListener);
 
                         tcs.SetException(new GeolocationException(GeolocationError.PositionUnavailable));
-                        return await tcs.Task.ConfigureAwait(false);
+                        return await tcs.Task;
                     }
                 }
                 catch (Java.Lang.SecurityException ex)
                 {
                     tcs.SetException(new GeolocationException(GeolocationError.Unauthorized, ex));
-                    return await tcs.Task.ConfigureAwait(false);
+                    return await tcs.Task;
                 }
 
-                return await singleListener.Task.ConfigureAwait(false);
+                return await singleListener.Task;
             }
 
             // If we're already listening, just use the current listener
@@ -197,25 +242,10 @@ namespace Plugin.Geolocator
         /// <inheritdoc/>
         public async Task<bool> StartListeningAsync(TimeSpan minTime, double minDistance, bool includeHeading = false, ListenerSettings settings = null)
         {
-            var status = await CrossPermissions.Current.CheckPermissionStatusAsync(Permissions.Abstractions.Permission.Location).ConfigureAwait(false);
-            if (status != Permissions.Abstractions.PermissionStatus.Granted)
-            {
-                Console.WriteLine("Currently does not have Location permissions, requesting permissions");
+            var hasPermission = await CheckPermissions();
+            if (!hasPermission)
+                return false;
 
-                var request = await CrossPermissions.Current.RequestPermissionsAsync(Permissions.Abstractions.Permission.Location);
-
-                if (request[Permissions.Abstractions.Permission.Location] != Permissions.Abstractions.PermissionStatus.Granted)
-                {
-                    Console.WriteLine("Location permission denied, can not get positions async.");
-                    return false;
-                }
-                providers = manager.GetProviders(enabledOnly: false).Where(s => s != LocationManager.PassiveProvider).ToArray();
-            }
-
-            if (providers.Length == 0)
-            {
-                providers = manager.GetProviders(enabledOnly: false).Where(s => s != LocationManager.PassiveProvider).ToArray();
-            }
 
             var minTimeMilliseconds = minTime.TotalMilliseconds;
             if (minTimeMilliseconds < 0)
@@ -225,13 +255,13 @@ namespace Plugin.Geolocator
             if (IsListening)
                 throw new InvalidOperationException("This Geolocator is already listening");
 
-            listener = new GeolocationContinuousListener(manager, minTime, providers);
+            listener = new GeolocationContinuousListener(Manager, minTime, Providers);
             listener.PositionChanged += OnListenerPositionChanged;
             listener.PositionError += OnListenerPositionError;
 
             Looper looper = Looper.MyLooper() ?? Looper.MainLooper;
-            for (int i = 0; i < providers.Length; ++i)
-                manager.RequestLocationUpdates(providers[i], (long)minTimeMilliseconds, (float)minDistance, listener, looper);
+            for (int i = 0; i < Providers.Length; ++i)
+                Manager.RequestLocationUpdates(Providers[i], (long)minTimeMilliseconds, (float)minDistance, listener, looper);
 
             return true;
         }
@@ -244,8 +274,8 @@ namespace Plugin.Geolocator
             listener.PositionChanged -= OnListenerPositionChanged;
             listener.PositionError -= OnListenerPositionError;
 
-            for (int i = 0; i < providers.Length; ++i)
-                manager.RemoveUpdates(listener);
+            for (int i = 0; i < Providers.Length; ++i)
+                Manager.RemoveUpdates(listener);
 
             listener = null;
             return Task.FromResult(true);
@@ -271,19 +301,6 @@ namespace Plugin.Geolocator
             await StopListeningAsync();
 
             PositionError?.Invoke(this, e);
-        }
-
-        private static readonly DateTime Epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-        internal static DateTimeOffset GetTimestamp(Location location)
-        {
-            try
-            {
-                return new DateTimeOffset(Epoch.AddMilliseconds(location.Time));
-            }
-            catch (Exception e)
-            {
-                return new DateTimeOffset(Epoch);
-            }
         }
     }
 }

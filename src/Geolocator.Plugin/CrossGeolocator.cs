@@ -29,7 +29,7 @@ namespace Plugin.Geolocator
         static IGeolocator CreateGeolocator()
         {
 #if PORTABLE
-        return null;
+            return null;
 #else
             return new GeolocatorImplementation();
 #endif

@@ -40,37 +40,65 @@ namespace Plugin.Geolocator
         public event EventHandler<PositionErrorEventArgs> PositionError;
         public event EventHandler<PositionEventArgs> PositionChanged;
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Gets if geolocation is available on device
+        /// </summary>
         public bool IsGeolocationAvailable => true;
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Gets if geolocation is enabled on device
+        /// </summary>
         public bool IsGeolocationEnabled
         {
             get
             {
                 if (watcher != null)
-                    isEnabled = (this.watcher.Permission == GeoPositionPermission.Granted && watcher.Status != GeoPositionStatus.Disabled);
+                    isEnabled = (watcher.Permission == GeoPositionPermission.Granted && watcher.Status != GeoPositionStatus.Disabled);
                 else
                     isEnabled = GetEnabled();
 
                 return isEnabled;
             }
         }
-        /// <inheritdoc/>
+
+        /// <summary>
+        /// Desired accuracy in meters
+        /// </summary>
         public double DesiredAccuracy
         {
             get;
             set;
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Gets if device supports heading
+        /// </summary>
         public bool SupportsHeading => true;
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Gets if you are listening for location changes
+        /// </summary>
         public bool IsListening => watcher != null;
 
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Gets the last known and most accurate location.
+        /// This is usually cached and best to display first before querying for full position.
+        /// </summary>
+        /// <returns>Best and most recent location or null if none found</returns>
+        public Task<Position> GetLastKnownLocationAsync()
+        {
+            var watch = new GeoCoordinateWatcher();
+            return Task.FromResult(watch.Position?.ToPosition() ?? null);
+        }
+
+        /// <summary>
+        /// Gets position async with specified parameters
+        /// </summary>
+        /// <param name="timeout">Timeout to wait, Default Infinite</param>
+        /// <param name="token">Cancelation token</param>
+        /// <param name="includeHeading">If you would like to include heading</param>
+        /// <returns>Position</returns>
         public Task<Position> GetPositionAsync(TimeSpan? timeout, CancellationToken? cancelToken = null, bool includeHeading = false)
         {
             var timeoutMilliseconds = timeout.HasValue ? (int)timeout.Value.TotalMilliseconds : Timeout.Infinite;
@@ -83,15 +111,22 @@ namespace Plugin.Geolocator
 
             return new SinglePositionListener(DesiredAccuracy, timeoutMilliseconds, cancelToken.Value).Task;
         }
-        /// <inheritdoc/>
-        public Task<bool> StartListeningAsync(TimeSpan minTime, double minDistance, bool includeHeading = false, ListenerSettings settings = null)
+
+        /// <summary>
+		/// Start listening for changes
+		/// </summary>
+		/// <param name="minimumTime">Time</param>
+		/// <param name="minimumDistance">Distance</param>
+		/// <param name="includeHeading">Include heading or not</param>
+		/// <param name="listenerSettings">Optional settings (iOS only)</param>
+		public Task<bool> StartListeningAsync(TimeSpan minTime, double minDistance, bool includeHeading = false, ListenerSettings settings = null)
         {
             if (minDistance < 0)
                 throw new ArgumentOutOfRangeException("minDistance");
             if (IsListening)
                 throw new InvalidOperationException("This Geolocator is already listening");
 
-            watcher = new GeoCoordinateWatcher(GetAccuracy(DesiredAccuracy));
+            watcher = new GeoCoordinateWatcher(DesiredAccuracy.ToAccuracy());
             watcher.MovementThreshold = minDistance;
             watcher.PositionChanged += WatcherOnPositionChanged;
             watcher.StatusChanged += WatcherOnStatusChanged;
@@ -99,7 +134,10 @@ namespace Plugin.Geolocator
 
             return Task.FromResult(true);
         }
-        /// <inheritdoc/>
+
+        /// <summary>
+        /// Stop listening
+        /// </summary>
         public Task<bool> StopListeningAsync()
         {
             if (watcher == null)
@@ -115,7 +153,7 @@ namespace Plugin.Geolocator
         }
 
 
-        private static bool GetEnabled()
+        static bool GetEnabled()
         {
             var w = new GeoCoordinateWatcher();
             try
@@ -136,7 +174,7 @@ namespace Plugin.Geolocator
             }
         }
 
-        private async void WatcherOnStatusChanged(object sender, GeoPositionStatusChangedEventArgs e)
+        async void WatcherOnStatusChanged(object sender, GeoPositionStatusChangedEventArgs e)
         {
             isEnabled = (watcher.Permission == GeoPositionPermission.Granted && watcher.Status != GeoPositionStatus.Disabled);
 
@@ -160,49 +198,14 @@ namespace Plugin.Geolocator
             PositionError?.Invoke(this, new PositionErrorEventArgs(error));
         }
 
-        private void WatcherOnPositionChanged(object sender, GeoPositionChangedEventArgs<GeoCoordinate> e)
+        void WatcherOnPositionChanged(object sender, GeoPositionChangedEventArgs<GeoCoordinate> e)
         {
-            Position p = GetPosition(e.Position);
+            var p = e.Position.ToPosition();
             if (p == null)
                 return;
 
             PositionChanged?.Invoke(this, new PositionEventArgs(p));
 
-        }
-
-        internal static GeoPositionAccuracy GetAccuracy(double desiredAccuracy)
-        {
-            if (desiredAccuracy < 100)
-                return GeoPositionAccuracy.High;
-
-            return GeoPositionAccuracy.Default;
-        }
-
-        internal static Position GetPosition(GeoPosition<GeoCoordinate> position)
-        {
-            if (position.Location.IsUnknown)
-                return null;
-
-            var p = new Position();
-            p.Accuracy = position.Location.HorizontalAccuracy;
-            p.Longitude = position.Location.Longitude;
-            p.Latitude = position.Location.Latitude;
-
-            if (!Double.IsNaN(position.Location.VerticalAccuracy) && !Double.IsNaN(position.Location.Altitude))
-            {
-                p.AltitudeAccuracy = position.Location.VerticalAccuracy;
-                p.Altitude = position.Location.Altitude;
-            }
-
-            if (!Double.IsNaN(position.Location.Course))
-                p.Heading = position.Location.Course;
-
-            if (!Double.IsNaN(position.Location.Speed))
-                p.Speed = position.Location.Speed;
-
-            p.Timestamp = position.Timestamp.ToUniversalTime();
-
-            return p;
         }
     }
 

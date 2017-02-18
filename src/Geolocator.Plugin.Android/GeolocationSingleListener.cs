@@ -20,9 +20,11 @@ using Android.OS;
 using System.Threading;
 using System.Collections.Generic;
 using Plugin.Geolocator.Abstractions;
+using Android.Runtime;
 
 namespace Plugin.Geolocator
 {
+    [Preserve(AllMembers = true)]
     internal class GeolocationSingleListener
        : Java.Lang.Object, ILocationListener
     {
@@ -30,18 +32,27 @@ namespace Plugin.Geolocator
         readonly object locationSync = new object();
         Location bestLocation;
 
+
         readonly Action finishedCallback;
         readonly float desiredAccuracy;
         readonly Timer timer;
         readonly TaskCompletionSource<Position> completionSource = new TaskCompletionSource<Position>();
         HashSet<string> activeProviders = new HashSet<string>();
 
-        public GeolocationSingleListener(float desiredAccuracy, int timeout, IEnumerable<string> activeProviders, Action finishedCallback)
+        public GeolocationSingleListener(LocationManager manager, float desiredAccuracy, int timeout, IEnumerable<string> activeProviders, Action finishedCallback)
         {
             this.desiredAccuracy = desiredAccuracy;
             this.finishedCallback = finishedCallback;
 
             this.activeProviders = new HashSet<string>(activeProviders);
+
+            foreach(var provider in activeProviders)
+            {
+                var location = manager.GetLastKnownLocation(provider);
+                if (location != null && GeolocationUtils.IsBetterLocation(location, bestLocation))
+                    bestLocation = location;
+            }
+            
 
             if (timeout != Timeout.Infinite)
                 timer = new Timer(TimesUp, null, timeout, 0);
@@ -60,10 +71,12 @@ namespace Plugin.Geolocator
 
             lock (locationSync)
             {
-                if (bestLocation == null || location.Accuracy <= bestLocation.Accuracy)
+                if (GeolocationUtils.IsBetterLocation(location, bestLocation))
                     bestLocation = location;
             }
         }
+
+        
 
         public void OnProviderDisabled(string provider)
         {
@@ -114,23 +127,8 @@ namespace Plugin.Geolocator
 
         private void Finish(Location location)
         {
-            var p = new Position();
-            if (location.HasAccuracy)
-                p.Accuracy = location.Accuracy;
-            if (location.HasAltitude)
-                p.Altitude = location.Altitude;
-            if (location.HasBearing)
-                p.Heading = location.Bearing;
-            if (location.HasSpeed)
-                p.Speed = location.Speed;
-
-            p.Longitude = location.Longitude;
-            p.Latitude = location.Latitude;
-            p.Timestamp = GeolocatorImplementation.GetTimestamp(location);
-
             finishedCallback?.Invoke();
-
-            completionSource.TrySetResult(p);
+            completionSource.TrySetResult(location.ToPosition());
         }
     }
 }
