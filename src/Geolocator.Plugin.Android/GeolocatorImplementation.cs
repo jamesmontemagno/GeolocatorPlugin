@@ -244,7 +244,7 @@ namespace Plugin.Geolocator
         {
             var pos = await GetPositionAsync(new TimeSpan(0, 0, 1));
 
-            Geocoder geocoder = new Geocoder(this);
+            Geocoder geocoder = new Geocoder(Application.Context);
             var addressList = await geocoder.GetFromLocationAsync(pos.Latitude, pos.Longitude, 10);
             var address = addressList.FirstOrDefault();
 
@@ -259,7 +259,7 @@ namespace Plugin.Geolocator
         /// <returns>Address of the desired position</returns>
         public async Task<Address> ReverseGeocodeLocation(double latitude, double longitude)
         {
-            Geocoder geocoder = new Geocoder(this);
+            Geocoder geocoder = new Geocoder(Application.Context);
             var addressList = await geocoder.GetFromLocationAsync(latitude, longitude, 10);
             var address = addressList.FirstOrDefault();
 
