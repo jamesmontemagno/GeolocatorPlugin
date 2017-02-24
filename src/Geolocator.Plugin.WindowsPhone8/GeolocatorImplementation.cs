@@ -113,6 +113,26 @@ namespace Plugin.Geolocator
         }
 
         /// <summary>
+        /// Gets position async and reverse geocode
+        /// </summary>
+        /// <returns>Address of the current position</returns>
+        public Task<Address> ReverseGeocodeCurrentLocation()
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Reverse geocode a position
+        /// </summary>
+        /// <param name="latitude">Desired Latitude</param>
+        /// <param name="longitude">Desired Longitude</param>
+        /// <returns>Address of the desired position</returns>
+        public Task<Address> ReverseGeocodeLocation(double latitude, double longitude)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
 		/// Start listening for changes
 		/// </summary>
 		/// <param name="minimumTime">Time</param>

@@ -15,6 +15,7 @@
 //
 using Plugin.Geolocator.Abstractions;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Android.Locations;
 using System.Threading;
@@ -25,6 +26,7 @@ using Android.Content;
 using Android.Content.PM;
 using Plugin.Permissions;
 using Android.Runtime;
+using Address = Plugin.Geolocator.Abstractions.Address;
 
 namespace Plugin.Geolocator
 {
@@ -54,7 +56,7 @@ namespace Plugin.Geolocator
         {
             get
             {
-                if((allProviders?.Length ?? 0) == 0)
+                if ((allProviders?.Length ?? 0) == 0)
                     allProviders = Manager.GetProviders(enabledOnly: false).ToArray();
 
                 return allProviders;
@@ -65,7 +67,7 @@ namespace Plugin.Geolocator
         {
             get
             {
-                if(locationManager == null)
+                if (locationManager == null)
                     locationManager = (LocationManager)Application.Context.GetSystemService(Context.LocationService);
 
                 return locationManager;
@@ -130,7 +132,6 @@ namespace Plugin.Geolocator
                 {
                     Console.WriteLine("Location permission denied, can not get positions async.");
                     return false;
-
                 }
             }
 
@@ -143,8 +144,6 @@ namespace Plugin.Geolocator
         {
             var timeoutMilliseconds = timeout.HasValue ? (int)timeout.Value.TotalMilliseconds : Timeout.Infinite;
 
-
-
             if (timeoutMilliseconds <= 0 && timeoutMilliseconds != Timeout.Infinite)
                 throw new ArgumentOutOfRangeException(nameof(timeout), "timeout must be greater than or equal to 0");
 
@@ -154,8 +153,6 @@ namespace Plugin.Geolocator
             var hasPermission = await CheckPermissions();
             if (!hasPermission)
                 return null;
-
-
 
             var tcs = new TaskCompletionSource<Position>();
 
@@ -237,6 +234,36 @@ namespace Plugin.Geolocator
             }
 
             return await tcs.Task.ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Gets position async and reverse geocode
+        /// </summary>
+        /// <returns>Address of the current position</returns>
+        public async Task<Address> ReverseGeocodeCurrentLocation()
+        {
+            var pos = await GetPositionAsync(new TimeSpan(0, 0, 1));
+
+            Geocoder geocoder = new Geocoder(this);
+            var addressList = await geocoder.GetFromLocationAsync(pos.Latitude, pos.Longitude, 10);
+            var address = addressList.FirstOrDefault();
+
+            return address.ToAddress();
+        }
+
+        /// <summary>
+        /// Reverse geocode a position
+        /// </summary>
+        /// <param name="latitude">Desired Latitude</param>
+        /// <param name="longitude">Desired Longitude</param>
+        /// <returns>Address of the desired position</returns>
+        public async Task<Address> ReverseGeocodeLocation(double latitude, double longitude)
+        {
+            Geocoder geocoder = new Geocoder(this);
+            var addressList = await geocoder.GetFromLocationAsync(latitude, longitude, 10);
+            var address = addressList.FirstOrDefault();
+
+            return address.ToAddress();
         }
 
         /// <inheritdoc/>

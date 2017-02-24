@@ -62,14 +62,28 @@ namespace Plugin.Geolocator.Abstractions
         /// <returns>Position</returns>
         Task<Position> GetPositionAsync(TimeSpan? timeout = null, CancellationToken? token = null, bool includeHeading = false);
 
-		/// <summary>
-		/// Start listening for changes
-		/// </summary>
-		/// <param name="minimumTime">Time</param>
-		/// <param name="minimumDistance">Distance</param>
-		/// <param name="includeHeading">Include heading or not</param>
-		/// <param name="listenerSettings">Optional settings (iOS only)</param>
-		Task<bool> StartListeningAsync(TimeSpan minimumTime, double minimumDistance, bool includeHeading = false, ListenerSettings listenerSettings = null);
+        /// <summary>
+        /// Gets position async and reverse geocode
+        /// </summary>
+        /// <returns>Address of the current position</returns>
+        Task<Address> ReverseGeocodeCurrentLocation();
+
+        /// <summary>
+        /// Reverse geocode a position
+        /// </summary>
+        /// <param name="latitude">Desired Latitude</param>
+        /// <param name="longitude">Desired Longitude</param>
+        /// <returns>Address of the desired position</returns>
+        Task<Address> ReverseGeocodeLocation(double latitude, double longitude);
+
+        /// <summary>
+        /// Start listening for changes
+        /// </summary>
+        /// <param name="minimumTime">Time</param>
+        /// <param name="minimumDistance">Distance</param>
+        /// <param name="includeHeading">Include heading or not</param>
+        /// <param name="listenerSettings">Optional settings (iOS only)</param>
+        Task<bool> StartListeningAsync(TimeSpan minimumTime, double minimumDistance, bool includeHeading = false, ListenerSettings listenerSettings = null);
 
 
         /// <summary>

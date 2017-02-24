@@ -58,6 +58,22 @@ namespace Plugin.Geolocator
             => Task.FromResult<Position>(null);
 
         /// <summary>
+        /// Gets position async and reverse geocode
+        /// </summary>
+        /// <returns>Address of the current position</returns>
+        public Task<Address> ReverseGeocodeCurrentLocation()
+            => Task.FromResult<Address>(null);
+
+        /// <summary>
+        /// Reverse geocode a position
+        /// </summary>
+        /// <param name="latitude">Desired Latitude</param>
+        /// <param name="longitude">Desired Longitude</param>
+        /// <returns>Address of the desired position</returns>
+        public Task<Address> ReverseGeocodeLocation(double latitude, double longitude)
+            => Task.FromResult<Address>(null);
+
+        /// <summary>
         /// Start listenting
         /// </summary>
         /// <param name="minTime"></param>
