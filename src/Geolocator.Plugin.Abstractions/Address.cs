@@ -1,20 +1,4 @@
-﻿
-//
-//  Copyright 2011-2013, Xamarin Inc.
-//
-//    Licensed under the Apache License, Version 2.0 (the "License");
-//    you may not use this file except in compliance with the License.
-//    You may obtain a copy of the License at
-//
-//        http://www.apache.org/licenses/LICENSE-2.0
-//
-//    Unless required by applicable law or agreed to in writing, software
-//    distributed under the License is distributed on an "AS IS" BASIS,
-//    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-//    See the License for the specific language governing permissions and
-//    limitations under the License.
-//
-using System;
+﻿using System;
 
 namespace Plugin.Geolocator.Abstractions
 {
@@ -27,7 +11,7 @@ namespace Plugin.Geolocator.Abstractions
         public Address(Address address)
         {
             if (address == null)
-                throw new ArgumentNullException("address");
+                throw new ArgumentNullException(nameof(address));
 
             CountryCode = address.CountryCode;
             CountryName = address.CountryName;
@@ -51,20 +35,43 @@ namespace Plugin.Geolocator.Abstractions
         public double Longitude { get; set; }
 
         /// <summary>
-        /// Gets or sets the latitude.
+        /// Gets or sets the country ISO code.
         /// </summary>
         public string CountryCode { get; set; }
 
         /// <summary>
-        /// Gets or sets the longitude.
+        /// Gets or sets the country name.
         /// </summary>
         public string CountryName { get; set; }
 
+        /// <summary>
+        /// Gets or sets a featured name.
+        /// </summary>
         public string FeatureName { get; set; }
+
+        /// <summary>
+        /// Gets or sets a postal code.
+        /// </summary>
         public string PostalCode { get; set; }
+
+        /// <summary>
+        /// Gets or sets a sub locality.
+        /// </summary>
         public string SubLocality { get; set; }
+
+        /// <summary>
+        /// Gets or sets a street name.
+        /// </summary>
         public string Thoroughfare { get; set; }
+
+        /// <summary>
+        /// Gets or sets optional info: sub street or region.
+        /// </summary>
         public string SubThoroughfare { get; set; }
+
+        /// <summary>
+        /// Gets or sets a city/town.
+        /// </summary>
         public string Locality { get; set; }
     }
 }
