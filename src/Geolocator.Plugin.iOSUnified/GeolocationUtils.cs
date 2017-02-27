@@ -15,7 +15,10 @@ namespace Plugin.Geolocator
                 PostalCode = address.PostalCode,
                 SubLocality = address.SubLocality,
                 CountryCode = address.IsoCountryCode,
-                CountryName = address.Country
+                CountryName = address.Country,
+                Thoroughfare = address.SubThoroughfare,
+                SubThoroughfare = address.SubThoroughfare,
+                Locality = address.Locality
             };
 
             return a;

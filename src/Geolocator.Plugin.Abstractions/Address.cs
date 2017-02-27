@@ -30,11 +30,14 @@ namespace Plugin.Geolocator.Abstractions
                 throw new ArgumentNullException("address");
 
             CountryCode = address.CountryCode;
+            CountryName = address.CountryName;
             Latitude = address.Latitude;
             Longitude = address.Longitude;
             FeatureName = address.FeatureName;
             PostalCode = address.PostalCode;
             SubLocality = address.SubLocality;
+            Thoroughfare = address.Thoroughfare;
+            SubThoroughfare = address.SubThoroughfare;
         }
 
         /// <summary>
@@ -60,5 +63,8 @@ namespace Plugin.Geolocator.Abstractions
         public string FeatureName { get; set; }
         public string PostalCode { get; set; }
         public string SubLocality { get; set; }
+        public string Thoroughfare { get; set; }
+        public string SubThoroughfare { get; set; }
+        public string Locality { get; set; }
     }
 }
