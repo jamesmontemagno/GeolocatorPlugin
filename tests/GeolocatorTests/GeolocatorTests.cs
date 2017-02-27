@@ -15,46 +15,74 @@ namespace GeolocatorTests
                 Text = "Click Get Location"
             };
 
+            var addressLabel = new Label
+            {
+                Text = "Click Get Address"
+            };
+
             var button = new Button
             {
                 Text = "Get Location"
             };
 
+            var addressBtn = new Button
+            {
+                Text = "Get Address"
+            };
+
             button.Clicked += async (sender, e) =>
+            {
+                try
                 {
-                    try
-                    {
-                        button.IsEnabled = false;
-                        label.Text = "Getting...";
+                    button.IsEnabled = false;
+                    label.Text = "Getting...";
 
-                        var cached = await CrossGeolocator.Current.GetLastKnownLocationAsync();
-                        if (cached == null)
-                            label.Text += "No cached";
-                        else
-                            label.Text += "\n" + "Cached: Lat: " + cached.Latitude.ToString() + " Long: " + cached.Longitude.ToString();
+                    var cached = await CrossGeolocator.Current.GetLastKnownLocationAsync();
+                    if (cached == null)
+                        label.Text += "No cached";
+                    else
+                        label.Text += "\n" + "Cached: Lat: " + cached.Latitude.ToString() + " Long: " + cached.Longitude.ToString();
 
-                        var test = await CrossGeolocator.Current.GetPositionAsync(TimeSpan.FromMinutes(2));
-                        label.Text += "\n" + "Full: Lat: " + test.Latitude.ToString() + " Long: " + test.Longitude.ToString();
-                    }
-                    catch (Exception ex)
-                    {
-                        label.Text = ex.Message;
-                    }
-                    finally
-                    {
-                        button.IsEnabled = true;
-                    }
-                };
+                    var test = await CrossGeolocator.Current.GetPositionAsync(TimeSpan.FromMinutes(2));
+                    label.Text += "\n" + "Full: Lat: " + test.Latitude.ToString() + " Long: " + test.Longitude.ToString();
+                }
+                catch (Exception ex)
+                {
+                    label.Text = ex.Message;
+                }
+                finally
+                {
+                    button.IsEnabled = true;
+                }
+            };
+
+            addressBtn.Clicked += async (sender, e) =>
+            {
+                try
+                {
+                    addressBtn.IsEnabled = false;
+                    label.Text = "Getting address...";
+                    var test = await CrossGeolocator.Current.ReverseGeocodeCurrentLocation();
+                    label.Text += "\n" + "Full: Lat: " + test.Latitude.ToString() + " Long: " + test.Longitude.ToString();
+                    addressLabel.Text = $"Address: {test.Thoroughfare} {test.Locality}";
+                }
+                catch (Exception ex)
+                {
+                    label.Text = ex.Message;
+                }
+                finally
+                {
+                    addressBtn.IsEnabled = true;
+                }
+            };
+
             // The root page of your application
             MainPage = new ContentPage
             {
                 Content = new StackLayout
                 {
                     VerticalOptions = LayoutOptions.Center,
-                    Children =
-                    {
-                                    label, button
-                    }
+                    Children = { label, button, addressBtn, addressLabel }
                 }
             };
         }
