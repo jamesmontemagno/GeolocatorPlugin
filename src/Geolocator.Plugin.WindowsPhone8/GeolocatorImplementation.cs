@@ -15,11 +15,13 @@
 //
 
 using System;
+using System.Collections.Generic;
 using System.Device.Location;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Phone.Maps.Services;
 using Plugin.Geolocator.Abstractions;
-
+using System.Linq;
 
 namespace Plugin.Geolocator
 {
@@ -110,6 +112,29 @@ namespace Plugin.Geolocator
                 throw new ArgumentOutOfRangeException(nameof(timeout), "timeout must be greater than or equal to 0");
 
             return new SinglePositionListener(DesiredAccuracy, timeoutMilliseconds, cancelToken.Value).Task;
+        }
+
+        /// <summary>
+        /// Retrieve addresses for position.
+        /// </summary>
+        /// <param name="position">Desired position (latitude and longitude)</param>
+        /// <returns>Addresses of the desired position</returns>
+        public Task<IEnumerable<Address>> GetAddressesForPositionAsync(Position position)
+        {
+            if (position == null)
+                return null;
+
+            var source = new TaskCompletionSource<IEnumerable<Address>>();
+
+            var query = new ReverseGeocodeQuery
+            {
+                GeoCoordinate = new GeoCoordinate(position.Latitude, position.Longitude)
+            };
+
+            query.QueryCompleted += (sender, args) => source.SetResult(args.Result.ToAddresses());
+            query.QueryAsync();
+
+            return source.Task;
         }
 
         /// <summary>

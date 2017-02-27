@@ -1,6 +1,9 @@
 using Android.Locations;
 using Plugin.Geolocator.Abstractions;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using Address = Plugin.Geolocator.Abstractions.Address;
 
 namespace Plugin.Geolocator
 {
@@ -71,6 +74,23 @@ namespace Plugin.Geolocator
             p.Latitude = location.Latitude;
             p.Timestamp = location.GetTimestamp();
             return p;
+        }
+
+        internal static IEnumerable<Address> ToAddresses(this IEnumerable<Android.Locations.Address> addresses)
+        {
+            return addresses.Select(address => new Address
+            {
+                Longitude = address.Longitude,
+                Latitude = address.Latitude,
+                FeatureName = address.FeatureName,
+                PostalCode = address.PostalCode,
+                SubLocality = address.SubLocality,
+                CountryCode = address.CountryCode,
+                CountryName = address.CountryName,
+                Thoroughfare = address.Thoroughfare,
+                SubThoroughfare = address.SubThoroughfare,
+                Locality = address.Locality
+            });
         }
 
         private static readonly DateTime Epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);

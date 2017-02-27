@@ -58,6 +58,14 @@ namespace Plugin.Geolocator
             => Task.FromResult<Position>(null);
 
         /// <summary>
+        /// Retrieve addresses for position.
+        /// </summary>
+        /// <param name="position">Desired position (latitude and longitude)</param>
+        /// <returns>Addresses of the desired position</returns>
+        public Task<IEnumerable<Address>> GetAddressesForPositionAsync(Position position)
+            => Task.FromResult<IEnumerable<Address>>(null);
+
+        /// <summary>
         /// Start listenting
         /// </summary>
         /// <param name="minTime"></param>

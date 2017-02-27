@@ -90,6 +90,7 @@
     </Compile>
     <Compile Include="Extensions.cs" />
     <Compile Include="GeolocatorImplementation.cs" />
+    <Compile Include="GeolocatorUtils.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Timeout.cs" />
   </ItemGroup>

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -62,14 +63,21 @@ namespace Plugin.Geolocator.Abstractions
         /// <returns>Position</returns>
         Task<Position> GetPositionAsync(TimeSpan? timeout = null, CancellationToken? token = null, bool includeHeading = false);
 
-		/// <summary>
-		/// Start listening for changes
-		/// </summary>
-		/// <param name="minimumTime">Time</param>
-		/// <param name="minimumDistance">Distance</param>
-		/// <param name="includeHeading">Include heading or not</param>
-		/// <param name="listenerSettings">Optional settings (iOS only)</param>
-		Task<bool> StartListeningAsync(TimeSpan minimumTime, double minimumDistance, bool includeHeading = false, ListenerSettings listenerSettings = null);
+        /// <summary>
+        /// Retrieve addresses for position.
+        /// </summary>
+        /// <param name="position">Desired position (latitude and longitude)</param>
+        /// <returns>Addresses of the desired position</returns>
+        Task<IEnumerable<Address>> GetAddressesForPositionAsync(Position position);
+
+        /// <summary>
+        /// Start listening for changes
+        /// </summary>
+        /// <param name="minimumTime">Time</param>
+        /// <param name="minimumDistance">Distance</param>
+        /// <param name="includeHeading">Include heading or not</param>
+        /// <param name="listenerSettings">Optional settings (iOS only)</param>
+        Task<bool> StartListeningAsync(TimeSpan minimumTime, double minimumDistance, bool includeHeading = false, ListenerSettings listenerSettings = null);
 
 
         /// <summary>
