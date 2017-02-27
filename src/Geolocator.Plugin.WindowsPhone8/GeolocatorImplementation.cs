@@ -15,11 +15,13 @@
 //
 
 using System;
+using System.Collections.Generic;
 using System.Device.Location;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Phone.Maps.Services;
 using Plugin.Geolocator.Abstractions;
-
+using System.Linq;
 
 namespace Plugin.Geolocator
 {
@@ -113,23 +115,26 @@ namespace Plugin.Geolocator
         }
 
         /// <summary>
-        /// Gets position async and reverse geocode
+        /// Retrieve addresses for position.
         /// </summary>
-        /// <returns>Address of the current position</returns>
-        public Task<Address> ReverseGeocodeCurrentLocation()
+        /// <param name="position">Desired position (latitude and longitude)</param>
+        /// <returns>Addresses of the desired position</returns>
+        public Task<IEnumerable<Address>> GetAddressesForPositionAsync(Position position)
         {
-            throw new NotImplementedException();
-        }
+            if (position == null)
+                return null;
 
-        /// <summary>
-        /// Reverse geocode a position
-        /// </summary>
-        /// <param name="latitude">Desired Latitude</param>
-        /// <param name="longitude">Desired Longitude</param>
-        /// <returns>Address of the desired position</returns>
-        public Task<Address> ReverseGeocodeLocation(double latitude, double longitude)
-        {
-            throw new NotImplementedException();
+            var source = new TaskCompletionSource<IEnumerable<Address>>();
+
+            var query = new ReverseGeocodeQuery
+            {
+                GeoCoordinate = new GeoCoordinate(position.Latitude, position.Longitude)
+            };
+
+            query.QueryCompleted += (sender, args) => source.SetResult(args.Result.ToAddresses());
+            query.QueryAsync();
+
+            return source.Task;
         }
 
         /// <summary>

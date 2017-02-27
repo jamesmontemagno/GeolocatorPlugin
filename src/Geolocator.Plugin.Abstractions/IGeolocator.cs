@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -63,18 +64,11 @@ namespace Plugin.Geolocator.Abstractions
         Task<Position> GetPositionAsync(TimeSpan? timeout = null, CancellationToken? token = null, bool includeHeading = false);
 
         /// <summary>
-        /// Gets position async and reverse geocode
+        /// Retrieve addresses for position.
         /// </summary>
-        /// <returns>Address of the current position</returns>
-        Task<Address> ReverseGeocodeCurrentLocation();
-
-        /// <summary>
-        /// Reverse geocode a position
-        /// </summary>
-        /// <param name="latitude">Desired Latitude</param>
-        /// <param name="longitude">Desired Longitude</param>
-        /// <returns>Address of the desired position</returns>
-        Task<Address> ReverseGeocodeLocation(double latitude, double longitude);
+        /// <param name="position">Desired position (latitude and longitude)</param>
+        /// <returns>Addresses of the desired position</returns>
+        Task<IEnumerable<Address>> GetAddressesForPositionAsync(Position position);
 
         /// <summary>
         /// Start listening for changes

@@ -15,11 +15,15 @@
 //
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Windows.Devices.Geolocation;
 using Windows.Foundation;
 using Plugin.Geolocator.Abstractions;
 using System.Threading;
+#if !WINDOWS_APP
+using Windows.Services.Maps;
+#endif
 
 namespace Plugin.Geolocator
 {
@@ -172,23 +176,28 @@ namespace Plugin.Geolocator
         }
 
         /// <summary>
-        /// Gets position async and reverse geocode
+        /// Retrieve addresses for position.
         /// </summary>
-        /// <returns>Address of the current position</returns>
-        public Task<Address> ReverseGeocodeCurrentLocation()
+        /// <param name="position">Desired position (latitude and longitude)</param>
+        /// <returns>Addresses of the desired position</returns>
+#if !WINDOWS_APP
+        public async Task<IEnumerable<Address>> GetAddressesForPositionAsync(Position position)
+#else
+        public Task<IEnumerable<Address>> GetAddressesForPositionAsync(Position position)
+#endif
         {
-            throw new NotImplementedException();
-        }
+#if !WINDOWS_APP
+            if (position == null)
+                return null;
 
-        /// <summary>
-        /// Reverse geocode a position
-        /// </summary>
-        /// <param name="latitude">Desired Latitude</param>
-        /// <param name="longitude">Desired Longitude</param>
-        /// <returns>Address of the desired position</returns>
-        public Task<Address> ReverseGeocodeLocation(double latitude, double longitude)
-        {
-            throw new NotImplementedException();
+            var queryResults =
+                await MapLocationFinder.FindLocationsAtAsync(
+                        new Geopoint(new BasicGeoposition { Latitude = position.Latitude, Longitude = position.Longitude }));
+
+            return queryResults?.Locations.ToAddresses();
+#else
+            return Task.FromResult<IEnumerable<Address>>(null);
+#endif
         }
 
         /// <summary>
@@ -200,7 +209,7 @@ namespace Plugin.Geolocator
 		/// <param name="listenerSettings">Optional settings (iOS only)</param>
 		public Task<bool> StartListeningAsync(TimeSpan minTime, double minDistance, bool includeHeading = false, ListenerSettings settings = null)
         {
-            
+
             if (minTime.TotalMilliseconds < 0)
                 throw new ArgumentOutOfRangeException("minTime");
             if (minDistance < 0)
@@ -234,7 +243,7 @@ namespace Plugin.Geolocator
             return Task.FromResult(true);
         }
 
-      
+
         private async void OnLocatorStatusChanged(Windows.Devices.Geolocation.Geolocator sender, StatusChangedEventArgs e)
         {
             GeolocationError error;
@@ -267,10 +276,10 @@ namespace Plugin.Geolocator
         }
 
         private void OnPositionChanged(PositionEventArgs e) => PositionChanged?.Invoke(this, e);
-        
+
 
         private void OnPositionError(PositionErrorEventArgs e) => PositionError?.Invoke(this, e);
-        
+
 
         private Windows.Devices.Geolocation.Geolocator GetGeolocator()
         {

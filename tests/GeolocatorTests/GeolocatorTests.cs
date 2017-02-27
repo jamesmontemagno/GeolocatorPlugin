@@ -1,5 +1,5 @@
 ﻿using System;
-
+using System.Linq;
 using Xamarin.Forms;
 using Plugin.Geolocator;
 
@@ -62,9 +62,11 @@ namespace GeolocatorTests
                 {
                     addressBtn.IsEnabled = false;
                     label.Text = "Getting address...";
-                    var test = await CrossGeolocator.Current.ReverseGeocodeCurrentLocation();
-                    label.Text += "\n" + "Full: Lat: " + test.Latitude.ToString() + " Long: " + test.Longitude.ToString();
-                    addressLabel.Text = $"Address: {test.Thoroughfare} {test.Locality}";
+                    var position = await CrossGeolocator.Current.GetPositionAsync(TimeSpan.FromMinutes(2));
+                    var addresses = await CrossGeolocator.Current.GetAddressesForPositionAsync(position);
+                    var address = addresses.First();
+                    label.Text += "\n" + "Full: Lat: " + address.Latitude.ToString() + " Long: " + address.Longitude.ToString();
+                    addressLabel.Text = $"Address: {address.Thoroughfare} {address.Locality}";
                 }
                 catch (Exception ex)
                 {

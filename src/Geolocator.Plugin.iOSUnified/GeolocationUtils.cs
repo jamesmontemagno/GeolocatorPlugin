@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using CoreLocation;
 using Address = Plugin.Geolocator.Abstractions.Address;
 
@@ -5,9 +7,9 @@ namespace Plugin.Geolocator
 {
     public static class GeolocationUtils
     {
-        internal static Address ToAddress(this CLPlacemark address)
+        internal static IEnumerable<Address> ToAddresses(this IEnumerable<CLPlacemark> addresses)
         {
-            var a = new Address
+            return addresses.Select(address=> new Address
             {
                 Longitude = address.Location.Coordinate.Longitude,
                 Latitude = address.Location.Coordinate.Latitude,
@@ -16,12 +18,10 @@ namespace Plugin.Geolocator
                 SubLocality = address.SubLocality,
                 CountryCode = address.IsoCountryCode,
                 CountryName = address.Country,
-                Thoroughfare = address.SubThoroughfare,
+                Thoroughfare = address.Thoroughfare,
                 SubThoroughfare = address.SubThoroughfare,
                 Locality = address.Locality
-            };
-
-            return a;
+            });
         }
     }
 }

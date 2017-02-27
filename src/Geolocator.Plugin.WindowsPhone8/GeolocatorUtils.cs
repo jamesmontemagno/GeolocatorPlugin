@@ -1,10 +1,8 @@
-﻿using Plugin.Geolocator.Abstractions;
-using System;
+﻿using Microsoft.Phone.Maps.Services;
+using Plugin.Geolocator.Abstractions;
 using System.Collections.Generic;
 using System.Device.Location;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Plugin.Geolocator
 {
@@ -43,6 +41,22 @@ namespace Plugin.Geolocator
             p.Timestamp = position.Timestamp.ToUniversalTime();
 
             return p;
+        }
+
+        internal static IEnumerable<Address> ToAddresses(this IEnumerable<MapLocation> addresses)
+        {
+            return addresses.Select(address => new Address
+            {
+                Longitude = address.GeoCoordinate.Longitude,
+                Latitude = address.GeoCoordinate.Latitude,
+                FeatureName = address.Information.Name,
+                PostalCode = address.Information.Address.PostalCode,
+                CountryCode = address.Information.Address.CountryCode,
+                CountryName = address.Information.Address.Country,
+                Thoroughfare = address.Information.Address.Street,
+                SubThoroughfare = address.Information.Address.Township,
+                Locality = address.Information.Address.City
+            });
         }
     }
 }

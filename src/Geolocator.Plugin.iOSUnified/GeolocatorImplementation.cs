@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Threading;
@@ -214,33 +215,18 @@ namespace Plugin.Geolocator
         }
 
         /// <summary>
-        /// Gets position async and reverse geocode
+        /// Retrieve addresses for position.
         /// </summary>
-        /// <returns>Address of the current position</returns>
-        public async Task<Address> ReverseGeocodeCurrentLocation()
+        /// <param name="location">Desired position (latitude and longitude)</param>
+        /// <returns>Addresses of the desired position</returns>
+        public async Task<IEnumerable<Address>> GetAddressesForPositionAsync(Position location)
         {
-            var pos = await GetPositionAsync(new TimeSpan(0, 0, 1));
+            if (location == null)
+                return null;
 
-            var geoCoder = new CLGeocoder();
-            var placemarks = await geoCoder.ReverseGeocodeLocationAsync(new CLLocation(pos.Latitude, pos.Longitude));
-            var address = placemarks.FirstOrDefault();
-
-            return address.ToAddress();
-        }
-
-        /// <summary>
-        /// Reverse geocode a position
-        /// </summary>
-        /// <param name="latitude">Desired Latitude</param>
-        /// <param name="longitude">Desired Longitude</param>
-        /// <returns>Address of the desired position</returns>
-        public async Task<Address> ReverseGeocodeLocation(double latitude, double longitude)
-        {
-            var geoCoder = new CLGeocoder();
-            var placemarks = await geoCoder.ReverseGeocodeLocationAsync(new CLLocation(latitude, longitude));
-            var address = placemarks.FirstOrDefault();
-
-            return address.ToAddress();
+            var geocoder = new CLGeocoder();
+            var addressList = await geocoder.ReverseGeocodeLocationAsync(new CLLocation(location.Latitude, location.Longitude));
+            return addressList.ToAddresses();
         }
 
         /// <summary>

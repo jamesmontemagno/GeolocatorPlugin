@@ -115,6 +115,9 @@
     <Compile Include="..\Geolocator.Plugin.WindowsPhone81\GeolocatorImplementation.cs">
       <Link>GeolocatorImplementation.cs</Link>
     </Compile>
+    <Compile Include="..\Geolocator.Plugin.WindowsPhone81\GeolocatorUtils.cs">
+      <Link>GeolocatorUtils.cs</Link>
+    </Compile>
     <Compile Include="..\Geolocator.Plugin.WindowsPhone81\Timeout.cs">
       <Link>Timeout.cs</Link>
     </Compile>

@@ -237,33 +237,18 @@ namespace Plugin.Geolocator
         }
 
         /// <summary>
-        /// Gets position async and reverse geocode
+        /// Retrieve addresses for position.
         /// </summary>
-        /// <returns>Address of the current position</returns>
-        public async Task<Address> ReverseGeocodeCurrentLocation()
+        /// <param name="position">Desired position (latitude and longitude)</param>
+        /// <returns>Addresses of the desired position</returns>
+        public async Task<IEnumerable<Address>> GetAddressesForPositionAsync(Position position)
         {
-            var pos = await GetPositionAsync(new TimeSpan(0, 0, 1));
+            if (position == null)
+                return null;
 
-            Geocoder geocoder = new Geocoder(Application.Context);
-            var addressList = await geocoder.GetFromLocationAsync(pos.Latitude, pos.Longitude, 10);
-            var address = addressList.FirstOrDefault();
-
-            return address.ToAddress();
-        }
-
-        /// <summary>
-        /// Reverse geocode a position
-        /// </summary>
-        /// <param name="latitude">Desired Latitude</param>
-        /// <param name="longitude">Desired Longitude</param>
-        /// <returns>Address of the desired position</returns>
-        public async Task<Address> ReverseGeocodeLocation(double latitude, double longitude)
-        {
-            Geocoder geocoder = new Geocoder(Application.Context);
-            var addressList = await geocoder.GetFromLocationAsync(latitude, longitude, 10);
-            var address = addressList.FirstOrDefault();
-
-            return address.ToAddress();
+            var geocoder = new Geocoder(Application.Context);
+            var addressList = await geocoder.GetFromLocationAsync(position.Latitude, position.Longitude, 10);
+            return addressList.ToAddresses();
         }
 
         /// <inheritdoc/>
