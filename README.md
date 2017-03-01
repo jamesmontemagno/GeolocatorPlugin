@@ -56,8 +56,12 @@ catch(Exception ex)
 try
 { 
   var addresses = await locator.GetAddressesForPositionAsync (position);
-  var address = addresses.First();
-  Console.WriteLine ("Addresss: {0} {1} {2}", address.Thoroughfare, address.Locality, address.Country);
+  var address = addresses.FirstOrDefault();
+  
+  if(address == null)
+    Console.WriteLine ($"No address found for position.");
+  else
+    Console.WriteLine ("Addresss: {0} {1} {2}", address.Thoroughfare, address.Locality, address.Country);
 }
 catch(Exception ex)
 {
