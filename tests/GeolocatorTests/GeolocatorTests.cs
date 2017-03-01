@@ -64,9 +64,16 @@ namespace GeolocatorTests
                     label.Text = "Getting address...";
                     var position = await CrossGeolocator.Current.GetPositionAsync(TimeSpan.FromMinutes(2));
                     var addresses = await CrossGeolocator.Current.GetAddressesForPositionAsync(position);
-                    var address = addresses.First();
-                    label.Text += "\n" + "Full: Lat: " + address.Latitude.ToString() + " Long: " + address.Longitude.ToString();
-                    addressLabel.Text = $"Address: {address.Thoroughfare} {address.Locality}";
+                    var address = addresses.FirstOrDefault();
+
+                    if (address == null)
+                    {
+                        addressLabel.Text = "No address found for position.";
+                    }
+                    else
+                    {
+                        addressLabel.Text = $"Address: {address.Thoroughfare} {address.Locality}";
+                    }
                 }
                 catch (Exception ex)
                 {
