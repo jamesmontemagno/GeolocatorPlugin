@@ -50,7 +50,7 @@ catch(Exception ex)
 ```
 
 
-**Reverse geocoding** : retrieve addresses for position
+**Reverse Geocoding** : retrieve addresses for position (4.0 beta)
 
 ```csharp
 try
