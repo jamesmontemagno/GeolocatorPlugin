@@ -189,6 +189,11 @@ namespace Plugin.Geolocator
             tcs = new TaskCompletionSource<Position>();
             if (position == null)
             {
+                if (cancelToken != CancellationToken.None)
+                {
+                    cancelToken.Value.Register(() => tcs.TrySetCanceled());
+                }
+
                 EventHandler<PositionErrorEventArgs> gotError = null;
                 gotError = (s, e) =>
                 {
