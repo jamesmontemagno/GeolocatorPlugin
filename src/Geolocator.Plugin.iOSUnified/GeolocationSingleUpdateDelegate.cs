@@ -113,6 +113,9 @@ namespace Plugin.Geolocator
             }
         }
 
+        
+
+#if __IOS__
         public override void UpdatedHeading(CLLocationManager manager, CLHeading newHeading)
         {
             if (newHeading.HeadingAccuracy < 0)
@@ -130,12 +133,15 @@ namespace Plugin.Geolocator
                 StopListening();
             }
         }
+#endif
 
 
         private void StopListening()
         {
+#if __IOS__
             if (CLLocationManager.HeadingAvailable)
                 manager.StopUpdatingHeading();
+#endif
 
             manager.StopUpdatingLocation();
         }
