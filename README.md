@@ -223,6 +223,8 @@ You must set the ID_CAP_LOCATION permission.
 
 
 #### License
+Licensed under MIT, see license file.
+
 This is a derivative to [Xamarin.Mobile's Geolocator](http://github.com/xamarin/xamarin.mobile) with a cross platform API and other enhancements.
 ﻿//
 //  Copyright 2011-2013, Xamarin Inc.

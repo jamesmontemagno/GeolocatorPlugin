@@ -2,6 +2,8 @@ using System.Collections.Generic;
 using System.Linq;
 using CoreLocation;
 using Address = Plugin.Geolocator.Abstractions.Address;
+using System;
+using Foundation;
 
 namespace Plugin.Geolocator
 {
@@ -22,6 +24,10 @@ namespace Plugin.Geolocator
                 SubThoroughfare = address.SubThoroughfare,
                 Locality = address.Locality
             });
+        }
+        public static DateTime ToDateTime(this NSDate date)
+        {
+            return (DateTime)date;
         }
     }
 }

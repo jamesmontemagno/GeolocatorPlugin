@@ -109,22 +109,14 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\Geolocator.Plugin.WindowsPhone81\Extensions.cs">
-      <Link>Extensions.cs</Link>
-    </Compile>
-    <Compile Include="..\Geolocator.Plugin.WindowsPhone81\GeolocatorImplementation.cs">
-      <Link>GeolocatorImplementation.cs</Link>
-    </Compile>
-    <Compile Include="..\Geolocator.Plugin.WindowsPhone81\GeolocatorUtils.cs">
-      <Link>GeolocatorUtils.cs</Link>
-    </Compile>
-    <Compile Include="..\Geolocator.Plugin.WindowsPhone81\Timeout.cs">
-      <Link>Timeout.cs</Link>
-    </Compile>
     <Compile Include="..\Geolocator.Plugin\CrossGeolocator.cs">
       <Link>CrossGeolocator.cs</Link>
     </Compile>
+    <Compile Include="Extensions.cs" />
+    <Compile Include="GeolocatorImplementation.cs" />
+    <Compile Include="GeolocatorUtils.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Timeout.cs" />
     <Content Include="Properties\Plugin.Geolocator.rd.xml" />
   </ItemGroup>
   <ItemGroup>

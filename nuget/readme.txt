@@ -1,27 +1,5 @@
 ﻿Geolocator Readme
 
-Changelog:
-[4.0.0-beta4]
--Breaking Changes:
----Moved AllowsBackgroundLocationUpdates from IGeolocator to ListenerSettings, which is passed to StartListeningAsync.
----Moved PausesLocationUpdatesAutomatically from IGeolocator to ListenerSettings, which is passed to StartListeningAysnc.
--Other Changes:
----Added iOS support for significant change listening and update delivery deferral.
----Additional fixes for getting location on ios 9
-
-[3.0.4]
--Breaking Changes:
----Changed StartListening and StopListening to Task that return a bool of success or failure
----New Namespace: Plugin.Geolocator
----Android API 14+ only
----Requires Compile Against Android API 23 (6.0)
--Automatically Prompt on Android for Permissions
-         
--Enhancements:
----Automatically add needed android permissions
----Check for permissions before StartListening on Android
----UWP Support
-
 ## Android specific in your BaseActivity or MainActivity (for Xamarin.Forms) add this code:
 
 public override void OnRequestPermissionsResult(int requestCode, string[] permissions, Permission[] grantResults)

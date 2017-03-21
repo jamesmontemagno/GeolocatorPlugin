@@ -7,6 +7,7 @@ namespace GeolocatorTests
 {
     public class App : Application
     {
+        Label listenLabel;
         public App()
         {
 
@@ -20,6 +21,11 @@ namespace GeolocatorTests
                 Text = "Click Get Address"
             };
 
+            listenLabel = new Label
+            {
+                Text = "Click to listen"
+            };
+
             var button = new Button
             {
                 Text = "Get Location"
@@ -28,6 +34,32 @@ namespace GeolocatorTests
             var addressBtn = new Button
             {
                 Text = "Get Address"
+            };
+
+            var listenToggle = new Button
+            {
+                Text = "Listen"
+            };
+
+
+            var buttonIsAvailable = new Button
+            {
+                Text = "IsAvailable"
+            };
+
+            var buttonIsEnabled = new Button
+            {
+                Text = "IsEnabled"
+            };
+
+            buttonIsAvailable.Clicked += (sender, args) =>
+            {
+                buttonIsAvailable.Text = CrossGeolocator.Current.IsGeolocationAvailable ? "Available" : "Not Available";
+            };
+
+            buttonIsEnabled.Clicked += (sender, args) =>
+            {
+                buttonIsEnabled.Text = CrossGeolocator.Current.IsGeolocationEnabled ? "Enabled" : "Not Enabled";
             };
 
             button.Clicked += async (sender, e) =>
@@ -45,6 +77,12 @@ namespace GeolocatorTests
 
                     var test = await CrossGeolocator.Current.GetPositionAsync(TimeSpan.FromMinutes(2));
                     label.Text += "\n" + "Full: Lat: " + test.Latitude.ToString() + " Long: " + test.Longitude.ToString();
+                    label.Text += "\n" + $"Time: {test.Timestamp.ToString()}";
+                    label.Text += "\n" + $"Heading: {test.Heading.ToString()}";
+                    label.Text += "\n" + $"Speed: {test.Speed.ToString()}";
+                    label.Text += "\n" + $"Accuracy: {test.Accuracy.ToString()}";
+                    label.Text += "\n" + $"Altitude: {test.Altitude.ToString()}";
+                    label.Text += "\n" + $"AltitudeAccuracy: {test.AltitudeAccuracy.ToString()}";
                 }
                 catch (Exception ex)
                 {
@@ -85,15 +123,57 @@ namespace GeolocatorTests
                 }
             };
 
+
+            listenToggle.Clicked += async (sender, args) =>
+            {
+                if(CrossGeolocator.Current.IsListening)
+                {
+                    listenToggle.Text = "Stopped Listening";
+                    await CrossGeolocator.Current.StopListeningAsync();
+
+                    CrossGeolocator.Current.PositionChanged -= Current_PositionChanged;
+                    return;
+                }
+
+                listenToggle.Text = "Listening";
+                await CrossGeolocator.Current.StartListeningAsync(TimeSpan.FromSeconds(5), 1, true, new Plugin.Geolocator.Abstractions.ListenerSettings
+                {
+                    ActivityType = Plugin.Geolocator.Abstractions.ActivityType.AutomotiveNavigation,
+                    AllowBackgroundUpdates = false,
+                    DeferLocationUpdates = false,
+                    DeferralDistanceMeters = 1,
+                    DeferralTime = TimeSpan.FromSeconds(1),
+                    ListenForSignificantChanges = false,
+                    PauseLocationUpdatesAutomatically = false
+                });
+
+                CrossGeolocator.Current.PositionChanged += Current_PositionChanged;
+            };
+
             // The root page of your application
             MainPage = new ContentPage
             {
                 Content = new StackLayout
                 {
                     VerticalOptions = LayoutOptions.Center,
-                    Children = { label, button, addressBtn, addressLabel }
+                    Children = { buttonIsAvailable, buttonIsEnabled, label, button, addressBtn, addressLabel, listenToggle, listenLabel }
                 }
             };
+        }
+
+        private void Current_PositionChanged(object sender, Plugin.Geolocator.Abstractions.PositionEventArgs e)
+        {
+            Device.BeginInvokeOnMainThread(() =>
+            {
+                var test = e.Position;
+                listenLabel.Text = "Full: Lat: " + test.Latitude.ToString() + " Long: " + test.Longitude.ToString();
+                listenLabel.Text += "\n" + $"Time: {test.Timestamp.ToString()}";
+                listenLabel.Text += "\n" + $"Heading: {test.Heading.ToString()}";
+                listenLabel.Text += "\n" + $"Speed: {test.Speed.ToString()}";
+                listenLabel.Text += "\n" + $"Accuracy: {test.Accuracy.ToString()}";
+                listenLabel.Text += "\n" + $"Altitude: {test.Altitude.ToString()}";
+                listenLabel.Text += "\n" + $"AltitudeAccuracy: {test.AltitudeAccuracy.ToString()}";
+            });
         }
 
         protected override void OnStart()

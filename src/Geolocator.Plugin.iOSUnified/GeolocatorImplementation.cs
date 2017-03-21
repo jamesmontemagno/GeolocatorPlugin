@@ -107,10 +107,10 @@ namespace Plugin.Geolocator
 
             if (UIDevice.CurrentDevice.CheckSystemVersion(8, 0))
             {
+                if (info.ContainsKey(new NSString("NSLocationAlwaysUsageDescription")))
+                    manager.RequestAlwaysAuthorization();
                 if (info.ContainsKey(new NSString("NSLocationWhenInUseUsageDescription")))
                     manager.RequestWhenInUseAuthorization();
-                else if (info.ContainsKey(new NSString("NSLocationAlwaysUsageDescription")))
-                    manager.RequestAlwaysAuthorization();
                 else
                     throw new UnauthorizedAccessException("On iOS 8.0 and higher you must set either NSLocationWhenInUseUsageDescription or NSLocationAlwaysUsageDescription in your Info.plist file to enable Authorization Requests for Location updates!");
             }
@@ -136,7 +136,14 @@ namespace Plugin.Geolocator
             position.Latitude = newLocation.Coordinate.Latitude;
             position.Longitude = newLocation.Coordinate.Longitude;
             position.Speed = newLocation.Speed;
-            position.Timestamp = new DateTimeOffset((DateTime)newLocation.Timestamp);
+            try
+            {
+                position.Timestamp = new DateTimeOffset(newLocation.Timestamp.ToDateTime());
+            }
+            catch (Exception ex)
+            {
+                position.Timestamp = DateTimeOffset.UtcNow;
+            }
 
             return Task.FromResult(position);
         }
@@ -189,6 +196,11 @@ namespace Plugin.Geolocator
             tcs = new TaskCompletionSource<Position>();
             if (position == null)
             {
+                if (cancelToken != CancellationToken.None)
+                {
+                    cancelToken.Value.Register(() => tcs.TrySetCanceled());
+                }
+
                 EventHandler<PositionErrorEventArgs> gotError = null;
                 gotError = (s, e) =>
                 {
@@ -264,14 +276,21 @@ namespace Plugin.Geolocator
             {
                 manager.PausesLocationUpdatesAutomatically = settings.PauseLocationUpdatesAutomatically;
 
-                if (settings.ActivityType == ActivityType.AutomotiveNavigation)
-                    manager.ActivityType = CLActivityType.AutomotiveNavigation;
-                else if (settings.ActivityType == ActivityType.Fitness)
-                    manager.ActivityType = CLActivityType.Fitness;
-                else if (settings.ActivityType == ActivityType.Other)
-                    manager.ActivityType = CLActivityType.Other;
-                else if (settings.ActivityType == ActivityType.OtherNavigation)
-                    manager.ActivityType = CLActivityType.OtherNavigation;
+                switch(settings.ActivityType)
+                {
+                    case ActivityType.AutomotiveNavigation:
+                        manager.ActivityType = CLActivityType.AutomotiveNavigation;
+                        break;
+                    case ActivityType.Fitness:
+                        manager.ActivityType = CLActivityType.Fitness;
+                        break;
+                    case ActivityType.OtherNavigation:
+                        manager.ActivityType = CLActivityType.OtherNavigation;
+                        break;
+                    default:
+                        manager.ActivityType = CLActivityType.Other;
+                        break;
+                }
             }
 
             // to use deferral, CLLocationManager.DistanceFilter must be set to CLLocationDistance.None, and CLLocationManager.DesiredAccuracy must be 
@@ -384,8 +403,16 @@ namespace Plugin.Geolocator
             if (location.Speed > -1)
                 p.Speed = location.Speed;
 
-            var dateTime = (DateTime)location.Timestamp;
-            p.Timestamp = new DateTimeOffset(dateTime);
+            try
+            {
+                var date = location.Timestamp.ToDateTime();
+                p.Timestamp = new DateTimeOffset(date);
+            }
+            catch (Exception ex)
+            {
+                p.Timestamp = DateTimeOffset.UtcNow;
+            }
+            
 
             position = p;
 

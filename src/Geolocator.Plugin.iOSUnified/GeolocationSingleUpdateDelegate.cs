@@ -96,8 +96,14 @@ namespace Plugin.Geolocator
             position.Latitude = newLocation.Coordinate.Latitude;
             position.Longitude = newLocation.Coordinate.Longitude;
             position.Speed = newLocation.Speed;
-            position.Timestamp = new DateTimeOffset((DateTime)newLocation.Timestamp);
-
+            try
+            {
+                position.Timestamp = new DateTimeOffset(newLocation.Timestamp.ToDateTime());
+            }
+            catch(Exception ex)
+            {
+                position.Timestamp = DateTimeOffset.UtcNow;
+            }
             haveLocation = true;
 
             if ((!includeHeading || haveHeading) && position.Accuracy <= desiredAccuracy)
