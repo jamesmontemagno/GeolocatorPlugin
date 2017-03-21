@@ -106,7 +106,7 @@ namespace Plugin.Geolocator
         /// <returns>Best and most recent location or null if none found</returns>
         public Task<Position> GetLastKnownLocationAsync()
         {
-            return null;
+            return Task.Factory.StartNew<Position>(()=> { return null; });
         }
 
         /// <summary>
