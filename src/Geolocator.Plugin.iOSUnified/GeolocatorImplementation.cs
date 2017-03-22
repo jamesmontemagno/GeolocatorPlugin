@@ -517,5 +517,6 @@ namespace Plugin.Geolocator
             if (e.Status == CLAuthorizationStatus.Denied || e.Status == CLAuthorizationStatus.Restricted)
                 OnPositionError(new PositionErrorEventArgs(GeolocationError.Unauthorized));
         }
+
      }
 }
