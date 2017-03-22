@@ -5,6 +5,7 @@ using Foundation;
 using System.Threading.Tasks;
 using System.Threading;
 using Plugin.Geolocator.Abstractions;
+using System.Linq;
 
 namespace Plugin.Geolocator
 {
@@ -16,7 +17,9 @@ namespace Plugin.Geolocator
         bool haveHeading;
         bool haveLocation;
         readonly Position position = new Position();
+#if __IOS__
         CLHeading bestHeading;
+#endif
 
         readonly double desiredAccuracy;
         readonly bool includeHeading;
@@ -80,10 +83,22 @@ namespace Plugin.Geolocator
             }
         }
 
-        public override bool ShouldDisplayHeadingCalibration(CLLocationManager manager) => true;
 
+#if __IOS__
+        public override bool ShouldDisplayHeadingCalibration(CLLocationManager manager) => true;
+#endif
+
+#if __TVOS__
+        public override void LocationsUpdated(CLLocationManager manager, CLLocation[] locations)
+        {
+            var newLocation = locations.FirstOrDefault();
+            if (newLocation == null)
+                return;
+
+#else
         public override void UpdatedLocation(CLLocationManager manager, CLLocation newLocation, CLLocation oldLocation)
         {
+#endif
             if (newLocation.HorizontalAccuracy < 0)
                 return;
 
@@ -95,7 +110,9 @@ namespace Plugin.Geolocator
             position.AltitudeAccuracy = newLocation.VerticalAccuracy;
             position.Latitude = newLocation.Coordinate.Latitude;
             position.Longitude = newLocation.Coordinate.Longitude;
+#if __IOS__ || __MACOS__
             position.Speed = newLocation.Speed;
+#endif
             try
             {
                 position.Timestamp = new DateTimeOffset(newLocation.Timestamp.ToDateTime());
@@ -112,8 +129,6 @@ namespace Plugin.Geolocator
                 StopListening();
             }
         }
-
-        
 
 #if __IOS__
         public override void UpdatedHeading(CLLocationManager manager, CLHeading newHeading)

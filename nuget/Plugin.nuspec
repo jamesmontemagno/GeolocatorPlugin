@@ -28,54 +28,27 @@
    <files>
      <file src="nuget\readme.txt" target="readme.txt" />
     <!--Core-->
-     <file src="src\Geolocator.Plugin\bin\Release\Plugin.Geolocator.dll" target="lib\portable-net45+wp80+win8+wpa81\Plugin.Geolocator.dll" />
-     <file src="src\Geolocator.Plugin\bin\Release\Plugin.Geolocator.xml" target="lib\portable-net45+wp80+win8+wpa81\Plugin.Geolocator.xml" />
-     <file src="src\Geolocator.Plugin\bin\Release\Plugin.Geolocator.pdb" target="lib\portable-net45+wp80+win8+wpa81\Plugin.Geolocator.pdb" />
-     <file src="src\Geolocator.Plugin.Abstractions\bin\Release\Plugin.Geolocator.Abstractions.dll" target="lib\portable-net45+wp80+win8+wpa81\Plugin.Geolocator.Abstractions.dll" />
-     <file src="src\Geolocator.Plugin.Abstractions\bin\Release\Plugin.Geolocator.Abstractions.xml" target="lib\portable-net45+wp80+win8+wpa81\Plugin.Geolocator.Abstractions.xml" />
-     <file src="src\Geolocator.Plugin.Abstractions\bin\Release\Plugin.Geolocator.Abstractions.pdb" target="lib\portable-net45+wp80+win8+wpa81\Plugin.Geolocator.Abstractions.pdb" />
-    
+     <file src="src\Geolocator.Plugin\bin\Release\Plugin.Geolocator.*" target="lib\portable-net45+wp80+win8+wpa81" />
+     
      <!--Xamarin.Android-->
-     <file src="src\Geolocator.Plugin.Android\bin\Release\Plugin.Geolocator.dll" target="lib\MonoAndroid10\Plugin.Geolocator.dll" />
-     <file src="src\Geolocator.Plugin.Android\bin\Release\Plugin.Geolocator.xml" target="lib\MonoAndroid10\Plugin.Geolocator.xml" />
-     <file src="src\Geolocator.Plugin.Android\bin\Release\Plugin.Geolocator.pdb" target="lib\MonoAndroid10\Plugin.Geolocator.pdb" />
-     <file src="src\Geolocator.Plugin.Abstractions\bin\Release\Plugin.Geolocator.Abstractions.dll" target="lib\MonoAndroid10\Plugin.Geolocator.Abstractions.dll" />
-     <file src="src\Geolocator.Plugin.Abstractions\bin\Release\Plugin.Geolocator.Abstractions.xml" target="lib\MonoAndroid10\Plugin.Geolocator.Abstractions.xml" />
-     <file src="src\Geolocator.Plugin.Abstractions\bin\Release\Plugin.Geolocator.Abstractions.pdb" target="lib\MonoAndroid10\Plugin.Geolocator.Abstractions.pdb" />
+     <file src="src\Geolocator.Plugin.Android\bin\Release\Plugin.Geolocator.*" target="lib\MonoAndroid10" />
      
      <!--Xamarin.iOS Unified-->
-     <file src="src\Geolocator.Plugin.iOSUnified\bin\iPhone\Release\Plugin.Geolocator.dll" target="lib\Xamarin.iOS10\Plugin.Geolocator.dll" />
-     <file src="src\Geolocator.Plugin.iOSUnified\bin\iPhone\Release\Plugin.Geolocator.xml" target="lib\Xamarin.iOS10\Plugin.Geolocator.xml" />
-     <file src="src\Geolocator.Plugin.iOSUnified\bin\iPhone\Release\Plugin.Geolocator.pdb" target="lib\Xamarin.iOS10\Plugin.Geolocator.pdb" />
-       <file src="src\Geolocator.Plugin.Abstractions\bin\Release\Plugin.Geolocator.Abstractions.dll" target="lib\Xamarin.iOS10\Plugin.Geolocator.Abstractions.dll" />
-     <file src="src\Geolocator.Plugin.Abstractions\bin\Release\Plugin.Geolocator.Abstractions.xml" target="lib\Xamarin.iOS10\Plugin.Geolocator.Abstractions.xml" />
-    <file src="src\Geolocator.Plugin.Abstractions\bin\Release\Plugin.Geolocator.Abstractions.pdb" target="lib\Xamarin.iOS10\Plugin.Geolocator.Abstractions.pdb" />
+     <file src="src\Geolocator.Plugin.iOSUnified\bin\iPhone\Release\Plugin.Geolocator.*" target="lib\Xamarin.iOS10" />
        
      
      <!--Xamarin.Mac-->
-     <file src="src\Geolocator.Plugin.macOS\bin\Release\Plugin.Geolocator.dll" target="lib\Xamarin.Mac20\Plugin.Geolocator.dll" />
-     <file src="src\Geolocator.Plugin.macOS\bin\Release\Plugin.Geolocator.xml" target="lib\Xamarin.Mac20\Plugin.Geolocator.xml" />
-     <file src="src\Geolocator.Plugin.macOS\bin\Release\Plugin.Geolocator.pdb" target="lib\Xamarin.Mac20\Plugin.Geolocator.pdb" />
-       <file src="src\Geolocator.Plugin.Abstractions\bin\Release\Plugin.Geolocator.Abstractions.dll" target="lib\Xamarin.Mac20\Plugin.Geolocator.Abstractions.dll" />
-     <file src="src\Geolocator.Plugin.Abstractions\bin\Release\Plugin.Geolocator.Abstractions.xml" target="lib\Xamarin.Mac20\Plugin.Geolocator.Abstractions.xml" />
-    <file src="src\Geolocator.Plugin.Abstractions\bin\Release\Plugin.Geolocator.Abstractions.pdb" target="lib\Mac20\Plugin.Geolocator.Abstractions.pdb" />
+       <file src="src\Geolocator.Plugin.macOS\bin\Release\Plugin.Geolocator.*" target="lib\Xamarin.Mac20" />
        
 
        <!--UWP-->
-       <file src="src\Geolocator.Plugin.UWP\bin\Release\Plugin.Geolocator.dll" target="lib\UAP10\Plugin.Geolocator.dll" />
-       <file src="src\Geolocator.Plugin.UWP\bin\Release\Plugin.Geolocator.xml" target="lib\UAP10\Plugin.Geolocator.xml" />
-       <file src="src\Geolocator.Plugin.UWP\bin\Release\Plugin.Geolocator.pdb" target="lib\UAP10\Plugin.Geolocator.pdb" />
-       <file src="src\Geolocator.Plugin.Abstractions\bin\Release\Plugin.Geolocator.Abstractions.dll" target="lib\UAP10\Plugin.Geolocator.Abstractions.dll" />
-       <file src="src\Geolocator.Plugin.Abstractions\bin\Release\Plugin.Geolocator.Abstractions.xml" target="lib\UAP10\Plugin.Geolocator.Abstractions.xml" />
-       <file src="src\Geolocator.Plugin.Abstractions\bin\Release\Plugin.Geolocator.Abstractions.pdb" target="lib\UAP10\Plugin.Geolocator.Abstractions.pdb" />
+       <file src="src\Geolocator.Plugin.UWP\bin\Release\Plugin.Geolocator.*" target="lib\UAP10" />
        
         <!--net45-->
-       <file src="src\Geolocator.Plugin.Net45\bin\Release\Plugin.Geolocator.dll" target="lib\net45\Plugin.Geolocator.dll" />
-       <file src="src\Geolocator.Plugin.Net45\bin\Release\Plugin.Geolocator.xml" target="lib\net45\Plugin.Geolocator.xml" />
-       <file src="src\Geolocator.Plugin.Net45\bin\Release\Plugin.Geolocator.pdb" target="lib\net45\Plugin.Geolocator.pdb" />
-       <file src="src\Geolocator.Plugin.Abstractions\bin\Release\Plugin.Geolocator.Abstractions.dll" target="lib\net45\Plugin.Geolocator.Abstractions.dll" />
-       <file src="src\Geolocator.Plugin.Abstractions\bin\Release\Plugin.Geolocator.Abstractions.xml" target="lib\net45\Plugin.Geolocator.Abstractions.xml" />
-       <file src="src\Geolocator.Plugin.Abstractions\bin\Release\Plugin.Geolocator.Abstractions.pdb" target="lib\net45\Plugin.Geolocator.Abstractions.pdb" />
-       
+       <file src="src\Geolocator.Plugin.Net45\bin\Release\Plugin.Geolocator.*" target="lib\net45" />
+   
+
+        <!--tvOS-->
+       <file src="src\Geolocator.Plugin.tvOS\bin\Release\Plugin.Geolocator.*" target="lib\XamarinTVOS" />
    </files>
 </package>

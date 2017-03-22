@@ -29,6 +29,8 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Geolocator.Shared", "Geoloc
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Geolocator.Plugin.macOS", "Geolocator.Plugin.macOS\Geolocator.Plugin.macOS.csproj", "{C9E2506E-7CC0-43B8-BCED-93C2F69920D1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Geolocator.Plugin.tvOS", "Geolocator.Plugin.tvOS\Geolocator.Plugin.tvOS.csproj", "{71A925B6-F452-4A2B-9038-4FC611DB2C17}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		Geolocator.Shared\Geolocator.Shared.projitems*{14318cb2-06ec-4b31-be72-c4702d8aeb5f}*SharedItemsImports = 4
@@ -36,7 +38,9 @@ Global
 		Geolocator.Shared\Geolocator.Shared.projitems*{56a56f17-7de1-4ca1-9617-bf32e971ac84}*SharedItemsImports = 4
 		Geolocator.Shared\Geolocator.Shared.projitems*{674d29bb-9528-46e6-9353-d45e8a1d4c76}*SharedItemsImports = 4
 		Geolocator.Shared\Geolocator.Shared.projitems*{6edb0588-ffc5-4ef5-8a99-9e241d0f878d}*SharedItemsImports = 4
+		Geolocator.Shared\Geolocator.Shared.projitems*{71a925b6-f452-4a2b-9038-4fc611db2c17}*SharedItemsImports = 4
 		Geolocator.Shared\Geolocator.Shared.projitems*{a6fcef44-d2ba-42c7-b3cb-13667bcd7b54}*SharedItemsImports = 4
+		Geolocator.Shared\Geolocator.Shared.projitems*{c9e2506e-7cc0-43b8-bced-93c2f69920d1}*SharedItemsImports = 4
 		Geolocator.Shared\Geolocator.Shared.projitems*{f447d32e-5a83-4905-9b55-d224cfdb44c0}*SharedItemsImports = 13
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -198,6 +202,30 @@ Global
 		{C9E2506E-7CC0-43B8-BCED-93C2F69920D1}.Release|x64.Build.0 = Release|Any CPU
 		{C9E2506E-7CC0-43B8-BCED-93C2F69920D1}.Release|x86.ActiveCfg = Release|Any CPU
 		{C9E2506E-7CC0-43B8-BCED-93C2F69920D1}.Release|x86.Build.0 = Release|Any CPU
+		{71A925B6-F452-4A2B-9038-4FC611DB2C17}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{71A925B6-F452-4A2B-9038-4FC611DB2C17}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{71A925B6-F452-4A2B-9038-4FC611DB2C17}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{71A925B6-F452-4A2B-9038-4FC611DB2C17}.Debug|ARM.Build.0 = Debug|Any CPU
+		{71A925B6-F452-4A2B-9038-4FC611DB2C17}.Debug|iPhone.ActiveCfg = Debug|Any CPU
+		{71A925B6-F452-4A2B-9038-4FC611DB2C17}.Debug|iPhone.Build.0 = Debug|Any CPU
+		{71A925B6-F452-4A2B-9038-4FC611DB2C17}.Debug|iPhoneSimulator.ActiveCfg = Debug|Any CPU
+		{71A925B6-F452-4A2B-9038-4FC611DB2C17}.Debug|iPhoneSimulator.Build.0 = Debug|Any CPU
+		{71A925B6-F452-4A2B-9038-4FC611DB2C17}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{71A925B6-F452-4A2B-9038-4FC611DB2C17}.Debug|x64.Build.0 = Debug|Any CPU
+		{71A925B6-F452-4A2B-9038-4FC611DB2C17}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{71A925B6-F452-4A2B-9038-4FC611DB2C17}.Debug|x86.Build.0 = Debug|Any CPU
+		{71A925B6-F452-4A2B-9038-4FC611DB2C17}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{71A925B6-F452-4A2B-9038-4FC611DB2C17}.Release|Any CPU.Build.0 = Release|Any CPU
+		{71A925B6-F452-4A2B-9038-4FC611DB2C17}.Release|ARM.ActiveCfg = Release|Any CPU
+		{71A925B6-F452-4A2B-9038-4FC611DB2C17}.Release|ARM.Build.0 = Release|Any CPU
+		{71A925B6-F452-4A2B-9038-4FC611DB2C17}.Release|iPhone.ActiveCfg = Release|Any CPU
+		{71A925B6-F452-4A2B-9038-4FC611DB2C17}.Release|iPhone.Build.0 = Release|Any CPU
+		{71A925B6-F452-4A2B-9038-4FC611DB2C17}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
+		{71A925B6-F452-4A2B-9038-4FC611DB2C17}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
+		{71A925B6-F452-4A2B-9038-4FC611DB2C17}.Release|x64.ActiveCfg = Release|Any CPU
+		{71A925B6-F452-4A2B-9038-4FC611DB2C17}.Release|x64.Build.0 = Release|Any CPU
+		{71A925B6-F452-4A2B-9038-4FC611DB2C17}.Release|x86.ActiveCfg = Release|Any CPU
+		{71A925B6-F452-4A2B-9038-4FC611DB2C17}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
