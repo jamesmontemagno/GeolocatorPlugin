@@ -34,6 +34,7 @@ Version 4.X
 |Xamarin.Android|API 14+|
 |Windows 10 UWP|10+|
 |macOS|All|
+|tvOS|10+|
 
 
 
