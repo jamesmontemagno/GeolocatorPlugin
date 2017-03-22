@@ -46,15 +46,15 @@
      <!--Xamarin.iOS Unified-->
      <file src="src\Geolocator.Plugin.iOSUnified\bin\iPhone\Release\Plugin.Geolocator.dll" target="lib\Xamarin.iOS10\Plugin.Geolocator.dll" />
      <file src="src\Geolocator.Plugin.iOSUnified\bin\iPhone\Release\Plugin.Geolocator.xml" target="lib\Xamarin.iOS10\Plugin.Geolocator.xml" />
-     <file src="src\Geolocator.Plugin.iOSUnified\bin\Release\Plugin.Geolocator.pdb" target="lib\Xamarin.iOS10\Plugin.Geolocator.pdb" />
+     <file src="src\Geolocator.Plugin.iOSUnified\bin\iPhone\Release\Plugin.Geolocator.pdb" target="lib\Xamarin.iOS10\Plugin.Geolocator.pdb" />
        <file src="src\Geolocator.Plugin.Abstractions\bin\Release\Plugin.Geolocator.Abstractions.dll" target="lib\Xamarin.iOS10\Plugin.Geolocator.Abstractions.dll" />
      <file src="src\Geolocator.Plugin.Abstractions\bin\Release\Plugin.Geolocator.Abstractions.xml" target="lib\Xamarin.iOS10\Plugin.Geolocator.Abstractions.xml" />
     <file src="src\Geolocator.Plugin.Abstractions\bin\Release\Plugin.Geolocator.Abstractions.pdb" target="lib\Xamarin.iOS10\Plugin.Geolocator.Abstractions.pdb" />
        
      
      <!--Xamarin.Mac-->
-     <file src="src\Geolocator.Plugin.macOS\bin\iPhone\Release\Plugin.Geolocator.dll" target="lib\Xamarin.Mac20\Plugin.Geolocator.dll" />
-     <file src="src\Geolocator.Plugin.macOS\bin\iPhone\Release\Plugin.Geolocator.xml" target="lib\Xamarin.Mac20\Plugin.Geolocator.xml" />
+     <file src="src\Geolocator.Plugin.macOS\bin\Release\Plugin.Geolocator.dll" target="lib\Xamarin.Mac20\Plugin.Geolocator.dll" />
+     <file src="src\Geolocator.Plugin.macOS\bin\Release\Plugin.Geolocator.xml" target="lib\Xamarin.Mac20\Plugin.Geolocator.xml" />
      <file src="src\Geolocator.Plugin.macOS\bin\Release\Plugin.Geolocator.pdb" target="lib\Xamarin.Mac20\Plugin.Geolocator.pdb" />
        <file src="src\Geolocator.Plugin.Abstractions\bin\Release\Plugin.Geolocator.Abstractions.dll" target="lib\Xamarin.Mac20\Plugin.Geolocator.Abstractions.dll" />
      <file src="src\Geolocator.Plugin.Abstractions\bin\Release\Plugin.Geolocator.Abstractions.xml" target="lib\Xamarin.Mac20\Plugin.Geolocator.Abstractions.xml" />
