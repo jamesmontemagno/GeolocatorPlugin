@@ -14,21 +14,33 @@ Build Status: [![Build status](https://ci.appveyor.com/api/projects/status/nan2c
 
 **Platform Support**
 
+Version 3.X
 |Platform|Supported|Version|
-| ------------------- | :-----------: | :------------------: |
-|Xamarin.iOS|Yes|iOS 7+|
-|Xamarin.iOS Unified|Yes|iOS 7+|
-|Xamarin.Android|Yes|API 14+|
-|Windows Phone Silverlight|Yes|8.0+|
-|Windows Phone RT|Yes|8.1+|
-|Windows Store RT|Yes|8.1+|
-|Windows 10 UWP|Yes|10+|
-|Xamarin.Mac|No||
+| -------------------  | :------------------: |
+|Xamarin.iOS|iOS 7+|
+|Xamarin.iOS Unified|iOS 7+|
+|Xamarin.Android|API 14+|
+|Windows Phone Silverlight|8.0+|
+|Windows Phone RT|8.1+|
+|Windows Store RT|8.1+|
+|Windows 10 UWP|10+|
+
+Version 4.X
+|Platform|Supported|Version|
+| ------------------- |  | :------------------: |
+|Xamarin.iOS|iOS 7+|
+|Xamarin.Android|API 14+|
+|Windows 10 UWP|10+|
+|macOS|All|
+
+
 
 
 ### API Usage
 
 Call **CrossGeolocator.Current** from any project or PCL to gain access to APIs.
+
+#### Get Position
 
 ```csharp
 
@@ -37,7 +49,9 @@ try
   var locator = CrossGeolocator.Current;
   locator.DesiredAccuracy = 50;
   
-  var position = await locator.GetPositionAsync (timeoutMilliseconds: 10000);
+  var position = await locator.GetPositionAsync (TimeSpan.FromSeconds(10));
+  if(position == null)
+    return;
   
   Console.WriteLine ("Position Status: {0}", position.Timestamp);
   Console.WriteLine ("Position Latitude: {0}", position.Latitude);
@@ -49,8 +63,65 @@ catch(Exception ex)
 }
 ```
 
+In addition to taking in a timespan ```GetPositionAsync``` also takes in a cancelation token.
 
-**Reverse Geocoding** : retrieve addresses for position (4.0 beta)
+#### Get Cached Location
+On iOS, Android, and macOS you can auery the last known position really fast by getting the cached position of the system.
+
+```csharp
+var cached = await CrossGeolocator.Current.GetLastKnownLocationAsync();
+if(cached == null)
+  return;
+
+
+Console.WriteLine ("Position Status: {0}", cached.Timestamp);
+Console.WriteLine ("Position Latitude: {0}", cached.Latitude);
+Console.WriteLine ("Position Longitude: {0}", cached.Longitude);
+```
+
+#### Listening for Location Changes
+
+* iOS has special capabilities that allows certain types of apps to get location updates when in the background, but you must specify this.
+* On Android you should use a background service and bind to the UI
+* Windows you should also use some background services
+
+```csharp
+
+async Task StartListening()
+{
+    await CrossGeolocator.Current.StartListeningAsync(TimeSpan.FromSeconds(5), 10, true, new Plugin.Geolocator.Abstractions.ListenerSettings
+                {
+                    ActivityType = Plugin.Geolocator.Abstractions.ActivityType.AutomotiveNavigation,
+                    AllowBackgroundUpdates = true,
+                    DeferLocationUpdates = true,
+                    DeferralDistanceMeters = 1,
+                    DeferralTime = TimeSpan.FromSeconds(1),
+                    ListenForSignificantChanges = true,
+                    PauseLocationUpdatesAutomatically = false
+                });
+
+    CrossGeolocator.Current.PositionChanged += Current_PositionChanged;
+}
+
+private void Current_PositionChanged(object sender, Plugin.Geolocator.Abstractions.PositionEventArgs e)
+{
+    Device.BeginInvokeOnMainThread(() =>
+    {
+        var test = e.Position;
+        listenLabel.Text = "Full: Lat: " + test.Latitude.ToString() + " Long: " + test.Longitude.ToString();
+        listenLabel.Text += "\n" + $"Time: {test.Timestamp.ToString()}";
+        listenLabel.Text += "\n" + $"Heading: {test.Heading.ToString()}";
+        listenLabel.Text += "\n" + $"Speed: {test.Speed.ToString()}";
+        listenLabel.Text += "\n" + $"Accuracy: {test.Accuracy.ToString()}";
+        listenLabel.Text += "\n" + $"Altitude: {test.Altitude.ToString()}";
+        listenLabel.Text += "\n" + $"AltitudeAccuracy: {test.AltitudeAccuracy.ToString()}";
+    });
+}           
+```
+
+
+#### Reverse Geocoding
+Retrieve addresses for position (4.0+)
 
 ```csharp
 try
@@ -69,107 +140,6 @@ catch(Exception ex)
 }
 ```
 
-### API 
-
-```csharp
-/// <summary>
-/// Position error event handler
-/// </summary>
-event EventHandler<PositionErrorEventArgs> PositionError;
-```
-
-```csharp
-/// <summary>
-/// Position changed event handler
-/// </summary>
-event EventHandler<PositionEventArgs> PositionChanged;
-```
-
-```csharp
-/// <summary>
-/// Desired accuracy in meteres
-/// </summary>
-double DesiredAccuracy { get; set; }
-```
-
-```csharp
-/// <summary>
-/// Gets if you are listening for location changes
-/// </summary>
-bool IsListening { get; }
-```
-
-```csharp
-/// <summary>
-/// Gets if device supports heading
-/// </summary>
-bool SupportsHeading { get; }
-```
-
-```csharp
-/// <summary>
-/// Gets or sets if background updates should be allowed on the geolocator.
-/// </summary>
-bool AllowsBackgroundUpdates { get; set; }
-```
-
-```csharp
-/// <summary>
-/// Gets or sets if the location updates should be paused automatically (iOS)
-/// </summary>
-bool PausesLocationUpdatesAutomatically { get; set; }
-```
-
-```csharp
-/// <summary>
-/// Gets if geolocation is available on device
-/// </summary>
-bool IsGeolocationAvailable { get; }
-```
-
-```csharp
-/// <summary>
-/// Gets if geolocation is enabled on device
-/// </summary>
-bool IsGeolocationEnabled { get; }
-```
-
-```csharp
-/// <summary>
-/// Gets position async with specified parameters
-/// </summary>
-/// <param name="timeoutMilliseconds">Timeout in milliseconds to wait, Default Infinite</param>
-/// <param name="token">Cancelation token</param>
-/// <param name="includeHeading">If you would like to include heading</param>
-/// <returns>Position</returns>
-Task<Position> GetPositionAsync(int timeoutMilliseconds = Timeout.Infinite, CancellationToken? token = null, bool includeHeading = false);
-```
-
-```csharp
-/// <summary>
-/// Retrieve addresses for position.
-/// </summary>
-/// <param name="position">Desired position (latitude and longitude)</param>
-/// <returns>Addresses of the desired position</returns>
-Task<IEnumerable<Address>> GetAddressesForPositionAsync(Position position);
-```
-
-```csharp
-/// <summary>
-/// Start lisenting for changes
-/// </summary>
-/// <param name="minTime">Time</param>
-/// <param name="minDistance">Distance</param>
-/// <param name="includeHeading">Include heading or not</param>
-Task<bool> StartListeningAsync(int minTime, double minDistance, bool includeHeading = false);
-```
-
-```csharp
-/// <summary>
-/// Stop listening
-/// </summary>
-Task<bool> StopListeningAsync();
-```
 
 ### **IMPORTANT**
 #### Android:
