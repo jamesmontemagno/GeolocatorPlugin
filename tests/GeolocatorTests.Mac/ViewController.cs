@@ -51,7 +51,7 @@ namespace GeolocatorTests.Mac
         async partial void ButtonGetLocationClicked(NSObject sender)
         {
             var test = await CrossGeolocator.Current.GetPositionAsync(TimeSpan.FromMinutes(2));
-            LabelPosition.StringValue =  "Full: Lat: " + (test.Latitude+2).ToString() + " Long: " + (test.Longitude+2).ToString();
+            LabelPosition.StringValue =  "Full: Lat: " + (test.Latitude).ToString() + " Long: " + (test.Longitude).ToString();
             LabelPosition.StringValue += "\n" + $"Time: {test.Timestamp.ToString()}";
             LabelPosition.StringValue += "\n" + $"Heading: {test.Heading.ToString()}";
             LabelPosition.StringValue += "\n" + $"Speed: {test.Speed.ToString()}";
