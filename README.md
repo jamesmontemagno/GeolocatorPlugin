@@ -15,6 +15,7 @@ Build Status: [![Build status](https://ci.appveyor.com/api/projects/status/nan2c
 **Platform Support**
 
 Version 3.X
+
 |Platform|Version|
 | -------------------  | :------------------: |
 |Xamarin.iOS|iOS 7+|
@@ -26,6 +27,7 @@ Version 3.X
 |Windows 10 UWP|10+|
 
 Version 4.X
+
 |Platform|Version|
 | ------------------- |  :------------------: |
 |Xamarin.iOS|iOS 7+|
