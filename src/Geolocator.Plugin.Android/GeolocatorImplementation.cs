@@ -38,7 +38,7 @@ namespace Plugin.Geolocator
         }
 
         string[] Providers => Manager.GetProviders(enabledOnly: false).ToArray();
-       
+        string[] IgnoredProviders => new string[] { LocationManager.PassiveProvider, "local_database" };
 
         LocationManager Manager
         {
@@ -75,7 +75,7 @@ namespace Plugin.Geolocator
 
 
         /// <inheritdoc/>
-        public bool IsGeolocationEnabled => Providers.Any(p => p != LocationManager.PassiveProvider && Manager.IsProviderEnabled(p));
+        public bool IsGeolocationEnabled => Providers.Any(p => !IgnoredProviders.Contains(p) && Manager.IsProviderEnabled(p));
 
 
         public async Task<Position> GetLastKnownLocationAsync()
