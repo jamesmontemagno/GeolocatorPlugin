@@ -1,13 +1,12 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Threading;
 using CoreLocation;
 using Foundation;
-using UIKit;
 using Plugin.Geolocator.Abstractions;
-
+using Plugin.Permissions;
+using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using UIKit;
 
 namespace Plugin.Geolocator
 {
@@ -38,14 +37,11 @@ namespace Plugin.Geolocator
             manager.UpdatedHeading += OnUpdatedHeading;
 
             manager.DeferredUpdatesFinished += OnDeferredUpdatedFinished;
-
-            RequestAuthorization();
         }
 
         void OnDeferredUpdatedFinished(object sender, NSErrorEventArgs e) => deferringUpdates = false;
 
         bool CanDeferLocationUpdate => UIDevice.CurrentDevice.CheckSystemVersion(6, 0);
-
 
         /// <summary>
         /// Position error event handler
@@ -101,28 +97,18 @@ namespace Plugin.Geolocator
             }
         }
 
-        void RequestAuthorization()
-        {
-            var info = NSBundle.MainBundle.InfoDictionary;
-
-            if (UIDevice.CurrentDevice.CheckSystemVersion(8, 0))
-            {
-                if (info.ContainsKey(new NSString("NSLocationWhenInUseUsageDescription")))
-                    manager.RequestWhenInUseAuthorization();
-                else if (info.ContainsKey(new NSString("NSLocationAlwaysUsageDescription")))
-                    manager.RequestAlwaysAuthorization();
-                else
-                    throw new UnauthorizedAccessException("On iOS 8.0 and higher you must set either NSLocationWhenInUseUsageDescription or NSLocationAlwaysUsageDescription in your Info.plist file to enable Authorization Requests for Location updates!");
-            }
-        }
-
         /// <summary>
         /// Gets the last known and most accurate location.
         /// This is usually cached and best to display first before querying for full position.
         /// </summary>
         /// <returns>Best and most recent location or null if none found</returns>
-        public Task<Position> GetLastKnownLocationAsync()
+        public async Task<Position> GetLastKnownLocationAsync()
         {
+            var hasPermission = await CheckPermissions();
+
+            if (!hasPermission)
+                return null;
+
             var m = GetManager();
             var newLocation = m?.Location;
 
@@ -138,7 +124,26 @@ namespace Plugin.Geolocator
             position.Speed = newLocation.Speed;
             position.Timestamp = new DateTimeOffset((DateTime)newLocation.Timestamp);
 
-            return Task.FromResult(position);
+            return position;
+        }
+
+        async Task<bool> CheckPermissions()
+        {
+            var status = await CrossPermissions.Current.CheckPermissionStatusAsync(Permissions.Abstractions.Permission.Location).ConfigureAwait(false);
+            if (status != Permissions.Abstractions.PermissionStatus.Granted)
+            {
+                Console.WriteLine("Currently does not have Location permissions, requesting permissions");
+
+                var request = await CrossPermissions.Current.RequestPermissionsAsync(Permissions.Abstractions.Permission.Location);
+
+                if (request[Permissions.Abstractions.Permission.Location] != Permissions.Abstractions.PermissionStatus.Granted)
+                {
+                    Console.WriteLine("Location permission denied, can not get positions async.");
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         /// <summary>
@@ -148,8 +153,13 @@ namespace Plugin.Geolocator
         /// <param name="token">Cancelation token</param>
         /// <param name="includeHeading">If you would like to include heading</param>
         /// <returns>Position</returns>
-		public Task<Position> GetPositionAsync(TimeSpan? timeout, CancellationToken? cancelToken = null, bool includeHeading = false)
+		public async Task<Position> GetPositionAsync(TimeSpan? timeout, CancellationToken? cancelToken = null, bool includeHeading = false)
         {
+            var hasPermission = await CheckPermissions();
+
+            if (!hasPermission)
+                return null;
+
             var timeoutMilliseconds = timeout.HasValue ? (int)timeout.Value.TotalMilliseconds : Timeout.Infinite;
 
             if (timeoutMilliseconds <= 0 && timeoutMilliseconds != Timeout.Infinite)
@@ -182,9 +192,8 @@ namespace Plugin.Geolocator
                 if (includeHeading && SupportsHeading)
                     m.StartUpdatingHeading();
 
-                return singleListener.Task;
+                return await singleListener.Task;
             }
-
 
             tcs = new TaskCompletionSource<Position>();
             if (position == null)
@@ -210,8 +219,7 @@ namespace Plugin.Geolocator
             else
                 tcs.SetResult(position);
 
-
-            return tcs.Task;
+            return await tcs.Task;
         }
 
         /// <summary>
