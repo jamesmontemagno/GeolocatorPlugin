@@ -47,9 +47,6 @@
     <Compile Include="..\Geolocator.Plugin.iOSUnified\GeolocatorImplementation.cs">
       <Link>GeolocatorImplementation.cs</Link>
     </Compile>
-    <Compile Include="..\Geolocator.Plugin\CrossGeolocator.cs">
-      <Link>CrossGeolocator.cs</Link>
-    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\TVOS\Xamarin.TVOS.CSharp.targets" />
@@ -58,6 +55,11 @@
       <Project>{6edb0588-ffc5-4ef5-8a99-9e241d0f878d}</Project>
       <Name>Geolocator.Plugin.Abstractions</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="NETStandard.Library">
+      <Version>1.6.1</Version>
+    </PackageReference>
   </ItemGroup>
   <Import Project="..\Geolocator.Shared\Geolocator.Shared.projitems" Label="Shared" />
 </Project>

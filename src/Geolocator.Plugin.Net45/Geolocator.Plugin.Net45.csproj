@@ -41,9 +41,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\Geolocator.Plugin\CrossGeolocator.cs">
-      <Link>CrossGeolocator.cs</Link>
-    </Compile>
     <Compile Include="GeolocatorImplementation.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
