@@ -21,7 +21,11 @@
         </releaseNotes>
         <tags>xamarin, geolocator, geolocation, gps, pcl, xam.pcl, plugin, plugin for xamarin, windows phone, winphone, wp8, winrt, android, xamarin.forms, ios</tags>
         <dependencies>
+            <group>
+                <dependency id="NETStandard.Library" version="[1.6.1, 2)" />
+            </group>
             <group targetFramework="MonoAndroid10">
+                <dependency id="NETStandard.Library" version="[1.6.1, 2)" />
                 <dependency id="Plugin.Permissions" version="1.2.1"/>
             </group>
         </dependencies>
