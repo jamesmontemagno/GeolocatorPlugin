@@ -9,6 +9,7 @@
     <Import_RootNamespace>Geolocator.Shared</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)CrossGeolocator.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GlobalAssemblyInfo.cs" />
   </ItemGroup>
 </Project>

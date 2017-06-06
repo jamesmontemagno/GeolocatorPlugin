@@ -8,7 +8,7 @@ Ported from [Xamarin.Mobile](http://www.github.com/xamarin/xamarin.mobile) to a 
 
 ### Setup
 * Available on NuGet: http://www.nuget.org/packages/Xam.Plugin.Geolocator [![NuGet](https://img.shields.io/nuget/v/Xam.Plugin.Geolocator.svg?label=NuGet)](https://www.nuget.org/packages/Xam.Plugin.Geolocator/)
-* Install into your PCL project and Client projects.
+* Install into your NET Standard project and Client projects.
 
 Build Status: [![Build status](https://ci.appveyor.com/api/projects/status/nan2cxlgeo11sc5u?svg=true)](https://ci.appveyor.com/project/JamesMontemagno/geolocatorplugin)
 
@@ -41,7 +41,7 @@ Version 4.X
 
 ### API Usage
 
-Call **CrossGeolocator.Current** from any project or PCL to gain access to APIs.
+Call **CrossGeolocator.Current** from any project or NET Standard library to gain access to APIs.
 
 #### Get Position
 

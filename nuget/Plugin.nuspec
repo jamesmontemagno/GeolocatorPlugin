@@ -1,54 +1,60 @@
 <?xml version="1.0" encoding="utf-8"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
-   <metadata minClientVersion="2.8.1">
-       <id>Xam.Plugin.Geolocator</id>
-       <version>$version$</version>
-       <title>Geolocator Plugin for Xamarin and Windows</title>
-       <authors>James Montemagno</authors>
-       <owners>James Montemagno</owners>
-       <licenseUrl>https://github.com/jamesmontemagno/GeolocatorPlugin/blob/master/LICENSE</licenseUrl>
-       <projectUrl>https://github.com/jamesmontemagno/GeolocatorPlugin</projectUrl>
-       <iconUrl>http://www.refractored.com/images/plugin_icon_geolocator.png</iconUrl>
-     
-       <requireLicenseAcceptance>false</requireLicenseAcceptance>
-       <description>
-         Easily access geolocation across Xamarin.iOS, Xamarin.Android, and Windows.   
-       </description>
-       <summary>Easly access geolocation across Xamarin.iOS, Xamarin.Android, and Windows. View full project page for README
-       </summary>
-     <releaseNotes>
-     </releaseNotes>
-       <tags>xamarin, geolocator, geolocation, gps, pcl, xam.pcl, plugin, plugin for xamarin, windows phone, winphone, wp8, winrt, android, xamarin.forms, ios</tags>
-       <dependencies>
-           <group targetFramework="MonoAndroid10">
-               <dependency id="Plugin.Permissions" version="1.2.1"/>
-           </group>
-       </dependencies>
-   </metadata>
-   <files>
-     <file src="nuget\readme.txt" target="readme.txt" />
-    <!--Core-->
-     <file src="src\Geolocator.Plugin\bin\Release\Plugin.Geolocator.*" target="lib\portable-net45+wp80+win8+wpa81" />
-     
-     <!--Xamarin.Android-->
-     <file src="src\Geolocator.Plugin.Android\bin\Release\Plugin.Geolocator.*" target="lib\MonoAndroid10" />
-     
-     <!--Xamarin.iOS Unified-->
-     <file src="src\Geolocator.Plugin.iOSUnified\bin\iPhone\Release\Plugin.Geolocator.*" target="lib\Xamarin.iOS10" />
-       
-     
-     <!--Xamarin.Mac-->
-       <file src="src\Geolocator.Plugin.macOS\bin\Release\Plugin.Geolocator.*" target="lib\Xamarin.Mac20" />
-       
+    <metadata minClientVersion="2.8.1">
+        <id>Xam.Plugin.Geolocator</id>
+        <version>$version$</version>
+        <title>Geolocator Plugin for Xamarin and Windows</title>
+        <authors>James Montemagno</authors>
+        <owners>James Montemagno</owners>
+        <licenseUrl>https://github.com/jamesmontemagno/GeolocatorPlugin/blob/master/LICENSE</licenseUrl>
+        <projectUrl>https://github.com/jamesmontemagno/GeolocatorPlugin</projectUrl>
+        <iconUrl>http://www.refractored.com/images/plugin_icon_geolocator.png</iconUrl>
 
-       <!--UWP-->
-       <file src="src\Geolocator.Plugin.UWP\bin\Release\Plugin.Geolocator.*" target="lib\UAP10" />
-       
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>
+            Easily access geolocation across Xamarin.iOS, Xamarin.Android, and Windows.
+        </description>
+        <summary>
+            Easly access geolocation across Xamarin.iOS, Xamarin.Android, and Windows. View full project page for README
+        </summary>
+        <releaseNotes>
+        </releaseNotes>
+        <tags>xamarin, geolocator, geolocation, gps, pcl, xam.pcl, plugin, plugin for xamarin, windows phone, winphone, wp8, winrt, android, xamarin.forms, ios</tags>
+        <dependencies>
+            <group>
+                <dependency id="NETStandard.Library" version="[1.6.1, 2)" />
+            </group>
+            <group targetFramework="MonoAndroid10">
+                <dependency id="NETStandard.Library" version="[1.6.1, 2)" />
+                <dependency id="Plugin.Permissions" version="1.2.1"/>
+            </group>
+        </dependencies>
+    </metadata>
+    <files>
+        <file src="nuget\readme.txt" target="readme.txt" />
+
+        <!--Core-->
+        <file src="src\Geolocator.Plugin\bin\Release\netstandard1.0\Plugin.Geolocator.*" target="lib\netstandard1.0" />
+
+        <!--Xamarin.Android-->
+        <file src="src\Geolocator.Plugin.Android\bin\Release\Plugin.Geolocator.*" target="lib\MonoAndroid10" />
+
+        <!--Xamarin.iOS Unified-->
+        <file src="src\Geolocator.Plugin.iOSUnified\bin\iPhone\Release\Plugin.Geolocator.*" target="lib\Xamarin.iOS10" />
+
+
+        <!--Xamarin.Mac-->
+        <file src="src\Geolocator.Plugin.macOS\bin\Release\Plugin.Geolocator.*" target="lib\Xamarin.Mac20" />
+
+
+        <!--UWP-->
+        <file src="src\Geolocator.Plugin.UWP\bin\Release\Plugin.Geolocator.*" target="lib\UAP10" />
+
         <!--net45-->
-       <file src="src\Geolocator.Plugin.Net45\bin\Release\Plugin.Geolocator.*" target="lib\net45" />
-   
+        <file src="src\Geolocator.Plugin.Net45\bin\Release\Plugin.Geolocator.*" target="lib\net45" />
+
 
         <!--tvOS-->
-       <file src="src\Geolocator.Plugin.tvOS\bin\Release\Plugin.Geolocator.*" target="lib\XamarinTVOS" />
-   </files>
+        <file src="src\Geolocator.Plugin.tvOS\bin\Release\Plugin.Geolocator.*" target="lib\XamarinTVOS" />
+    </files>
 </package>

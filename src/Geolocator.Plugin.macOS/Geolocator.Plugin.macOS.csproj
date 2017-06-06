@@ -72,9 +72,6 @@
     <Compile Include="..\Geolocator.Plugin.iOSUnified\GeolocatorImplementation.cs">
       <Link>GeolocatorImplementation.cs</Link>
     </Compile>
-    <Compile Include="..\Geolocator.Plugin\CrossGeolocator.cs">
-      <Link>CrossGeolocator.cs</Link>
-    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
