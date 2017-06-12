@@ -41,6 +41,8 @@ Version 4.X
 
 ### API Usage
 
+Below is API usage for 4.0+. To find 3.0 documentation please go [here](https://github.com/jamesmontemagno/Xamarin.Plugins/tree/0eed56ff8e9bbc4585fc60042da9cd74799b2f86/Geolocator).
+
 Call **CrossGeolocator.Current** from any project or PCL to gain access to APIs.
 
 #### Get Position
