@@ -58,9 +58,9 @@ try
   if(position == null)
     return;
   
-  Console.WriteLine ("Position Status: {0}", position.Timestamp);
-  Console.WriteLine ("Position Latitude: {0}", position.Latitude);
-  Console.WriteLine ("Position Longitude: {0}", position.Longitude);
+  Console.WriteLine ("Position Status: {0}", position.Result.Timestamp);
+  Console.WriteLine ("Position Latitude: {0}", position.Result.Latitude);
+  Console.WriteLine ("Position Longitude: {0}", position.Result.Longitude);
 }
 catch(Exception ex)
 {
