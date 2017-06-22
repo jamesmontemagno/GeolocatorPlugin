@@ -7,6 +7,7 @@ var libraries = new Dictionary<string, string> {
  	{ "./src/Geolocator.sln", "Any" },
 };
 
+
 var BuildAction = new Action<Dictionary<string, string>> (solutions =>
 {
 
@@ -55,6 +56,7 @@ Task("Libraries").Does(()=>
     BuildAction(libraries);
 });
 
+
 Task ("NuGet")
 	.IsDependentOn ("Libraries")
 	.Does (() =>
@@ -70,6 +72,7 @@ Task ("NuGet")
 		ToolPath = "./tools/nuget3.exe"
 	});	
 });
+
 
 //Build the component, which build samples, nugets, and libraries
 Task ("Default").IsDependentOn("NuGet");

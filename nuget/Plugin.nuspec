@@ -20,20 +20,45 @@
      </releaseNotes>
        <tags>xamarin, geolocator, geolocation, gps, pcl, xam.pcl, plugin, plugin for xamarin, windows phone, winphone, wp8, winrt, android, xamarin.forms, ios</tags>
        <dependencies>
-           <group targetFramework="MonoAndroid10">
-               <dependency id="Plugin.Permissions" version="1.2.1"/>
-           </group>
+         <group targetFramework="net">
+         </group>
+         <group targetFramework="win">
+         </group>
+         <group targetFramework="wp">
+         </group>
+         <group targetFramework="wpa">
+         </group>
+         <group targetFramework="netstandard1.0">
+           <dependency id="NETStandard.Library" version="1.6.1" />
+         </group>
+         <group targetFramework="MonoAndroid70">
+           <dependency id="Plugin.Permissions" version="2.0.0.28-beta"/>
+         </group>
+         <group targetFramework="Xamarin.iOS10">
+         </group>
+         <group targetFramework="Xamarin.Mac20">
+         </group>
+         <group targetFramework="portable-net45+win+wpa81+wp80">
+         </group>
+         <group targetFramework="uap">
+         </group>
+         <group targetFramework="dotnet">
+         </group>
+         <group targetFramework="xamarintvos">
+         </group>
+         <group targetFramework="xamarinwatchos">
+         </group>
        </dependencies>
    </metadata>
    <files>
      <file src="nuget\readme.txt" target="readme.txt" />
     <!--Core-->
-     <file src="src\Geolocator.Plugin\bin\Release\Plugin.Geolocator.*" target="lib\portable-net45+wp80+win8+wpa81" />
+     <file src="src\Geolocator.Plugin\bin\Release\netstandard1.0\Plugin.Geolocator.*" target="lib\netstandard1.0" />
      
      <!--Xamarin.Android-->
      <file src="src\Geolocator.Plugin.Android\bin\Release\Plugin.Geolocator.*" target="lib\MonoAndroid10" />
      
-     <!--Xamarin.iOS Unified-->
+     <!--Xamarin.iOS-->
      <file src="src\Geolocator.Plugin.iOSUnified\bin\iPhone\Release\Plugin.Geolocator.*" target="lib\Xamarin.iOS10" />
        
      
@@ -43,10 +68,6 @@
 
        <!--UWP-->
        <file src="src\Geolocator.Plugin.UWP\bin\Release\Plugin.Geolocator.*" target="lib\UAP10" />
-       
-        <!--net45-->
-       <file src="src\Geolocator.Plugin.Net45\bin\Release\Plugin.Geolocator.*" target="lib\net45" />
-   
 
         <!--tvOS-->
        <file src="src\Geolocator.Plugin.tvOS\bin\Release\Plugin.Geolocator.*" target="lib\XamarinTVOS" />

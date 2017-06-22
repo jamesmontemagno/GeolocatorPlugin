@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -28,16 +28,21 @@
     <UseSGen>true</UseSGen>
     <UseRefCounting>true</UseRefCounting>
     <Profiling>true</Profiling>
-    <HttpClientHandler></HttpClientHandler>
-    <TlsProvider></TlsProvider>
-    <LinkMode></LinkMode>
-    <XamMacArch></XamMacArch>
+    <HttpClientHandler>
+    </HttpClientHandler>
+    <TlsProvider>
+    </TlsProvider>
+    <LinkMode>
+    </LinkMode>
+    <XamMacArch>
+    </XamMacArch>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release</OutputPath>
-    <DefineConstants></DefineConstants>
+    <DefineConstants>
+    </DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <EnableCodeSigning>false</EnableCodeSigning>
@@ -47,9 +52,12 @@
     <UseSGen>true</UseSGen>
     <UseRefCounting>true</UseRefCounting>
     <LinkMode>SdkOnly</LinkMode>
-    <HttpClientHandler></HttpClientHandler>
-    <TlsProvider></TlsProvider>
-    <XamMacArch></XamMacArch>
+    <HttpClientHandler>
+    </HttpClientHandler>
+    <TlsProvider>
+    </TlsProvider>
+    <XamMacArch>
+    </XamMacArch>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -90,7 +98,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\Geolocator.Plugin.Abstractions\Geolocator.Plugin.Abstractions.csproj">
-      <Project>{6EDB0588-FFC5-4EF5-8A99-9E241D0F878D}</Project>
+      <Project>{d8a817f4-a999-4bae-8fbf-fcf86ddf9990}</Project>
       <Name>Geolocator.Plugin.Abstractions</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\src\Geolocator.Plugin.macOS\Geolocator.Plugin.macOS.csproj">

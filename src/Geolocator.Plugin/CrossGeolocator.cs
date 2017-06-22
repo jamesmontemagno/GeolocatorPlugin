@@ -8,16 +8,20 @@ namespace Plugin.Geolocator
     /// </summary>
     public class CrossGeolocator
     {
-        static Lazy<IGeolocator> Implementation = new Lazy<IGeolocator>(() => CreateGeolocator(), System.Threading.LazyThreadSafetyMode.PublicationOnly);
+        static Lazy<IGeolocator> implementation = new Lazy<IGeolocator>(() => CreateGeolocator(), System.Threading.LazyThreadSafetyMode.PublicationOnly);
+        /// <summary>
+        /// Gets if the plugin is supported on the current platform.
+        /// </summary>
+        public static bool IsSupported => implementation.Value == null ? false : true;
 
         /// <summary>
-        /// Current settings to use
+        /// Current plugin implementation to use
         /// </summary>
         public static IGeolocator Current
         {
             get
             {
-                var ret = Implementation.Value;
+                var ret = implementation.Value;
                 if (ret == null)
                 {
                     throw NotImplementedInReferenceAssembly();
@@ -28,16 +32,15 @@ namespace Plugin.Geolocator
 
         static IGeolocator CreateGeolocator()
         {
-#if PORTABLE
+#if NETSTANDARD1_0
             return null;
 #else
-            return new GeolocatorImplementation();
+			return new GeolocatorImplementation();
 #endif
         }
 
-        internal static Exception NotImplementedInReferenceAssembly()
-        {
-            return new NotImplementedException("This functionality is not implemented in the portable version of this assembly.  You should reference the NuGet package from your main application project in order to reference the platform-specific implementation.");
-        }
+        internal static Exception NotImplementedInReferenceAssembly() =>
+			new NotImplementedException("This functionality is not implemented in the portable version of this assembly.  You should reference the NuGet package from your main application project in order to reference the platform-specific implementation.");
+        
     }
 }

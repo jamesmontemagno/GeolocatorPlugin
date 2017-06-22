@@ -213,12 +213,12 @@ namespace Plugin.Geolocator
             if (!IsListening)
             {
                 var m = GetManager();
-
+				m.DesiredAccuracy = DesiredAccuracy;
 #if __IOS__
                 // permit background updates if background location mode is enabled
                 if (UIDevice.CurrentDevice.CheckSystemVersion(9, 0))
                 {
-                    NSArray backgroundModes = NSBundle.MainBundle.InfoDictionary[(NSString)"UIBackgroundModes"] as NSArray;
+                    var backgroundModes = NSBundle.MainBundle.InfoDictionary[(NSString)"UIBackgroundModes"] as NSArray;
                     m.AllowsBackgroundLocationUpdates = backgroundModes != null && (backgroundModes.Contains((NSString)"Location") || backgroundModes.Contains((NSString)"location"));
                 }
 
@@ -227,7 +227,7 @@ namespace Plugin.Geolocator
                     m.PausesLocationUpdatesAutomatically = false;
 #endif
 
-                tcs = new TaskCompletionSource<Position>(m);
+				tcs = new TaskCompletionSource<Position>(m);
                 var singleListener = new GeolocationSingleUpdateDelegate(m, DesiredAccuracy, includeHeading, timeoutMilliseconds, cancelToken.Value);
                 m.Delegate = singleListener;
 

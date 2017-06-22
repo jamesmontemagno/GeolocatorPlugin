@@ -49,17 +49,17 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Geolocator.Plugin\Geolocator.Plugin.csproj">
-      <Project>{A6FCEF44-D2BA-42C7-B3CB-13667BCD7B54}</Project>
-      <Name>Geolocator.Plugin</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\src\Geolocator.Plugin.Abstractions\Geolocator.Plugin.Abstractions.csproj">
-      <Project>{6EDB0588-FFC5-4EF5-8A99-9E241D0F878D}</Project>
-      <Name>Geolocator.Plugin.Abstractions</Name>
-    </ProjectReference>
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <ProjectReference Include="..\..\src\Geolocator.Plugin.Abstractions\Geolocator.Plugin.Abstractions.csproj">
+      <Project>{d8a817f4-a999-4bae-8fbf-fcf86ddf9990}</Project>
+      <Name>Geolocator.Plugin.Abstractions</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\Geolocator.Plugin\Geolocator.Plugin.csproj">
+      <Project>{45f68bbe-9b86-4578-93f6-2b2c88fb03b2}</Project>
+      <Name>Geolocator.Plugin</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="..\packages\Xamarin.Forms.2.3.3.193\build\portable-win+net45+wp80+win81+wpa81+MonoAndroid10+Xamarin.iOS10+xamarinmac20\Xamarin.Forms.targets" Condition="Exists('..\packages\Xamarin.Forms.2.3.3.193\build\portable-win+net45+wp80+win81+wpa81+MonoAndroid10+Xamarin.iOS10+xamarinmac20\Xamarin.Forms.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

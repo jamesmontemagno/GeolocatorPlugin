@@ -6,9 +6,9 @@
     <ProjectTypeGuids>{06FA79CB-D6CD-4721-BB4B-1BD202089C55};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <ProjectGuid>{71A925B6-F452-4A2B-9038-4FC611DB2C17}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>Geolocator.Plugin</RootNamespace>
+    <RootNamespace>Plugin.Geolocator</RootNamespace>
     <IPhoneResourcePrefix>Resources</IPhoneResourcePrefix>
-    <AssemblyName>Geolocator.Plugin</AssemblyName>
+    <AssemblyName>Plugin.Geolocator</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -52,12 +52,12 @@
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <Import Project="$(MSBuildExtensionsPath)\Xamarin\TVOS\Xamarin.TVOS.CSharp.targets" />
   <ItemGroup>
     <ProjectReference Include="..\Geolocator.Plugin.Abstractions\Geolocator.Plugin.Abstractions.csproj">
-      <Project>{6edb0588-ffc5-4ef5-8a99-9e241d0f878d}</Project>
+      <Project>{4e7c1811-8caa-42fd-9a61-5777f611edfb}</Project>
       <Name>Geolocator.Plugin.Abstractions</Name>
     </ProjectReference>
   </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath)\Xamarin\TVOS\Xamarin.TVOS.CSharp.targets" />
   <Import Project="..\Geolocator.Shared\Geolocator.Shared.projitems" Label="Shared" />
 </Project>
