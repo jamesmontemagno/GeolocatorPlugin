@@ -213,7 +213,7 @@ namespace Plugin.Geolocator
             if (!IsListening)
             {
                 var m = GetManager();
-
+                m.DesiredAccuracy = DesiredAccuracy;
 #if __IOS__
                 // permit background updates if background location mode is enabled
                 if (UIDevice.CurrentDevice.CheckSystemVersion(9, 0))
