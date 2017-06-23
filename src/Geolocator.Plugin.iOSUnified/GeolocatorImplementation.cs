@@ -52,7 +52,11 @@ namespace Plugin.Geolocator
 #if __IOS__ || __MACOS__
             manager.DeferredUpdatesFinished += OnDeferredUpdatedFinished;
 #endif
-        }
+
+#if __TVOS__
+			RequestAuthorization();
+#endif
+		}
 
         void OnDeferredUpdatedFinished(object sender, NSErrorEventArgs e) => deferringUpdates = false;
 
@@ -196,7 +200,7 @@ namespace Plugin.Geolocator
 
 #if !__TVOS__
             position.Speed = newLocation.Speed;
-#endif 
+#endif
 
             try
             {
