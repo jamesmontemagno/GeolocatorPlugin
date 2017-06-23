@@ -27,6 +27,9 @@ namespace Plugin.Geolocator
         Position position;
         ListenerSettings listenerSettings;
 
+		/// <summary>
+		/// Constructor for implementation
+		/// </summary>
         public GeolocatorImplementation()
         {
             DesiredAccuracy = 100;
@@ -49,8 +52,6 @@ namespace Plugin.Geolocator
 #if __IOS__ || __MACOS__
             manager.DeferredUpdatesFinished += OnDeferredUpdatedFinished;
 #endif
-
-            RequestAuthorization();
         }
 
         void OnDeferredUpdatedFinished(object sender, NSErrorEventArgs e) => deferringUpdates = false;
@@ -64,10 +65,31 @@ namespace Plugin.Geolocator
         bool CanDeferLocationUpdate => false;
 #endif
 
-        /// <summary>
-        /// Position error event handler
-        /// </summary>
-        public event EventHandler<PositionErrorEventArgs> PositionError;
+#if __IOS__
+		async Task<bool> CheckPermissions()
+		{
+			var status = await Permissions.CrossPermissions.Current.CheckPermissionStatusAsync(Permissions.Abstractions.Permission.Location);
+			if (status != Permissions.Abstractions.PermissionStatus.Granted)
+			{
+				Console.WriteLine("Currently does not have Location permissions, requesting permissions");
+
+				var request = await Permissions.CrossPermissions.Current.RequestPermissionsAsync(Permissions.Abstractions.Permission.Location);
+
+				if (request[Permissions.Abstractions.Permission.Location] != Permissions.Abstractions.PermissionStatus.Granted)
+				{
+					Console.WriteLine("Location permission denied, can not get positions async.");
+					return false;
+				}
+			}
+
+			return true;
+		}
+#endif
+
+		/// <summary>
+		/// Position error event handler
+		/// </summary>
+		public event EventHandler<PositionErrorEventArgs> PositionError;
 
         /// <summary>
         /// Position changed event handler
@@ -114,16 +136,7 @@ namespace Plugin.Geolocator
             get
             {         
                 var status = CLLocationManager.Status;
-
-#if __IOS__ || __TVOS__
-                if (UIDevice.CurrentDevice.CheckSystemVersion(8, 0))
-                {
-                    return CLLocationManager.LocationServicesEnabled && (status == CLAuthorizationStatus.AuthorizedAlways
-                    || status == CLAuthorizationStatus.AuthorizedWhenInUse);
-                }
-#endif
-
-                return CLLocationManager.LocationServicesEnabled && status == CLAuthorizationStatus.Authorized;
+                return CLLocationManager.LocationServicesEnabled;
             }
         }
 
@@ -161,9 +174,14 @@ namespace Plugin.Geolocator
         /// This is usually cached and best to display first before querying for full position.
         /// </summary>
         /// <returns>Best and most recent location or null if none found</returns>
-        public Task<Position> GetLastKnownLocationAsync()
+        public async Task<Position> GetLastKnownLocationAsync()
         {
-            var m = GetManager();
+#if __IOS__
+			var hasPermission = await CheckPermissions();
+			if (!hasPermission)
+				throw new GeolocationException(GeolocationError.Unauthorized);
+#endif
+			var m = GetManager();
             var newLocation = m?.Location;
 
             if (newLocation == null)
@@ -189,19 +207,25 @@ namespace Plugin.Geolocator
                 position.Timestamp = DateTimeOffset.UtcNow;
             }
 
-            return Task.FromResult(position);
+            return position;
         }
 
-        /// <summary>
-        /// Gets position async with specified parameters
-        /// </summary>
-        /// <param name="timeout">Timeout to wait, Default Infinite</param>
-        /// <param name="token">Cancelation token</param>
-        /// <param name="includeHeading">If you would like to include heading</param>
-        /// <returns>Position</returns>
-		public Task<Position> GetPositionAsync(TimeSpan? timeout, CancellationToken? cancelToken = null, bool includeHeading = false)
+		/// <summary>
+		/// Gets position async with specified parameters
+		/// </summary>
+		/// <param name="timeout">Timeout to wait, Default Infinite</param>
+		/// <param name="cancelToken">Cancelation token</param>
+		/// <param name="includeHeading">If you would like to include heading</param>
+		/// <returns>Position</returns>
+		public async Task<Position> GetPositionAsync(TimeSpan? timeout, CancellationToken? cancelToken = null, bool includeHeading = false)
         {
-            var timeoutMilliseconds = timeout.HasValue ? (int)timeout.Value.TotalMilliseconds : Timeout.Infinite;
+#if __IOS__
+			var hasPermission = await CheckPermissions();
+			if (!hasPermission)
+				throw new GeolocationException(GeolocationError.Unauthorized);
+#endif
+
+			var timeoutMilliseconds = timeout.HasValue ? (int)timeout.Value.TotalMilliseconds : Timeout.Infinite;
 
             if (timeoutMilliseconds <= 0 && timeoutMilliseconds != Timeout.Infinite)
                 throw new ArgumentOutOfRangeException(nameof(timeout), "Timeout must be positive or Timeout.Infinite");
@@ -243,7 +267,7 @@ namespace Plugin.Geolocator
                     m.StartUpdatingHeading();
 #endif
 
-                return singleListener.Task;
+                return await singleListener.Task;
             }
 
 
@@ -277,7 +301,7 @@ namespace Plugin.Geolocator
                 tcs.SetResult(position);
 
 
-            return tcs.Task;
+            return await tcs.Task;
         }
 
         /// <summary>
@@ -302,9 +326,15 @@ namespace Plugin.Geolocator
         /// <param name="minimumDistance">Distance</param>
         /// <param name="includeHeading">Include heading or not</param>
         /// <param name="listenerSettings">Optional settings (iOS only)</param>
-        public Task<bool> StartListeningAsync(TimeSpan minTime, double minDistance, bool includeHeading = false, ListenerSettings settings = null)
+        public async Task<bool> StartListeningAsync(TimeSpan minTime, double minDistance, bool includeHeading = false, ListenerSettings settings = null)
         {
-            if (minDistance < 0)
+#if __IOS__
+			var hasPermission = await CheckPermissions();
+			if (!hasPermission)
+				throw new GeolocationException(GeolocationError.Unauthorized);
+#endif
+
+			if (minDistance < 0)
                 throw new ArgumentOutOfRangeException("minDistance");
             if (isListening)
                 throw new InvalidOperationException("Already listening");
@@ -374,7 +404,7 @@ namespace Plugin.Geolocator
                 manager.StartUpdatingHeading();
 #endif
 
-            return Task.FromResult(true);
+            return true;
         }
 
         /// <summary>

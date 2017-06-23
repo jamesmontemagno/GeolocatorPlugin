@@ -78,11 +78,15 @@ namespace Plugin.Geolocator
         public bool IsGeolocationEnabled => Providers.Any(p => !IgnoredProviders.Contains(p) && Manager.IsProviderEnabled(p));
 
 
+		/// <summary>
+		/// Get last known location
+		/// </summary>
+		/// <returns></returns>
         public async Task<Position> GetLastKnownLocationAsync()
         {
             var hasPermission = await CheckPermissions();
-            if (!hasPermission)
-                return null;
+			if (!hasPermission)
+				throw new GeolocationException(GeolocationError.Unauthorized);
 
             Location bestLocation = null;
             foreach (var provider in Providers)
@@ -127,11 +131,11 @@ namespace Plugin.Geolocator
             if (!cancelToken.HasValue)
                 cancelToken = CancellationToken.None;
 
-            var hasPermission = await CheckPermissions();
-            if (!hasPermission)
-                return null;
+			var hasPermission = await CheckPermissions();
+			if (!hasPermission)
+				throw new GeolocationException(GeolocationError.Unauthorized);
 
-            var tcs = new TaskCompletionSource<Position>();
+			var tcs = new TaskCompletionSource<Position>();
 
             if (!IsListening)
             {
@@ -232,12 +236,12 @@ namespace Plugin.Geolocator
         /// <inheritdoc/>
         public async Task<bool> StartListeningAsync(TimeSpan minTime, double minDistance, bool includeHeading = false, ListenerSettings settings = null)
         {
-            var hasPermission = await CheckPermissions();
-            if (!hasPermission)
-                return false;
+			var hasPermission = await CheckPermissions();
+			if (!hasPermission)
+				throw new GeolocationException(GeolocationError.Unauthorized);
 
 
-            var minTimeMilliseconds = minTime.TotalMilliseconds;
+			var minTimeMilliseconds = minTime.TotalMilliseconds;
             if (minTimeMilliseconds < 0)
                 throw new ArgumentOutOfRangeException("minTime");
             if (minDistance < 0)

@@ -35,6 +35,7 @@
            <dependency id="Plugin.Permissions" version="2.0.0.28-beta"/>
          </group>
          <group targetFramework="Xamarin.iOS10">
+           <dependency id="Plugin.Permissions" version="2.0.0.28-beta"/>
          </group>
          <group targetFramework="Xamarin.Mac20">
          </group>

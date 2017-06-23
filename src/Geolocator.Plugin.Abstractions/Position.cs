@@ -147,6 +147,7 @@ namespace Plugin.Geolocator.Abstractions
             Error = error;
         }
 
+
         /// <summary>
         /// Geolocation error
         /// </summary>
