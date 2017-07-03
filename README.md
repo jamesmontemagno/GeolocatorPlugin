@@ -14,18 +14,6 @@ Build Status: [![Build status](https://ci.appveyor.com/api/projects/status/nan2c
 
 **Platform Support**
 
-Version 3.X
-
-|Platform|Version|
-| -------------------  | :------------------: |
-|Xamarin.iOS|iOS 7+|
-|Xamarin.iOS Unified|iOS 7+|
-|Xamarin.Android|API 14+|
-|Windows Phone Silverlight|8.0+|
-|Windows Phone RT|8.1+|
-|Windows Store RT|8.1+|
-|Windows 10 UWP|10+|
-
 Version 4.X
 
 |Platform|Version|
@@ -41,7 +29,7 @@ Version 4.X
 
 ### API Usage
 
-Below is API usage for 4.0+. To find 3.0 documentation please go [here](https://github.com/jamesmontemagno/Xamarin.Plugins/tree/0eed56ff8e9bbc4585fc60042da9cd74799b2f86/Geolocator).
+Below is API usage for 4.0+.
 
 Call **CrossGeolocator.Current** from any project or PCL to gain access to APIs.
 
@@ -71,7 +59,8 @@ catch(Exception ex)
 In addition to taking in a timespan ```GetPositionAsync``` also takes in a cancelation token.
 
 #### Get Cached Location
-On iOS, Android, and macOS you can auery the last known position really fast by getting the cached position of the system.
+On iOS, Android, tvOS, and macOS you can auery the last known position really fast by getting the cached position of the system.
+On UWP ths will always return null.
 
 ```csharp
 var cached = await CrossGeolocator.Current.GetLastKnownLocationAsync();
@@ -126,12 +115,12 @@ private void Current_PositionChanged(object sender, Plugin.Geolocator.Abstractio
 
 
 #### Reverse Geocoding
-Retrieve addresses for position (4.0+)
+UWP will require a map key: https://docs.microsoft.com/en-us/windows/uwp/maps-and-location/authentication-key
 
 ```csharp
 try
 { 
-  var addresses = await locator.GetAddressesForPositionAsync (position);
+  var addresses = await locator.GetAddressesForPositionAsync (position, string mapKey = null);
   var address = addresses.FirstOrDefault();
   
   if(address == null)

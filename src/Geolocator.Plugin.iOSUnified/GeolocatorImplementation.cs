@@ -313,7 +313,7 @@ namespace Plugin.Geolocator
         /// </summary>
         /// <param name="location">Desired position (latitude and longitude)</param>
         /// <returns>Addresses of the desired position</returns>
-        public async Task<IEnumerable<Address>> GetAddressesForPositionAsync(Position location)
+        public async Task<IEnumerable<Address>> GetAddressesForPositionAsync(Position location, string mapKey = null)
         {
             if (location == null)
                 return null;

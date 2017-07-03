@@ -101,8 +101,9 @@ namespace GeolocatorTests
                     addressBtn.IsEnabled = false;
                     label.Text = "Getting address...";
                     var position = await CrossGeolocator.Current.GetPositionAsync(TimeSpan.FromMinutes(2));
-                    var addresses = await CrossGeolocator.Current.GetAddressesForPositionAsync(position);
-                    var address = addresses.FirstOrDefault();
+                    var addresses = await CrossGeolocator.Current.GetAddressesForPositionAsync(position, "RJHqIE53Onrqons5CNOx~FrDr3XhjDTyEXEjng-CRoA~Aj69MhNManYUKxo6QcwZ0wmXBtyva0zwuHB04rFYAPf7qqGJ5cHb03RCDw1jIW8l");
+
+					var address = addresses.FirstOrDefault();
 
                     if (address == null)
                     {

@@ -5,9 +5,7 @@ using Windows.Devices.Geolocation;
 using Windows.Foundation;
 using Plugin.Geolocator.Abstractions;
 using System.Threading;
-#if !WINDOWS_APP
 using Windows.Services.Maps;
-#endif
 
 namespace Plugin.Geolocator
 {
@@ -21,7 +19,9 @@ namespace Plugin.Geolocator
         double desiredAccuracy;
         Windows.Devices.Geolocation.Geolocator locator = new Windows.Devices.Geolocation.Geolocator();
 
-
+		/// <summary>
+		/// Constructor for Implementation
+		/// </summary>
         public GeolocatorImplementation()
         {
             DesiredAccuracy = 100;
@@ -49,7 +49,7 @@ namespace Plugin.Geolocator
         {
             get
             {
-                PositionStatus status = GetGeolocatorStatus();
+                var status = GetGeolocatorStatus();
 
                 while (status == PositionStatus.Initializing)
                 {
@@ -68,7 +68,7 @@ namespace Plugin.Geolocator
         {
             get
             {
-                PositionStatus status = GetGeolocatorStatus();
+                var status = GetGeolocatorStatus();
 
                 while (status == PositionStatus.Initializing)
                 {
@@ -104,10 +104,9 @@ namespace Plugin.Geolocator
         /// This is usually cached and best to display first before querying for full position.
         /// </summary>
         /// <returns>Best and most recent location or null if none found</returns>
-        public Task<Position> GetLastKnownLocationAsync()
-        {
-            return Task.Factory.StartNew<Position>(()=> { return null; });
-        }
+        public Task<Position> GetLastKnownLocationAsync() =>
+			Task.Factory.StartNew<Position>(()=> { return null; });
+        
 
         /// <summary>
         /// Gets position async with specified parameters
@@ -147,7 +146,7 @@ namespace Plugin.Geolocator
                         tcs.SetResult(GetPosition(op.GetResults()));
                         break;
                     case AsyncStatus.Error:
-                        Exception ex = op.ErrorCode;
+                        var ex = op.ErrorCode;
                         if (ex is UnauthorizedAccessException)
                             ex = new GeolocationException(GeolocationError.Unauthorized, ex);
 
@@ -164,33 +163,35 @@ namespace Plugin.Geolocator
         /// </summary>
         /// <param name="position">Desired position (latitude and longitude)</param>
         /// <returns>Addresses of the desired position</returns>
-#if !WINDOWS_APP
-        public async Task<IEnumerable<Address>> GetAddressesForPositionAsync(Position position)
-#else
-        public Task<IEnumerable<Address>> GetAddressesForPositionAsync(Position position)
-#endif
+        public async Task<IEnumerable<Address>> GetAddressesForPositionAsync(Position position, string mapKey = null)
         {
-#if !WINDOWS_APP
+
             if (position == null)
                 return null;
 
+			if(string.IsNullOrWhiteSpace(mapKey) && string.IsNullOrWhiteSpace(MapService.ServiceToken))
+			{
+				System.Diagnostics.Debug.WriteLine("Map API key is required on UWP to reverse geolocate.");
+				return null;
+			}
+
+			if (!string.IsNullOrWhiteSpace(mapKey))
+				MapService.ServiceToken = mapKey;
+
             var queryResults =
                 await MapLocationFinder.FindLocationsAtAsync(
-                        new Geopoint(new BasicGeoposition { Latitude = position.Latitude, Longitude = position.Longitude }));
+                        new Geopoint(new BasicGeoposition { Latitude = position.Latitude, Longitude = position.Longitude })).AsTask();
 
             return queryResults?.Locations.ToAddresses();
-#else
-            return Task.FromResult<IEnumerable<Address>>(null);
-#endif
         }
 
-        /// <summary>
+		/// <summary>
 		/// Start listening for changes
 		/// </summary>
-		/// <param name="minimumTime">Time</param>
-		/// <param name="minimumDistance">Distance</param>
+		/// <param name="minTime">Time</param>
+		/// <param name="minDistance">Distance</param>
 		/// <param name="includeHeading">Include heading or not</param>
-		/// <param name="listenerSettings">Optional settings (iOS only)</param>
+		/// <param name="settings">Optional settings (iOS only)</param>
 		public Task<bool> StartListeningAsync(TimeSpan minTime, double minDistance, bool includeHeading = false, ListenerSettings settings = null)
         {
 

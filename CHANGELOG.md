@@ -1,10 +1,10 @@
 ## Changelog
 
-### [4.0 - Beta]
+### [4.0]
 Breaking Changes:
 * Parameters have all been updated on several methods
 * Remove Windows Phone 8/8.1 and Windows Store 8.1
-* Now .NEt Standard Library
+* Now .NET Standard Library
 
 New Features:
 * Added iOS Support for Significant Changes & Deferral
