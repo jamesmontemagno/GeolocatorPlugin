@@ -30,16 +30,16 @@ Call **CrossGeolocator.Current** from any project to gain access to APIs.
 
 try
 {
-  var locator = CrossGeolocator.Current;
-  locator.DesiredAccuracy = 50;
-  
-  var position = await locator.GetPositionAsync (TimeSpan.FromSeconds(10));
-  if(position == null)
-    return;
-  
-  Console.WriteLine ("Position Status: {0}", position.Timestamp);
-  Console.WriteLine ("Position Latitude: {0}", position.Latitude);
-  Console.WriteLine ("Position Longitude: {0}", position.Longitude);
+	var locator = CrossGeolocator.Current;
+	locator.DesiredAccuracy = 50;
+
+	var position = await locator.GetPositionAsync (TimeSpan.FromSeconds(10));
+	if(position == null)
+	return;
+
+	Console.WriteLine ("Position Status: {0}", position.Timestamp);
+	Console.WriteLine ("Position Latitude: {0}", position.Latitude);
+	Console.WriteLine ("Position Longitude: {0}", position.Longitude);
 }
 catch(Exception ex)
 {
@@ -80,11 +80,11 @@ Before tracking begine you must check to ensure that you have location permissio
 /// <summary>
 /// Start listening for changes
 /// </summary>
-/// <param name="minTime">Minimum time between updates</param>
-/// <param name="minDistance">Distance distance in meters between updates</param>
+/// <param name="minimumTime">Time</param>
+/// <param name="minimumDistance">Distance</param>
 /// <param name="includeHeading">Include heading or not</param>
-/// <param name="settings">Optional settings (iOS only)</param>
-Task<bool> StartListeningAsync(TimeSpan minTime, double minDistance, bool includeHeading = false, ListenerSettings settings = null)
+/// <param name="listenerSettings">Optional settings (iOS only)</param>
+Task<bool> StartListeningAsync(TimeSpan minimumTime, double minimumDistance, bool includeHeading = false, ListenerSettings listenerSettings = null)
 ```
 
 **UWP Note:** How the Geolocator works you must either set the minTime or the minDistance. Setting both means that minDistance will take precedence between the two. You can read more on the [Windows blog](https://blogs.windows.com/buildingapps/2012/12/03/geoposition-advanced-tracking-scenarios-for-windows-phone-8/#81dhJ7lK83WcPgT2.97). 
