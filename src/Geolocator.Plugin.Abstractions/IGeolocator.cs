@@ -71,19 +71,20 @@ namespace Plugin.Geolocator.Abstractions
         /// <returns>Addresses of the desired position</returns>
         Task<IEnumerable<Address>> GetAddressesForPositionAsync(Position position, string mapKey = null);
 
-        /// <summary>
-        /// Start listening for changes
-        /// </summary>
-        /// <param name="minimumTime">Time</param>
-        /// <param name="minimumDistance">Distance</param>
-        /// <param name="includeHeading">Include heading or not</param>
-        /// <param name="listenerSettings">Optional settings (iOS only)</param>
-        Task<bool> StartListeningAsync(TimeSpan minimumTime, double minimumDistance, bool includeHeading = false, ListenerSettings listenerSettings = null);
+		/// <summary>
+		/// Start listening for changes
+		/// </summary>
+		/// <param name="minimumTime">Minimum time between updates</param>
+		/// <param name="minimumDistance">Distance distance in meters between updates</param>
+		/// <param name="includeHeading">Include heading or not</param>
+		/// <param name="listenerSettings">Optional settings (iOS only)</param>
+		Task<bool> StartListeningAsync(TimeSpan minimumTime, double minimumDistance, bool includeHeading = false, ListenerSettings listenerSettings = null);
 
 
         /// <summary>
         /// Stop listening
         /// </summary>
+		/// <returns>If successfully stopped</returns>
         Task<bool> StopListeningAsync();
     }
 }

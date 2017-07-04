@@ -106,16 +106,16 @@ namespace Plugin.Geolocator
         /// <returns>Best and most recent location or null if none found</returns>
         public Task<Position> GetLastKnownLocationAsync() =>
 			Task.Factory.StartNew<Position>(()=> { return null; });
-        
 
-        /// <summary>
-        /// Gets position async with specified parameters
-        /// </summary>
-        /// <param name="timeout">Timeout to wait, Default Infinite</param>
-        /// <param name="token">Cancelation token</param>
-        /// <param name="includeHeading">If you would like to include heading</param>
-        /// <returns>Position</returns>
-        public Task<Position> GetPositionAsync(TimeSpan? timeout, CancellationToken? cancelToken = null, bool includeHeading = false)
+
+		/// <summary>
+		/// Gets position async with specified parameters
+		/// </summary>
+		/// <param name="timeout">Timeout to wait, Default Infinite</param>
+		/// <param name="cancelToken">Cancelation token</param>
+		/// <param name="includeHeading">If you would like to include heading</param>
+		/// <returns>Position</returns>
+		public Task<Position> GetPositionAsync(TimeSpan? timeout, CancellationToken? cancelToken = null, bool includeHeading = false)
         {
             var timeoutMilliseconds = timeout.HasValue ? (int)timeout.Value.TotalMilliseconds : Timeout.Infite;
 
@@ -125,7 +125,7 @@ namespace Plugin.Geolocator
             if (!cancelToken.HasValue)
                 cancelToken = CancellationToken.None;
 
-            IAsyncOperation<Geoposition> pos = GetGeolocator().GetGeopositionAsync(TimeSpan.FromTicks(0), TimeSpan.FromDays(365));
+            var pos = GetGeolocator().GetGeopositionAsync(TimeSpan.FromTicks(0), TimeSpan.FromDays(365));
             cancelToken.Value.Register(o => ((IAsyncOperation<Geoposition>)o).Cancel(), pos);
 
 
@@ -183,30 +183,36 @@ namespace Plugin.Geolocator
                         new Geopoint(new BasicGeoposition { Latitude = position.Latitude, Longitude = position.Longitude })).AsTask();
 
             return queryResults?.Locations.ToAddresses();
-        }
+		}
+
 
 		/// <summary>
 		/// Start listening for changes
 		/// </summary>
-		/// <param name="minTime">Time</param>
-		/// <param name="minDistance">Distance</param>
+		/// <param name="minimumTime">Time</param>
+		/// <param name="minimumDistance">Distance</param>
 		/// <param name="includeHeading">Include heading or not</param>
-		/// <param name="settings">Optional settings (iOS only)</param>
-		public Task<bool> StartListeningAsync(TimeSpan minTime, double minDistance, bool includeHeading = false, ListenerSettings settings = null)
+		/// <param name="listenerSettings">Optional settings (iOS only)</param>
+		public Task<bool> StartListeningAsync(TimeSpan minimumTime, double minimumDistance, bool includeHeading = false, ListenerSettings listenerSettings = null)
         {
+			if (minimumTime.TotalMilliseconds <= 0 && minimumDistance <= 0)
+				throw new ArgumentException("You must specify either a minimumTime or minimumDistance, setting a minimumDistance will always take precedence over minTime");
 
-            if (minTime.TotalMilliseconds < 0)
-                throw new ArgumentOutOfRangeException("minTime");
-            if (minDistance < 0)
-                throw new ArgumentOutOfRangeException("minDistance");
+            if (minimumTime.TotalMilliseconds < 0)
+                throw new ArgumentOutOfRangeException(nameof(minimumTime));
+
+            if (minimumDistance < 0)
+                throw new ArgumentOutOfRangeException(nameof(minimumDistance));
+
             if (isListening)
                 throw new InvalidOperationException();
 
             isListening = true;
 
             var loc = GetGeolocator();
-            loc.ReportInterval = (uint)minTime.TotalMilliseconds;
-            loc.MovementThreshold = minDistance;
+
+			loc.ReportInterval = (uint)minimumTime.TotalMilliseconds;
+            loc.MovementThreshold = minimumDistance;
             loc.PositionChanged += OnLocatorPositionChanged;
             loc.StatusChanged += OnLocatorStatusChanged;
 

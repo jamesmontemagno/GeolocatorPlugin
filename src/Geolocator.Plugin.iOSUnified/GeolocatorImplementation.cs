@@ -323,14 +323,14 @@ namespace Plugin.Geolocator
             return addressList.ToAddresses();
         }
 
-        /// <summary>
-        /// Start listening for changes
-        /// </summary>
-        /// <param name="minimumTime">Time</param>
-        /// <param name="minimumDistance">Distance</param>
-        /// <param name="includeHeading">Include heading or not</param>
-        /// <param name="listenerSettings">Optional settings (iOS only)</param>
-        public async Task<bool> StartListeningAsync(TimeSpan minTime, double minDistance, bool includeHeading = false, ListenerSettings settings = null)
+		/// <summary>
+		/// Start listening for changes
+		/// </summary>
+		/// <param name="minimumTime">Time</param>
+		/// <param name="minimumDistance">Distance</param>
+		/// <param name="includeHeading">Include heading or not</param>
+		/// <param name="listenerSettings">Optional settings (iOS only)</param>
+		public async Task<bool> StartListeningAsync(TimeSpan minimumTime, double minimumDistance, bool includeHeading = false, ListenerSettings listenerSettings = null)
         {
 #if __IOS__
 			var hasPermission = await CheckPermissions();
@@ -338,33 +338,34 @@ namespace Plugin.Geolocator
 				throw new GeolocationException(GeolocationError.Unauthorized);
 #endif
 
-			if (minDistance < 0)
-                throw new ArgumentOutOfRangeException("minDistance");
+			if (minimumDistance < 0)
+                throw new ArgumentOutOfRangeException(nameof(minimumDistance));
+
             if (isListening)
                 throw new InvalidOperationException("Already listening");
 
             // if no settings were passed in, instantiate the default settings. need to check this and create default settings since
             // previous calls to StartListeningAsync might have already configured the location manager in a non-default way that the
             // caller of this method might not be expecting. the caller should expect the defaults if they pass no settings.
-            if (settings == null)
-                settings = new ListenerSettings();
+            if (listenerSettings == null)
+				listenerSettings = new ListenerSettings();
 
             // keep reference to settings so that we can stop the listener appropriately later
-            listenerSettings = settings;
+            this.listenerSettings = listenerSettings;
 
             var desiredAccuracy = DesiredAccuracy;
 
 // set background flag
 #if __IOS__
             if (UIDevice.CurrentDevice.CheckSystemVersion(9, 0))
-                manager.AllowsBackgroundLocationUpdates = settings.AllowBackgroundUpdates;
+                manager.AllowsBackgroundLocationUpdates = listenerSettings.AllowBackgroundUpdates;
 
             // configure location update pausing
             if (UIDevice.CurrentDevice.CheckSystemVersion(6, 0))
             {
-                manager.PausesLocationUpdatesAutomatically = settings.PauseLocationUpdatesAutomatically;
+                manager.PausesLocationUpdatesAutomatically = listenerSettings.PauseLocationUpdatesAutomatically;
 
-                switch(settings.ActivityType)
+                switch(listenerSettings.ActivityType)
                 {
                     case ActivityType.AutomotiveNavigation:
                         manager.ActivityType = CLActivityType.AutomotiveNavigation;
@@ -384,18 +385,18 @@ namespace Plugin.Geolocator
 
             // to use deferral, CLLocationManager.DistanceFilter must be set to CLLocationDistance.None, and CLLocationManager.DesiredAccuracy must be 
             // either CLLocation.AccuracyBest or CLLocation.AccuracyBestForNavigation. deferral only available on iOS 6.0 and above.
-            if (CanDeferLocationUpdate && settings.DeferLocationUpdates)
+            if (CanDeferLocationUpdate && listenerSettings.DeferLocationUpdates)
             {
-                minDistance = CLLocationDistance.FilterNone;
+                minimumDistance = CLLocationDistance.FilterNone;
                 desiredAccuracy = CLLocation.AccuracyBest;
             }
 
             isListening = true;
             manager.DesiredAccuracy = desiredAccuracy;
-            manager.DistanceFilter = minDistance;
+            manager.DistanceFilter = minimumDistance;
 
 #if __IOS__ || __MACOS__
-            if (settings.ListenForSignificantChanges)
+            if (listenerSettings.ListenForSignificantChanges)
                 manager.StartMonitoringSignificantLocationChanges();
             else
                 manager.StartUpdatingLocation();
@@ -468,7 +469,7 @@ namespace Plugin.Geolocator
 
         void OnLocationsUpdated(object sender, CLLocationsUpdatedEventArgs e)
         {
-            foreach (CLLocation location in e.Locations)
+            foreach (var location in e.Locations)
                 UpdatePosition(location);
 
             // defer future location updates if requested

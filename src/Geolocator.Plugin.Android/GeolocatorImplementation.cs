@@ -15,121 +15,128 @@ using Address = Plugin.Geolocator.Abstractions.Address;
 
 namespace Plugin.Geolocator
 {
-    /// <summary>
-    /// Implementation for Feature
-    /// </summary>
-    [Preserve(AllMembers = true)]
-    public class GeolocatorImplementation : IGeolocator
-    {
-        string[] allProviders;
-        LocationManager locationManager;
+	/// <summary>
+	/// Implementation for Feature
+	/// </summary>
+	[Preserve(AllMembers = true)]
+	public class GeolocatorImplementation : IGeolocator
+	{
+		string[] allProviders;
+		LocationManager locationManager;
 
-        GeolocationContinuousListener listener;
+		GeolocationContinuousListener listener;
 
-        readonly object positionSync = new object();
-        Position lastPosition;
+		readonly object positionSync = new object();
+		Position lastPosition;
 
-        /// <summary>
-        /// Default constructor
-        /// </summary>
-        public GeolocatorImplementation()
-        {
-            DesiredAccuracy = 100;
-        }
+		/// <summary>
+		/// Default constructor
+		/// </summary>
+		public GeolocatorImplementation()
+		{
+			DesiredAccuracy = 100;
+		}
 
-        string[] Providers => Manager.GetProviders(enabledOnly: false).ToArray();
-        string[] IgnoredProviders => new string[] { LocationManager.PassiveProvider, "local_database" };
+		string[] Providers => Manager.GetProviders(enabledOnly: false).ToArray();
+		string[] IgnoredProviders => new string[] { LocationManager.PassiveProvider, "local_database" };
 
-        LocationManager Manager
-        {
-            get
-            {
-                if (locationManager == null)
-                    locationManager = (LocationManager)Application.Context.GetSystemService(Context.LocationService);
+		LocationManager Manager
+		{
+			get
+			{
+				if (locationManager == null)
+					locationManager = (LocationManager)Application.Context.GetSystemService(Context.LocationService);
 
-                return locationManager;
-            }
-        }
+				return locationManager;
+			}
+		}
 
-        /// <inheritdoc/>
-        public event EventHandler<PositionErrorEventArgs> PositionError;
-        /// <inheritdoc/>
-        public event EventHandler<PositionEventArgs> PositionChanged;
-        /// <inheritdoc/>
-        public bool IsListening => listener != null;
-
-
-        /// <inheritdoc/>
-        public double DesiredAccuracy
-        {
-            get;
-            set;
-        }
-
-        /// <inheritdoc/>
-        public bool SupportsHeading => true;
+		/// <inheritdoc/>
+		public event EventHandler<PositionErrorEventArgs> PositionError;
+		/// <inheritdoc/>
+		public event EventHandler<PositionEventArgs> PositionChanged;
+		/// <inheritdoc/>
+		public bool IsListening => listener != null;
 
 
-        /// <inheritdoc/>
-        public bool IsGeolocationAvailable => Providers.Length > 0;
+		/// <inheritdoc/>
+		public double DesiredAccuracy
+		{
+			get;
+			set;
+		}
+
+		/// <inheritdoc/>
+		public bool SupportsHeading => true;
 
 
-        /// <inheritdoc/>
-        public bool IsGeolocationEnabled => Providers.Any(p => !IgnoredProviders.Contains(p) && Manager.IsProviderEnabled(p));
+		/// <inheritdoc/>
+		public bool IsGeolocationAvailable => Providers.Length > 0;
+
+
+		/// <inheritdoc/>
+		public bool IsGeolocationEnabled => Providers.Any(p => !IgnoredProviders.Contains(p) && Manager.IsProviderEnabled(p));
 
 
 		/// <summary>
-		/// Get last known location
+		/// Gets the last known and most accurate location.
+		/// This is usually cached and best to display first before querying for full position.
 		/// </summary>
-		/// <returns></returns>
-        public async Task<Position> GetLastKnownLocationAsync()
-        {
-            var hasPermission = await CheckPermissions();
+		/// <returns>Best and most recent location or null if none found</returns>
+		public async Task<Position> GetLastKnownLocationAsync()
+		{
+			var hasPermission = await CheckPermissions();
 			if (!hasPermission)
 				throw new GeolocationException(GeolocationError.Unauthorized);
 
-            Location bestLocation = null;
-            foreach (var provider in Providers)
-            {
-                var location = Manager.GetLastKnownLocation(provider);
-                if (location != null && GeolocationUtils.IsBetterLocation(location, bestLocation))
-                    bestLocation = location;
-            }
+			Location bestLocation = null;
+			foreach (var provider in Providers)
+			{
+				var location = Manager.GetLastKnownLocation(provider);
+				if (location != null && GeolocationUtils.IsBetterLocation(location, bestLocation))
+					bestLocation = location;
+			}
 
-            return bestLocation?.ToPosition();
+			return bestLocation?.ToPosition();
 
-        }
+		}
 
-        async Task<bool> CheckPermissions()
-        {
-            var status = await CrossPermissions.Current.CheckPermissionStatusAsync(Permissions.Abstractions.Permission.Location);
-            if (status != Permissions.Abstractions.PermissionStatus.Granted)
-            {
-                Console.WriteLine("Currently does not have Location permissions, requesting permissions");
+		async Task<bool> CheckPermissions()
+		{
+			var status = await CrossPermissions.Current.CheckPermissionStatusAsync(Permissions.Abstractions.Permission.Location);
+			if (status != Permissions.Abstractions.PermissionStatus.Granted)
+			{
+				Console.WriteLine("Currently does not have Location permissions, requesting permissions");
 
-                var request = await CrossPermissions.Current.RequestPermissionsAsync(Permissions.Abstractions.Permission.Location);
+				var request = await CrossPermissions.Current.RequestPermissionsAsync(Permissions.Abstractions.Permission.Location);
 
-                if (request[Permissions.Abstractions.Permission.Location] != Permissions.Abstractions.PermissionStatus.Granted)
-                {
-                    Console.WriteLine("Location permission denied, can not get positions async.");
-                    return false;
-                }
-            }
+				if (request[Permissions.Abstractions.Permission.Location] != Permissions.Abstractions.PermissionStatus.Granted)
+				{
+					Console.WriteLine("Location permission denied, can not get positions async.");
+					return false;
+				}
+			}
 
-            return true;
-        }
+			return true;
+		}
 
 
-        /// <inheritdoc/>
-        public async Task<Position> GetPositionAsync(TimeSpan? timeout, CancellationToken? cancelToken = null, bool includeHeading = false)
-        {
-            var timeoutMilliseconds = timeout.HasValue ? (int)timeout.Value.TotalMilliseconds : Timeout.Infinite;
+		/// <summary>
+		/// Gets position async with specified parameters
+		/// </summary>
+		/// <param name="timeout">Timeout to wait, Default Infinite</param>
+		/// <param name="cancelToken">Cancelation token</param>
+		/// <param name="includeHeading">If you would like to include heading</param>
+		/// <returns>Position</returns>
+		public async Task<Position> GetPositionAsync(TimeSpan? timeout, CancellationToken? cancelToken = null, bool includeHeading = false)
+		{
+			var timeoutMilliseconds = timeout.HasValue ? (int)timeout.Value.TotalMilliseconds : Timeout.Infinite;
 
-            if (timeoutMilliseconds <= 0 && timeoutMilliseconds != Timeout.Infinite)
-                throw new ArgumentOutOfRangeException(nameof(timeout), "timeout must be greater than or equal to 0");
+			if (timeoutMilliseconds <= 0 && timeoutMilliseconds != Timeout.Infinite)
+				throw new ArgumentOutOfRangeException(nameof(timeout), "timeout must be greater than or equal to 0");
 
-            if (!cancelToken.HasValue)
-                cancelToken = CancellationToken.None;
+			if (!cancelToken.HasValue)
+				cancelToken = CancellationToken.None;
 
 			var hasPermission = await CheckPermissions();
 			if (!hasPermission)
@@ -137,166 +144,172 @@ namespace Plugin.Geolocator
 
 			var tcs = new TaskCompletionSource<Position>();
 
-            if (!IsListening)
-            {
-                var providers = Providers;
-                GeolocationSingleListener singleListener = null;
-                singleListener = new GeolocationSingleListener(Manager, (float)DesiredAccuracy, timeoutMilliseconds, providers.Where(Manager.IsProviderEnabled),
-                    finishedCallback: () =>
-                {
-                    for (int i = 0; i < providers.Length; ++i)
-                        Manager.RemoveUpdates(singleListener);
-                });
+			if (!IsListening)
+			{
+				var providers = Providers;
+				GeolocationSingleListener singleListener = null;
+				singleListener = new GeolocationSingleListener(Manager, (float)DesiredAccuracy, timeoutMilliseconds, providers.Where(Manager.IsProviderEnabled),
+					finishedCallback: () =>
+				{
+					for (int i = 0; i < providers.Length; ++i)
+						Manager.RemoveUpdates(singleListener);
+				});
 
-                if (cancelToken != CancellationToken.None)
-                {
-                    cancelToken.Value.Register(() =>
-                    {
-                        singleListener.Cancel();
+				if (cancelToken != CancellationToken.None)
+				{
+					cancelToken.Value.Register(() =>
+					{
+						singleListener.Cancel();
 
-                        for (int i = 0; i < providers.Length; ++i)
-                            Manager.RemoveUpdates(singleListener);
-                    }, true);
-                }
+						for (var i = 0; i < providers.Length; ++i)
+							Manager.RemoveUpdates(singleListener);
+					}, true);
+				}
 
-                try
-                {
-                    var looper = Looper.MyLooper() ?? Looper.MainLooper;
+				try
+				{
+					var looper = Looper.MyLooper() ?? Looper.MainLooper;
 
-                    int enabled = 0;
-                    for (int i = 0; i < providers.Length; ++i)
-                    {
-                        if (Manager.IsProviderEnabled(providers[i]))
-                            enabled++;
+					int enabled = 0;
+					for (int i = 0; i < providers.Length; ++i)
+					{
+						if (Manager.IsProviderEnabled(providers[i]))
+							enabled++;
 
-                        Manager.RequestLocationUpdates(providers[i], 0, 0, singleListener, looper);
-                    }
+						Manager.RequestLocationUpdates(providers[i], 0, 0, singleListener, looper);
+					}
 
-                    if (enabled == 0)
-                    {
-                        for (int i = 0; i < providers.Length; ++i)
-                            Manager.RemoveUpdates(singleListener);
+					if (enabled == 0)
+					{
+						for (int i = 0; i < providers.Length; ++i)
+							Manager.RemoveUpdates(singleListener);
 
-                        tcs.SetException(new GeolocationException(GeolocationError.PositionUnavailable));
-                        return await tcs.Task;
-                    }
-                }
-                catch (Java.Lang.SecurityException ex)
-                {
-                    tcs.SetException(new GeolocationException(GeolocationError.Unauthorized, ex));
-                    return await tcs.Task;
-                }
+						tcs.SetException(new GeolocationException(GeolocationError.PositionUnavailable));
+						return await tcs.Task;
+					}
+				}
+				catch (Java.Lang.SecurityException ex)
+				{
+					tcs.SetException(new GeolocationException(GeolocationError.Unauthorized, ex));
+					return await tcs.Task;
+				}
 
-                return await singleListener.Task;
-            }
+				return await singleListener.Task;
+			}
 
-            // If we're already listening, just use the current listener
-            lock (positionSync)
-            {
-                if (lastPosition == null)
-                {
-                    if (cancelToken != CancellationToken.None)
-                    {
-                        cancelToken.Value.Register(() => tcs.TrySetCanceled());
-                    }
+			// If we're already listening, just use the current listener
+			lock (positionSync)
+			{
+				if (lastPosition == null)
+				{
+					if (cancelToken != CancellationToken.None)
+					{
+						cancelToken.Value.Register(() => tcs.TrySetCanceled());
+					}
 
-                    EventHandler<PositionEventArgs> gotPosition = null;
-                    gotPosition = (s, e) =>
-                    {
-                        tcs.TrySetResult(e.Position);
-                        PositionChanged -= gotPosition;
-                    };
+					EventHandler<PositionEventArgs> gotPosition = null;
+					gotPosition = (s, e) =>
+					{
+						tcs.TrySetResult(e.Position);
+						PositionChanged -= gotPosition;
+					};
 
-                    PositionChanged += gotPosition;
-                }
-                else
-                {
-                    tcs.SetResult(lastPosition);
-                }
-            }
+					PositionChanged += gotPosition;
+				}
+				else
+				{
+					tcs.SetResult(lastPosition);
+				}
+			}
 
-            return await tcs.Task;
-        }
+			return await tcs.Task;
+		}
 
-        /// <summary>
-        /// Retrieve addresses for position.
-        /// </summary>
-        /// <param name="position">Desired position (latitude and longitude)</param>
-        /// <returns>Addresses of the desired position</returns>
-        public async Task<IEnumerable<Address>> GetAddressesForPositionAsync(Position position, string mapKey = null)
-        {
-            if (position == null)
-                return null;
+		/// <summary>
+		/// Retrieve addresses for position.
+		/// </summary>
+		/// <param name="position">Desired position (latitude and longitude)</param>
+		/// <returns>Addresses of the desired position</returns>
+		public async Task<IEnumerable<Address>> GetAddressesForPositionAsync(Position position, string mapKey = null)
+		{
+			if (position == null)
+				return null;
 
-            var geocoder = new Geocoder(Application.Context);
-            var addressList = await geocoder.GetFromLocationAsync(position.Latitude, position.Longitude, 10);
-            return addressList.ToAddresses();
-        }
+			var geocoder = new Geocoder(Application.Context);
+			var addressList = await geocoder.GetFromLocationAsync(position.Latitude, position.Longitude, 10);
+			return addressList.ToAddresses();
+		}
 
-        /// <inheritdoc/>
-        public async Task<bool> StartListeningAsync(TimeSpan minTime, double minDistance, bool includeHeading = false, ListenerSettings settings = null)
-        {
+		/// <summary>
+		/// Start listening for changes
+		/// </summary>
+		/// <param name="minimumTime">Time</param>
+		/// <param name="minimumDistance">Distance</param>
+		/// <param name="includeHeading">Include heading or not</param>
+		/// <param name="listenerSettings">Optional settings (iOS only)</param>
+		public async Task<bool> StartListeningAsync(TimeSpan minimumTime, double minimumDistance, bool includeHeading = false, ListenerSettings listenerSettings = null)
+		{
 			var hasPermission = await CheckPermissions();
 			if (!hasPermission)
 				throw new GeolocationException(GeolocationError.Unauthorized);
 
 
-			var minTimeMilliseconds = minTime.TotalMilliseconds;
-            if (minTimeMilliseconds < 0)
-                throw new ArgumentOutOfRangeException("minTime");
-            if (minDistance < 0)
-                throw new ArgumentOutOfRangeException("minDistance");
-            if (IsListening)
-                throw new InvalidOperationException("This Geolocator is already listening");
+			var minTimeMilliseconds = minimumTime.TotalMilliseconds;
+			if (minTimeMilliseconds < 0)
+				throw new ArgumentOutOfRangeException(nameof(minimumTime));
+			if (minimumDistance < 0)
+				throw new ArgumentOutOfRangeException(nameof(minimumDistance));
+			if (IsListening)
+				throw new InvalidOperationException("This Geolocator is already listening");
 
-            var providers = Providers;
-            listener = new GeolocationContinuousListener(Manager, minTime, providers);
-            listener.PositionChanged += OnListenerPositionChanged;
-            listener.PositionError += OnListenerPositionError;
+			var providers = Providers;
+			listener = new GeolocationContinuousListener(Manager, minimumTime, providers);
+			listener.PositionChanged += OnListenerPositionChanged;
+			listener.PositionError += OnListenerPositionError;
 
-            Looper looper = Looper.MyLooper() ?? Looper.MainLooper;
-            for (int i = 0; i < providers.Length; ++i)
-                Manager.RequestLocationUpdates(providers[i], (long)minTimeMilliseconds, (float)minDistance, listener, looper);
+			var looper = Looper.MyLooper() ?? Looper.MainLooper;
+			for (var i = 0; i < providers.Length; ++i)
+				Manager.RequestLocationUpdates(providers[i], (long)minTimeMilliseconds, (float)minimumDistance, listener, looper);
 
-            return true;
-        }
-        /// <inheritdoc/>
-        public Task<bool> StopListeningAsync()
-        {
-            if (listener == null)
-                return Task.FromResult(true);
+			return true;
+		}
+		/// <inheritdoc/>
+		public Task<bool> StopListeningAsync()
+		{
+			if (listener == null)
+				return Task.FromResult(true);
 
-            var providers = Providers;
-            listener.PositionChanged -= OnListenerPositionChanged;
-            listener.PositionError -= OnListenerPositionError;
+			var providers = Providers;
+			listener.PositionChanged -= OnListenerPositionChanged;
+			listener.PositionError -= OnListenerPositionError;
 
-            for (int i = 0; i < providers.Length; ++i)
-                Manager.RemoveUpdates(listener);
+			for (var i = 0; i < providers.Length; ++i)
+				Manager.RemoveUpdates(listener);
 
-            listener = null;
-            return Task.FromResult(true);
-        }
+			listener = null;
+			return Task.FromResult(true);
+		}
 
 
-        /// <inheritdoc/>
-        private void OnListenerPositionChanged(object sender, PositionEventArgs e)
-        {
-            if (!IsListening) // ignore anything that might come in afterwards
-                return;
+		/// <inheritdoc/>
+		private void OnListenerPositionChanged(object sender, PositionEventArgs e)
+		{
+			if (!IsListening) // ignore anything that might come in afterwards
+				return;
 
-            lock (positionSync)
-            {
-                lastPosition = e.Position;
+			lock (positionSync)
+			{
+				lastPosition = e.Position;
 
-                PositionChanged?.Invoke(this, e);
-            }
-        }
-        /// <inheritdoc/>
-        private async void OnListenerPositionError(object sender, PositionErrorEventArgs e)
-        {
-            await StopListeningAsync();
+				PositionChanged?.Invoke(this, e);
+			}
+		}
+		/// <inheritdoc/>
+		private async void OnListenerPositionError(object sender, PositionErrorEventArgs e)
+		{
+			await StopListeningAsync();
 
-            PositionError?.Invoke(this, e);
-        }
-    }
+			PositionError?.Invoke(this, e);
+		}
+	}
 }
