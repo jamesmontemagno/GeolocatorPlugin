@@ -2,10 +2,6 @@
 
 Simple cross platform plugin to get GPS location including heading, speed, and more. Additionally, you can track geolocation changes :)
 
-Blog Post Walkthrough: https://blog.xamarin.com/geolocation-for-ios-android-and-windows-made-easy/
-
-Ported from [Xamarin.Mobile](http://www.github.com/xamarin/xamarin.mobile) to a cross platform API.
-
 ### Setup
 * Available on NuGet: http://www.nuget.org/packages/Xam.Plugin.Geolocator [![NuGet](https://img.shields.io/nuget/v/Xam.Plugin.Geolocator.svg?label=NuGet)](https://www.nuget.org/packages/Xam.Plugin.Geolocator/)
 * Install into your PCL project and Client projects.
@@ -25,13 +21,8 @@ Version 4.X
 |tvOS|10+|
 
 
-
-
 ### API Usage
-
-Below is API usage for 4.0+.
-
-Call **CrossGeolocator.Current** from any project or PCL to gain access to APIs.
+Call **CrossGeolocator.Current** from any project to gain access to APIs.
 
 #### Get Position
 
@@ -60,7 +51,7 @@ In addition to taking in a timespan ```GetPositionAsync``` also takes in a cance
 
 #### Get Cached Location
 On iOS, Android, tvOS, and macOS you can auery the last known position really fast by getting the cached position of the system.
-On UWP ths will always return null.
+**On UWP ths will always return null**, as this feature is not supported.
 
 ```csharp
 var cached = await CrossGeolocator.Current.GetLastKnownLocationAsync();
@@ -77,12 +68,36 @@ Console.WriteLine ("Position Longitude: {0}", cached.Longitude);
 
 * iOS has special capabilities that allows certain types of apps to get location updates when in the background, but you must specify this.
 * On Android you should use a background service and bind to the UI
-* Windows you should also use some background services
+* Windows you should also use background services
 
+
+#### Checking permissions
+Before tracking begine you must check to ensure that you have location permissions on all platforms. I recommend using the [Permissions Plugin](http://github.com/jamesmontemagno/PermissionPlugin) to ensure that you have permission.
+
+
+#### Start Tracking
+```csharp
+/// <summary>
+/// Start listening for changes
+/// </summary>
+/// <param name="minTime">Minimum time between updates</param>
+/// <param name="minDistance">Distance distance in meters between updates</param>
+/// <param name="includeHeading">Include heading or not</param>
+/// <param name="settings">Optional settings (iOS only)</param>
+Task<bool> StartListeningAsync(TimeSpan minTime, double minDistance, bool includeHeading = false, ListenerSettings settings = null)
+```
+
+**UWP Note:** How the Geolocator works you must either set the minTime or the minDistance. Setting both means that minDistance will take precedence between the two. You can read more on the [Windows blog](https://blogs.windows.com/buildingapps/2012/12/03/geoposition-advanced-tracking-scenarios-for-windows-phone-8/#81dhJ7lK83WcPgT2.97). 
+
+#### Example
 ```csharp
 
 async Task StartListening()
 {
+	if(CrossGeolocator.Current.IsListening)
+		return;
+	
+	///This logic will run on the background automatically on iOS, however for Android and UWP you must put logic in background services. Else if your app is killed the location updates will be killed.
     await CrossGeolocator.Current.StartListeningAsync(TimeSpan.FromSeconds(5), 10, true, new Plugin.Geolocator.Abstractions.ListenerSettings
                 {
                     ActivityType = Plugin.Geolocator.Abstractions.ActivityType.AutomotiveNavigation,
@@ -115,7 +130,9 @@ private void Current_PositionChanged(object sender, Plugin.Geolocator.Abstractio
 
 
 #### Reverse Geocoding
-UWP will require a map key: https://docs.microsoft.com/en-us/windows/uwp/maps-and-location/authentication-key
+Based on a location that is passed in, thi swill grab a list of addresses.
+
+**UWP** requires a Bing Map Key, which you can aquire by reading [this peice of documentation](https://docs.microsoft.com/en-us/windows/uwp/maps-and-location/authentication-key).
 
 ```csharp
 try
@@ -155,8 +172,7 @@ public override void OnRequestPermissionsResult(int requestCode, string[] permis
 }
 ```
 
-You MUST set your Target version to API 23+ and Compile against API 23+:
-![image](https://cloud.githubusercontent.com/assets/1676321/17110560/7279341c-5252-11e6-89be-8c10b38c0ea6.png)
+**You MUST set your Target version to API 25+ and Compile against API 25+**
 
 #### iOS:
 In iOS 8 you now have to call either RequestWhenInUseAuthorization or RequestAlwaysAuthorization on the location manager (the plugin does this automatically for you, however, need to add either the concisely named NSLocationWhenInUseUsageDescription or NSLocationAlwaysUsageDescription to your Info.plist. 
@@ -172,16 +188,11 @@ Getting location via the simulator doesn't seem to be supported, you will need t
 
 **iOS 9 Special Case: Background Updates (for background agents, not background tasks):**
 
-New in iOS 9 allowsBackgroundLocationUpdates must be set if you are running a background agent to track location. I have exposed this on the Geolocator via:
-
-```csharp
-var locator = CrossGeolocator.Current;
-locator.AllowsBackgroundUpdates = true;
-```
+New in iOS 9 allowsBackgroundLocationUpdates must be set if you are running a background agent to track location. I have exposed this on the Geolocator via a setting that is passed in when you start tracking:
 
 The presence of the UIBackgroundModes key with the location value is required for background updates; you use this property to enable and disable the behavior based on your app’s behavior.
 
-#### Windows Phone:
+#### UWP:
 
 You must set the ID_CAP_LOCATION permission.
 
