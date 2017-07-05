@@ -50,7 +50,7 @@ catch(Exception ex)
 In addition to taking in a timespan ```GetPositionAsync``` also takes in a cancelation token.
 
 #### Get Cached Location
-On iOS, Android, tvOS, and macOS you can auery the last known position really fast by getting the cached position of the system.
+On iOS, Android, tvOS, and macOS you can query the last known position really fast by getting the cached position of the system.
 **On UWP ths will always return null**, as this feature is not supported.
 
 ```csharp
