@@ -7,15 +7,19 @@ using Android.Views;
 using Android.Widget;
 using Android.OS;
 using Plugin.Permissions;
+using Xamarin.Forms.Platform.Android;
 
 namespace GeolocatorSample.Droid
 {
     [Activity(Label = "GeolocatorSample", Icon = "@drawable/icon", MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation)]
-    public class MainActivity : global::Xamarin.Forms.Platform.Android.FormsApplicationActivity
+    public class MainActivity : global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity
     {
         protected override void OnCreate(Bundle bundle)
         {
-            base.OnCreate(bundle);
+			FormsAppCompatActivity.ToolbarResource = Resource.Layout.Toolbar;
+			FormsAppCompatActivity.TabLayoutResource = Resource.Layout.Tabbar;
+
+			base.OnCreate(bundle);
 
             global::Xamarin.Forms.Forms.Init(this, bundle);
             LoadApplication(new App());
