@@ -72,7 +72,7 @@ Console.WriteLine ("Position Longitude: {0}", cached.Longitude);
 
 
 #### Checking permissions
-Before tracking begine you must check to ensure that you have location permissions on all platforms. I recommend using the [Permissions Plugin](http://github.com/jamesmontemagno/PermissionPlugin) to ensure that you have permission.
+Before tracking begins you must check to ensure that you have location permissions on all platforms. I recommend using the [Permissions Plugin](http://github.com/jamesmontemagno/PermissionPlugin) to ensure that you have permission.
 
 
 #### Start Tracking
