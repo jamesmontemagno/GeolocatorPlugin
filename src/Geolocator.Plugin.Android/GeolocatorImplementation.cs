@@ -21,6 +21,12 @@ namespace Plugin.Geolocator
 	[Preserve(AllMembers = true)]
 	public class GeolocatorImplementation : IGeolocator
 	{
+		// Mock location rejection
+		private Location lastMockLocation;
+		private int numGoodReadings;
+
+        private bool mockLocationsEnabled;
+
 		string[] allProviders;
 		LocationManager locationManager;
 
@@ -310,6 +316,75 @@ namespace Plugin.Geolocator
 			await StopListeningAsync();
 
 			PositionError?.Invoke(this, e);
+		}
+
+        /// <summary>
+        /// Checks the mock locations.
+        /// </summary>
+		private void CheckMockLocations()
+		{
+			// Starting with API level >= 18 we can (partially) rely on .isFromMockProvider()
+			// (http://developer.android.com/reference/android/location/Location.html#isFromMockProvider%28%29)
+			// For API level < 18 we have to check the Settings.Secure flag
+            if (Build.VERSION.SdkInt < BuildVersionCodes.JellyBeanMr2 &&
+                !Android.Provider.Settings.Secure.GetString(Application.Context.ContentResolver,
+                    Android.Provider.Settings.Secure.AllowMockLocation).Equals("0"))
+			{
+				mockLocationsEnabled = true;
+			}
+			else
+            {
+                mockLocationsEnabled = false;
+            }
+		}
+
+		/// <summary>
+		/// Check for Mock Location (prevent gps spoofing)
+		/// detailed blog post about this
+		/// http://www.klaasnotfound.com/2016/05/27/location-on-android-stop-mocking-me/
+		/// </summary>
+		/// <returns>The location plausible.</returns>
+		public async Task<bool> IsLocationPlausible()
+		{
+			var hasPermission = await CheckPermissions();
+
+			if (!hasPermission)
+				throw new GeolocationException(GeolocationError.Unauthorized);
+
+			Location bestLocation = null;
+			foreach (var provider in Providers)
+			{
+				var location = Manager.GetLastKnownLocation(provider);
+				if (location != null && GeolocationUtils.IsBetterLocation(location, bestLocation))
+					bestLocation = location;
+			}
+
+			if (bestLocation == null) return false;
+
+            CheckMockLocations();
+
+            bool isMock = mockLocationsEnabled || (Build.VERSION.SdkInt >= BuildVersionCodes.JellyBeanMr2 
+                                                   && bestLocation.IsFromMockProvider);
+			if (isMock)
+			{
+				lastMockLocation = bestLocation;
+				numGoodReadings = 0;
+			}
+			else
+				numGoodReadings = Math.Min(numGoodReadings + 1, 1000000); // Prevent overflow
+
+			// We only clear that incident record after a significant show of good behavior
+			if (numGoodReadings >= 20) lastMockLocation = null;
+
+			// If there's nothing to compare against, we have to trust it
+			if (lastMockLocation == null) 
+            {
+                return true;
+            }
+                
+			// And finally, if it's more than 1km away from the last known mock, we'll trust it
+			double d = bestLocation.DistanceTo(lastMockLocation);
+			return (d > 1000);
 		}
 	}
 }
