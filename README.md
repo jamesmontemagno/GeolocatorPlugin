@@ -3,7 +3,7 @@
 Simple cross platform plugin to get GPS location including heading, speed, and more. Additionally, you can track geolocation changes, reverse geocode, and more.
 
 ## Documentation
-Get started by reading through the [Geolocator Plugin documentation](https://jamesmontemagno.github.io/GeolocatoryPlugin/).
+Get started by reading through the [Geolocator Plugin documentation](https://jamesmontemagno.github.io/GeolocatorPlugin/).
 
 ### NuGet
 * Available on NuGet: [Xam.Plugin.Geolocator](http://www.nuget.org/packages/Xam.Plugin.Geolocator) [![NuGet](https://img.shields.io/nuget/v/Xam.Plugin.Geolocator.svg?label=NuGet)](https://www.nuget.org/packages/Xam.Plugin.Geolocator/)
