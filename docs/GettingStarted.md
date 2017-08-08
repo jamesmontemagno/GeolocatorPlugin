@@ -23,7 +23,7 @@ There may be instances where you install a plugin into a platform that it isn't 
 public bool IsLocationAvailable()
 {
     if(!CrossGeolocator.IsSupported)
-        return true;
+        return false;
 
     return CrossGeolocator.Current.IsGeolocationAvailable;
 }
