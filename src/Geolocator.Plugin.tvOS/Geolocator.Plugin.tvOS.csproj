@@ -54,7 +54,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Geolocator.Plugin.Abstractions\Geolocator.Plugin.Abstractions.csproj">
-      <Project>{4e7c1811-8caa-42fd-9a61-5777f611edfb}</Project>
+      <Project>{D8A817F4-A999-4BAE-8FBF-FCF86DDF9990}</Project>
       <Name>Geolocator.Plugin.Abstractions</Name>
     </ProjectReference>
   </ItemGroup>

@@ -8,11 +8,11 @@ namespace Plugin.Geolocator
     /// </summary>
     public class CrossGeolocator
     {
-        static Lazy<IGeolocator> implementation = new Lazy<IGeolocator>(() => CreateGeolocator(), System.Threading.LazyThreadSafetyMode.PublicationOnly);
+        static Lazy<IGeolocator> _implementation;
         /// <summary>
         /// Gets if the plugin is supported on the current platform.
         /// </summary>
-        public static bool IsSupported => implementation.Value == null ? false : true;
+        public static bool IsSupported => Current != null;
 
         /// <summary>
         /// Current plugin implementation to use
@@ -21,7 +21,15 @@ namespace Plugin.Geolocator
         {
             get
             {
-                var ret = implementation.Value;
+#if !NETSTANDARD1_0
+                if (_implementation == null)
+                {
+					Console.WriteLine($"CrossGeolocator Init: Using default Geolocator");
+					Init(() => new GeolocatorImplementation());
+    			}
+#endif
+
+				var ret = _implementation?.Value;
                 if (ret == null)
                 {
                     throw NotImplementedInReferenceAssembly();
@@ -30,16 +38,15 @@ namespace Plugin.Geolocator
             }
         }
 
-        static IGeolocator CreateGeolocator()
+#if !NETSTANDARD1_0
+        public static void Init(Func<IGeolocator> action)
         {
-#if NETSTANDARD1_0
-            return null;
-#else
-			return new GeolocatorImplementation();
-#endif
+            if (_implementation != null) throw new Exception("CrossGeolocator already initialized");
+    		_implementation = new Lazy<IGeolocator>(action, System.Threading.LazyThreadSafetyMode.PublicationOnly);
         }
+#endif
 
-        internal static Exception NotImplementedInReferenceAssembly() =>
+		internal static Exception NotImplementedInReferenceAssembly() =>
 			new NotImplementedException("This functionality is not implemented in the portable version of this assembly.  You should reference the NuGet package from your main application project in order to reference the platform-specific implementation.");
         
     }
