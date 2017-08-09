@@ -37,12 +37,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Geolocator.Plugin.tvOS", ".
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GeolocatorTests.tvOS", "GeolocatorTests.tvOS\GeolocatorTests.tvOS.csproj", "{F71B4971-EB5E-4552-8BD4-A61D7049939B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Geolocator.Plugin", "..\src\Geolocator.Plugin\Geolocator.Plugin.csproj", "{45F68BBE-9B86-4578-93F6-2B2C88FB03B2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Geolocator.Plugin", "..\src\Geolocator.Plugin\Geolocator.Plugin.csproj", "{45F68BBE-9B86-4578-93F6-2B2C88FB03B2}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Geolocator.Plugin.Abstractions", "..\src\Geolocator.Plugin.Abstractions\Geolocator.Plugin.Abstractions.csproj", "{D8A817F4-A999-4BAE-8FBF-FCF86DDF9990}"
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Geolocator.Plugin.Android.Fused", "..\src\Geolocator.Plugin.Android.Fused\Geolocator.Plugin.Android.Fused.csproj", "{3872AFC6-7796-4998-8818-A33314ACC1AC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Geolocator.Plugin.Abstractions", "..\src\Geolocator.Plugin.Abstractions\Geolocator.Plugin.Abstractions.csproj", "{D8A817F4-A999-4BAE-8FBF-FCF86DDF9990}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GeolocatorTests.Droid.Fused", "GeolocatorTests.Droid.Fused\GeolocatorTests.Droid.Fused.csproj", "{B3ABC73F-6E4C-4D23-A3E1-5289405F41C8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Geolocator.Plugin.Android.Fused", "..\src\Geolocator.Plugin.Android.Fused\Geolocator.Plugin.Android.Fused.csproj", "{3872AFC6-7796-4998-8818-A33314ACC1AC}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
