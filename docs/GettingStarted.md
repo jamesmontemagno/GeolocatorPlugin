@@ -48,7 +48,7 @@ By adding these permissions [Google Play will automatically filter out devices](
 [assembly: UsesFeature("android.hardware.location.network", Required = false)]
 ```
 
-This plugin leverages the [Permission Plugin](http://github.com/jamesmontemagno/PermissionPlugin), which means you must add the following code your BaseActivity or MainActivity in Xamarin.Forms:
+This plugin leverages the [Permission Plugin](http://github.com/jamesmontemagno/permissionsplugin), which means you must add the following code your BaseActivity or MainActivity in Xamarin.Forms:
 
 ```csharp
 public override void OnRequestPermissionsResult(int requestCode, string[] permissions, Permission[] grantResults)
