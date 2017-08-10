@@ -51,31 +51,47 @@ namespace Plugin.Geolocator
 			}
 		}
 
-		/// <inheritdoc/>
-		public event EventHandler<PositionErrorEventArgs> PositionError;
-		/// <inheritdoc/>
-		public event EventHandler<PositionEventArgs> PositionChanged;
-		/// <inheritdoc/>
-		public bool IsListening => listener != null;
+        /// <summary>
+        /// Position error event handler
+        /// </summary>
+        public event EventHandler<PositionErrorEventArgs> PositionError;
+
+        /// <summary>
+        /// Position changed event handler
+        /// </summary>
+        public event EventHandler<PositionEventArgs> PositionChanged;
+
+        /// <summary>
+        /// Gets if you are listening for location changes
+        /// </summary>
+        public bool IsListening => listener != null;
 
 
-		/// <inheritdoc/>
-		public double DesiredAccuracy
+        /// <summary>
+        /// Desired accuracy in meters
+        /// </summary>
+        public double DesiredAccuracy
 		{
 			get;
 			set;
 		}
 
-		/// <inheritdoc/>
-		public bool SupportsHeading => true;
+        /// <summary>
+        /// Gets if device supports heading
+        /// </summary>
+        public bool SupportsHeading => true;
 
 
-		/// <inheritdoc/>
-		public bool IsGeolocationAvailable => Providers.Length > 0;
+        /// <summary>
+        /// Gets if geolocation is available on device
+        /// </summary>
+        public bool IsGeolocationAvailable => Providers.Length > 0;
 
 
-		/// <inheritdoc/>
-		public bool IsGeolocationEnabled => Providers.Any(p => !IgnoredProviders.Contains(p) && Manager.IsProviderEnabled(p));
+        /// <summary>
+        /// Gets if geolocation is enabled on device
+        /// </summary>
+        public bool IsGeolocationEnabled => Providers.Any(p => !IgnoredProviders.Contains(p) && Manager.IsProviderEnabled(p));
 
 
 		/// <summary>
@@ -85,7 +101,7 @@ namespace Plugin.Geolocator
 		/// <returns>Best and most recent location or null if none found</returns>
 		public async Task<Position> GetLastKnownLocationAsync()
 		{
-			var hasPermission = await CheckPermissions();
+			var hasPermission = await GeolocationUtils.CheckPermissions();
 			if (!hasPermission)
 				throw new GeolocationException(GeolocationError.Unauthorized);
 
@@ -101,24 +117,7 @@ namespace Plugin.Geolocator
 
 		}
 
-		async Task<bool> CheckPermissions()
-		{
-			var status = await CrossPermissions.Current.CheckPermissionStatusAsync(Permissions.Abstractions.Permission.Location);
-			if (status != Permissions.Abstractions.PermissionStatus.Granted)
-			{
-				Console.WriteLine("Currently does not have Location permissions, requesting permissions");
-
-				var request = await CrossPermissions.Current.RequestPermissionsAsync(Permissions.Abstractions.Permission.Location);
-
-				if (request[Permissions.Abstractions.Permission.Location] != Permissions.Abstractions.PermissionStatus.Granted)
-				{
-					Console.WriteLine("Location permission denied, can not get positions async.");
-					return false;
-				}
-			}
-
-			return true;
-		}
+	
 
 
 		/// <summary>
@@ -138,7 +137,7 @@ namespace Plugin.Geolocator
 			if (!cancelToken.HasValue)
 				cancelToken = CancellationToken.None;
 
-			var hasPermission = await CheckPermissions();
+			var hasPermission = await GeolocationUtils.CheckPermissions();
 			if (!hasPermission)
 				throw new GeolocationException(GeolocationError.Unauthorized);
 
@@ -225,20 +224,13 @@ namespace Plugin.Geolocator
 			return await tcs.Task;
 		}
 
-		/// <summary>
-		/// Retrieve addresses for position.
-		/// </summary>
-		/// <param name="position">Desired position (latitude and longitude)</param>
-		/// <returns>Addresses of the desired position</returns>
-		public async Task<IEnumerable<Address>> GetAddressesForPositionAsync(Position position, string mapKey = null)
-		{
-			if (position == null)
-				return null;
-
-			var geocoder = new Geocoder(Application.Context);
-			var addressList = await geocoder.GetFromLocationAsync(position.Latitude, position.Longitude, 10);
-			return addressList.ToAddresses();
-		}
+        /// <summary>
+        /// Retrieve addresses for position.
+        /// </summary>
+        /// <param name="position">Desired position (latitude and longitude)</param>
+        /// <returns>Addresses of the desired position</returns>
+        public Task<IEnumerable<Abstractions.Address>> GetAddressesForPositionAsync(Position position, string mapKey = null) =>
+                GeolocationUtils.GetAddressesForPositionAsync(position);
 
 		/// <summary>
 		/// Start listening for changes
@@ -249,7 +241,7 @@ namespace Plugin.Geolocator
 		/// <param name="listenerSettings">Optional settings (iOS only)</param>
 		public async Task<bool> StartListeningAsync(TimeSpan minimumTime, double minimumDistance, bool includeHeading = false, ListenerSettings listenerSettings = null)
 		{
-			var hasPermission = await CheckPermissions();
+			var hasPermission = await GeolocationUtils.CheckPermissions();
 			if (!hasPermission)
 				throw new GeolocationException(GeolocationError.Unauthorized);
 
@@ -273,8 +265,12 @@ namespace Plugin.Geolocator
 
 			return true;
 		}
-		/// <inheritdoc/>
-		public Task<bool> StopListeningAsync()
+
+        /// <summary>
+        /// Stop listening
+        /// </summary>
+        /// <returns>If successfully stopped</returns>
+        public Task<bool> StopListeningAsync()
 		{
 			if (listener == null)
 				return Task.FromResult(true);
@@ -291,8 +287,7 @@ namespace Plugin.Geolocator
 		}
 
 
-		/// <inheritdoc/>
-		private void OnListenerPositionChanged(object sender, PositionEventArgs e)
+		void OnListenerPositionChanged(object sender, PositionEventArgs e)
 		{
 			if (!IsListening) // ignore anything that might come in afterwards
 				return;
@@ -304,8 +299,8 @@ namespace Plugin.Geolocator
 				PositionChanged?.Invoke(this, e);
 			}
 		}
-		/// <inheritdoc/>
-		private async void OnListenerPositionError(object sender, PositionErrorEventArgs e)
+
+        async void OnListenerPositionError(object sender, PositionErrorEventArgs e)
 		{
 			await StopListeningAsync();
 

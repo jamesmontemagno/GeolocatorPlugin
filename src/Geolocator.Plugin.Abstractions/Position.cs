@@ -208,6 +208,10 @@ namespace Plugin.Geolocator.Abstractions
         /// <summary>
         /// The app is not, or no longer, authorized to receive location data.
         /// </summary>
-        Unauthorized
+        Unauthorized,
+        /// <summary>
+        /// Unable to connect to client
+        /// </summary>
+        CanNotConnect
     }
 }

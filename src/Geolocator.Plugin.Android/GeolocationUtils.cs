@@ -4,6 +4,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Address = Plugin.Geolocator.Abstractions.Address;
+using System.Threading.Tasks;
+using Android.Content;
+using Android.App;
+using Plugin.Permissions;
+using Plugin.Permissions.Abstractions;
 
 namespace Plugin.Geolocator
 {
@@ -74,6 +79,38 @@ namespace Plugin.Geolocator
             p.Latitude = location.Latitude;
             p.Timestamp = location.GetTimestamp();
             return p;
+        }
+
+        internal static async Task<IEnumerable<Address>> GetAddressesForPositionAsync(Position position)
+        {
+            if (position == null)
+                return null;
+
+            using (var geocoder = new Geocoder(Application.Context))
+            {
+                var addressList = await geocoder.GetFromLocationAsync(position.Latitude, position.Longitude, 10);
+                return addressList.ToAddresses();
+            }
+
+        }
+
+        internal static async Task<bool> CheckPermissions()
+        {
+            var status = await CrossPermissions.Current.CheckPermissionStatusAsync(Permission.Location);
+            if (status != PermissionStatus.Granted)
+            {
+                Console.WriteLine("Currently does not have Location permissions, requesting permissions");
+
+                var request = await CrossPermissions.Current.RequestPermissionsAsync(Permission.Location);
+
+                if (request[Permission.Location] != PermissionStatus.Granted)
+                {
+                    Console.WriteLine("Location permission denied, can not get positions async.");
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         internal static IEnumerable<Address> ToAddresses(this IEnumerable<Android.Locations.Address> addresses)

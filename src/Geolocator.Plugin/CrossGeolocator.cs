@@ -1,5 +1,9 @@
 ﻿using Plugin.Geolocator.Abstractions;
 using System;
+#if !NETSTANDARD1_0
+using Android.Gms.Common;
+using Android.App;
+#endif
 
 namespace Plugin.Geolocator
 {
@@ -12,7 +16,7 @@ namespace Plugin.Geolocator
         /// <summary>
         /// Gets if the plugin is supported on the current platform.
         /// </summary>
-        public static bool IsSupported => implementation.Value == null ? false : true;
+        public static bool IsSupported => implementation.Value != null;
 
         /// <summary>
         /// Current plugin implementation to use
@@ -35,7 +39,10 @@ namespace Plugin.Geolocator
 #if NETSTANDARD1_0
             return null;
 #else
-			return new GeolocatorImplementation();
+            if (GoogleApiAvailability.Instance.IsGooglePlayServicesAvailable(Application.Context) == ConnectionResult.Success)
+                return new FusedGeolocatorImplementation();
+            
+		    return new GeolocatorImplementation();
 #endif
         }
 

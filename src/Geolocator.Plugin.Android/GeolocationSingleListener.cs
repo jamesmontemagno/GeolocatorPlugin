@@ -6,13 +6,26 @@ using System.Threading;
 using System.Collections.Generic;
 using Plugin.Geolocator.Abstractions;
 using Android.Runtime;
+using Android.Content;
 
 namespace Plugin.Geolocator
 {
     [Preserve(AllMembers = true)]
-    internal class GeolocationSingleListener
-       : Java.Lang.Object, ILocationListener
+    internal class GeolocationSingleListener : Java.Lang.Object, ILocationListener
     {
+        public GeolocationSingleListener(IntPtr handle, JniHandleOwnership transfer) : base(handle, transfer)
+        {
+        }
+
+        public GeolocationSingleListener()
+        {
+
+        }
+
+        public GeolocationSingleListener(Context context)
+        {
+
+        }
 
         readonly object locationSync = new object();
         Location bestLocation;

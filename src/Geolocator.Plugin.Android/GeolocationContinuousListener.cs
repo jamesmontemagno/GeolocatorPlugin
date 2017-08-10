@@ -6,13 +6,27 @@ using System.Collections.Generic;
 
 using Plugin.Geolocator.Abstractions;
 using Android.Runtime;
+using Android.Content;
 
 namespace Plugin.Geolocator
 {
     [Preserve(AllMembers = true)]
-    internal class GeolocationContinuousListener
-      : Java.Lang.Object, ILocationListener
+    internal class GeolocationContinuousListener : Java.Lang.Object, ILocationListener
     {
+        public GeolocationContinuousListener(IntPtr handle, JniHandleOwnership transfer) : base(handle, transfer)
+        {
+        }
+
+        public GeolocationContinuousListener()
+        {
+
+        }
+
+        public GeolocationContinuousListener(Context context)
+        {
+
+        }
+
         IList<string> providers;
         readonly HashSet<string> activeProviders = new HashSet<string>();
         readonly LocationManager manager;
