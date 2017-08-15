@@ -22,7 +22,9 @@ namespace Plugin.Geolocator
                 CountryName = address.Country,
                 Thoroughfare = address.Thoroughfare,
                 SubThoroughfare = address.SubThoroughfare,
-                Locality = address.Locality
+                Locality = address.Locality,
+                AdminArea = address.AdministrativeArea,
+                SubAdminArea = address.SubAdministrativeArea
             });
         }
         public static DateTime ToDateTime(this NSDate date)

@@ -18,8 +18,10 @@ namespace Plugin.Geolocator
                 CountryCode = address.Address.CountryCode,
                 CountryName = address.Address.Country,
                 Thoroughfare = address.Address.Street,
-                SubThoroughfare = address.Address.Region,
-                Locality = address.Address.Town
+                SubThoroughfare = address.Address.StreetNumber,
+                Locality = address.Address.Town,
+                AdminArea = address.Address.Region,
+                SubAdminArea = address.Address.District
             });
         }
     }
