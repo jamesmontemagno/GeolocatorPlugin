@@ -166,14 +166,21 @@ namespace Plugin.Geolocator
             }
 
             await Initialize();
+             var minTime = (long)minimumTime.TotalMilliseconds;
 
-            //TODO: handle timeoutse
-            await StartListeningAsync(TimeSpan.FromMilliseconds(500), 10, includeHeading);
+            var locationRequest = new LocationRequest();
+         
+            locationRequest.SetSmallestDisplacement(Convert.ToSingle(DesiredAccuracy))
+                .SetFastestInterval(minTime)
+                .SetInterval(minTime * 3)
+                .SetMaxWaitTime(minTime * 6)
+               .SetPriority(GetPriority());
 
-            var position = await NextLocationAsync();
+            var result = await LocationServices.FusedLocationApi.RequestLocationUpdatesAsync(googleApiClient, locationRequest, this);
 
-            await StopListeningAsync();
-            return position;
+            if (result.IsSuccess)
+
+            return null;
         }
 
         /// <summary>
@@ -226,12 +233,12 @@ namespace Plugin.Geolocator
             var minTime = (long)minimumTime.TotalMilliseconds;
 
             var locationRequest = new LocationRequest();
-
+         
             locationRequest.SetSmallestDisplacement(Convert.ToSingle(minimumDistance))
                 .SetFastestInterval(minTime)
                 .SetInterval(minTime * 3)
                 .SetMaxWaitTime(minTime * 6)
-                .SetPriority(GetPriority());
+               .SetPriority(GetPriority());
 
             var result = await LocationServices.FusedLocationApi.RequestLocationUpdatesAsync(googleApiClient, locationRequest, this);
 
