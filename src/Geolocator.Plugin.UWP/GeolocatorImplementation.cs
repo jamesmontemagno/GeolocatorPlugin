@@ -209,7 +209,11 @@ namespace Plugin.Geolocator
             if (queryResults?.Locations == null)
                 return positions;
             
-            positions.AddRange(queryResults.Locations.Select(p => new Position(p.Point.Position.Latitude, p.Point.Position.Longitude));
+            positions.AddRange(queryResults.Locations.Select(p => new Position
+            {
+                Latitude = p.Point.Position.Latitude,
+                Longitude = p.Point.Position.Longitude
+            }));
 
             return positions;
         }

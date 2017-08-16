@@ -1,6 +1,11 @@
 ## Changelog
 
-### [4.0]
+### 4.0.2
+- All: Add Geocoding of Address to Position Coordinates
+- Add Admin/SubAdmin area to Address
+
+
+### 4.0.1
 Breaking Changes:
 * Parameters have all been updated on several methods
 * Remove Windows Phone 8/8.1 and Windows Store 8.1
