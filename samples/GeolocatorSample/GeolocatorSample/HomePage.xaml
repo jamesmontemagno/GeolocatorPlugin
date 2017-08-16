@@ -45,9 +45,6 @@
 			</ScrollView>
 		</ContentPage>
 	<ContentPage Title="Tracking">
-		<ContentPage.Icon>
-			<OnPlatform x:TypeArguments="FileImageSource" iOS="try2"/>
-		</ContentPage.Icon>
 		<Grid>
 			<Grid.RowDefinitions>
 				<RowDefinition Height=".65*"/>
