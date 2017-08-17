@@ -1,0 +1,150 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<TabbedPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="GeolocatorTests.HomePage">
+	<ContentPage Title="Try It">
+		<ScrollView>
+			<StackLayout Spacing="10" Padding="10">
+				<Button x:Name="ButtonCached" Text="Get Last Known Location" Clicked="ButtonCached_Clicked">
+					<Button.IsVisible>
+						<OnPlatform x:TypeArguments="x:Boolean" iOS="true" WinPhone="false" Android="true"/>
+					</Button.IsVisible>
+				</Button>
+				<Label x:Name="LabelCached"/>
+				<Label Text="Location Options"/>
+
+				<StackLayout Orientation="Horizontal">
+					<Label Text="Include Heading" HorizontalOptions="Center"/>
+					<Switch x:Name="IncludeHeading" IsToggled="false" HorizontalOptions="Center"/>
+				</StackLayout>
+
+				<StackLayout Orientation="Horizontal">
+					<StackLayout>
+						<Label BindingContext="{x:Reference Timeout}" Text="{Binding Value,
+                          StringFormat='Timeout = {0:F0} Seconds'}"/>
+					</StackLayout>
+					<Stepper x:Name="Timeout" Maximum="60"  Minimum="2" Increment="1" Value="10"/>
+				</StackLayout>
+
+				<StackLayout Orientation="Horizontal">
+					<StackLayout>
+						<Label BindingContext="{x:Reference DesiredAccuracy}" Text="{Binding Value,
+                          StringFormat='Desired Accuracy = {0:F0} Meters'}"/>
+					</StackLayout>
+					<Stepper x:Name="DesiredAccuracy" Maximum="1500"  Minimum="10" Increment="10" Value="500"/>
+				</StackLayout>
+
+				<Button x:Name="ButtonGetGPS" Text="Get Current Location" Clicked="ButtonGetGPS_Clicked"/>
+				<Label x:Name="labelGPS"/>
+
+				<Button x:Name="ButtonAddressForPosition" Text="Get Address for Position" IsEnabled="False" Clicked="ButtonAddressForPosition_Clicked"/>
+				<Label x:Name="LabelAddress"/>
+
+				<Entry Placeholder="Address" x:Name="EntryAddress" Text="1 Microsoft Way, Redmond, WA 98052"/>
+				<Button x:Name="ButtonPositionForAddress" Text="Get Position for Address" Clicked="ButtonPositionForAddress_Clicked"/>
+				<Label x:Name="LabelPositionForAddress"/>
+
+			</StackLayout>
+		</ScrollView>
+	</ContentPage>
+	<ContentPage Title="Tracking">
+		<Grid>
+			<Grid.RowDefinitions>
+				<RowDefinition Height=".65*"/>
+				<RowDefinition Height=".35*"/>
+			</Grid.RowDefinitions>
+			<ScrollView Grid.Row="0">
+				<StackLayout Spacing="10" Padding="10">
+					<Button x:Name="ButtonTrack" Text="Track Movement" Clicked="ButtonTrack_Clicked"/>
+
+					<Label Text="Location Options"/>
+
+					<StackLayout Orientation="Horizontal">
+						<Label Text="Include Heading" HorizontalOptions="Center"/>
+						<Switch x:Name="TrackIncludeHeading" IsToggled="false" HorizontalOptions="Center"/>
+					</StackLayout>
+
+					<StackLayout Orientation="Horizontal">
+						<Label BindingContext="{x:Reference TrackTimeout}" Text="{Binding Value,
+                          StringFormat='Min Time Between Updates = {0:F0} Seconds'}"/>
+						<Stepper x:Name="TrackTimeout" Maximum="60"  Minimum="10" Increment="10" Value="10"/>
+					</StackLayout>
+
+					<StackLayout Orientation="Horizontal">
+						<Label BindingContext="{x:Reference TrackDistance}" Text="{Binding Value,
+                          StringFormat='Min Distance Between = {0:F0} Meters'}"/>
+						<Stepper x:Name="TrackDistance" Maximum="1000"  Minimum="0" Increment="10" Value="10"/>
+					</StackLayout>
+
+					<StackLayout>
+						<StackLayout.IsVisible>
+							<OnPlatform x:TypeArguments="x:Boolean" iOS="true" WinPhone="false" Android="false"/>
+						</StackLayout.IsVisible>
+						<StackLayout Orientation="Horizontal">
+							<Label Text="Allow Background Updates" HorizontalOptions="Center"/>
+							<Switch x:Name="AllowBackgroundUpdates" IsToggled="false" HorizontalOptions="Center"/>
+						</StackLayout>
+
+						<StackLayout Orientation="Horizontal">
+							<Label Text="Listen for Significant Changes" HorizontalOptions="Center"/>
+							<Switch x:Name="ListenForSig" IsToggled="false" HorizontalOptions="Center"/>
+						</StackLayout>
+
+						<StackLayout Orientation="Horizontal">
+							<Label Text="Pause Location Updates Auto" HorizontalOptions="Center"/>
+							<Switch x:Name="PauseLocation" IsToggled="false" HorizontalOptions="Center"/>
+						</StackLayout>
+
+						<StackLayout Orientation="Horizontal">
+							<Label Text="Defer Location Updates" HorizontalOptions="Center"/>
+							<Switch x:Name="DeferUpdates" IsToggled="false" HorizontalOptions="Center"/>
+						</StackLayout>
+
+						<StackLayout Orientation="Horizontal">
+							<Label BindingContext="{x:Reference DeferalDistance}" Text="{Binding Value,
+                          StringFormat='Deferal Distance = {0:F0} Meters'}"/>
+							<Stepper x:Name="DeferalDistance" Maximum="1000"  Minimum="0" Increment="10" Value="10"/>
+						</StackLayout>
+
+						<StackLayout Orientation="Horizontal">
+							<Label BindingContext="{x:Reference DeferalTIme}" Text="{Binding Value,
+                          StringFormat='Deferal Distance = {0:F0} Seconds'}"/>
+							<Stepper x:Name="DeferalTIme" Maximum="120"  Minimum="1" Increment="1" Value="1"/>
+						</StackLayout>
+
+						<Label Text="Activity Type"/>
+						<Picker x:Name="ActivityTypePicker">
+							<Picker.Items>
+								<x:String>Other</x:String>
+								<x:String>Automotive Navigation</x:String>
+								<x:String>Fitness</x:String>
+								<x:String>Other Navigation</x:String>
+							</Picker.Items>
+						</Picker>
+					</StackLayout>
+
+
+					<Label x:Name="labelGPSTrack"/>
+					<Label x:Name="LabelCount"/>
+				</StackLayout>
+			</ScrollView>
+			<ListView Grid.Row="1"
+                x:Name="ListViewPositions"
+                CachingStrategy="RecycleElement"
+                RowHeight="-1"
+                HasUnevenRows="true">
+				<ListView.ItemTemplate>
+					<DataTemplate>
+						<ViewCell>
+							<StackLayout Padding="10" Spacing="5">
+								<Label Text="{Binding Timestamp, StringFormat='{}{0:MM/dd/yyyy a\\t h:mm tt}'}}" FontSize="Small"/>
+								<Label Text="{Binding Latitude}" FontSize="Micro"/>
+								<Label Text="{Binding Longitude}" FontSize="Micro"/>
+							</StackLayout>
+						</ViewCell>
+					</DataTemplate>
+				</ListView.ItemTemplate>
+			</ListView>
+		</Grid>
+	</ContentPage>
+</TabbedPage>
