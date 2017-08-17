@@ -197,7 +197,7 @@ namespace Plugin.Geolocator
         /// <param name="address">Desired address</param>
         /// <param name="mapKey">Map Key required only on UWP</param>
         /// <returns>Positions of the desired address</returns>
-        public Task<IEnumerable<Position>> GetPositionsForAddressAsync(string address, string mapKey = null)
+        public async Task<IEnumerable<Position>> GetPositionsForAddressAsync(string address, string mapKey = null)
         {
             if (address == null)
                 throw new ArgumentNullException(nameof(address));
@@ -208,12 +208,13 @@ namespace Plugin.Geolocator
             var positions = new List<Position>();
             if (queryResults?.Locations == null)
                 return positions;
-            
-            positions.AddRange(queryResults.Locations.Select(p => new Position
-            {
-                Latitude = p.Point.Position.Latitude,
-                Longitude = p.Point.Position.Longitude
-            }));
+
+			foreach (var p in queryResults.Locations)
+				positions.Add(new Position
+				{
+					Latitude = p.Point.Position.Latitude,
+					Longitude = p.Point.Position.Longitude
+				});
 
             return positions;
         }
