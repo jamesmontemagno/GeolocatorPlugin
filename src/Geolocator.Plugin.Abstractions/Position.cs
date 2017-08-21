@@ -12,7 +12,15 @@ namespace Plugin.Geolocator.Abstractions
         {
         }
 
-        public Position(Position position)
+		public Position(double latitude, double longitude)
+		{
+
+			Timestamp = DateTimeOffset.UtcNow;
+			Latitude = latitude;
+			Longitude = longitude;
+		}
+
+		public Position(Position position)
         {
             if (position == null)
                 throw new ArgumentNullException("position");
@@ -27,6 +35,9 @@ namespace Plugin.Geolocator.Abstractions
             Speed = position.Speed;
         }
 
+		/// <summary>
+		/// Gets or sets the timestamp of the position
+		/// </summary>
         public DateTimeOffset Timestamp
         {
             get;
