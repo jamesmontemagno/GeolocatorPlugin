@@ -71,6 +71,14 @@ namespace Plugin.Geolocator.Abstractions
         /// <returns>Addresses of the desired position</returns>
         Task<IEnumerable<Address>> GetAddressesForPositionAsync(Position position, string mapKey = null);
 
+        /// <summary>
+        /// Retrieve positions for address.
+        /// </summary>
+        /// <param name="address">Desired address</param>
+        /// <param name="mapKey">Map Key required only on UWP</param>
+        /// <returns>Positions of the desired address</returns>
+        Task<IEnumerable<Position>> GetPositionsForAddressAsync(string address, string mapKey = null);
+
 		/// <summary>
 		/// Start listening for changes
 		/// </summary>

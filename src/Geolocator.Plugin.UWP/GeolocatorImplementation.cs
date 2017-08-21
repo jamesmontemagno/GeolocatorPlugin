@@ -158,6 +158,19 @@ namespace Plugin.Geolocator
             return tcs.Task;
         }
 
+        void SetMapKey(string mapKey)
+        {
+            if (string.IsNullOrWhiteSpace(mapKey) && string.IsNullOrWhiteSpace(MapService.ServiceToken))
+            {
+                System.Diagnostics.Debug.WriteLine("Map API key is required on UWP to reverse geolocate.");
+                throw new ArgumentNullException(nameof(mapKey));
+
+            }
+
+            if (!string.IsNullOrWhiteSpace(mapKey))
+                MapService.ServiceToken = mapKey;
+        }
+
         /// <summary>
         /// Retrieve addresses for position.
         /// </summary>
@@ -167,16 +180,9 @@ namespace Plugin.Geolocator
         {
 
             if (position == null)
-                return null;
+                throw new ArgumentNullException(nameof(position));
 
-			if(string.IsNullOrWhiteSpace(mapKey) && string.IsNullOrWhiteSpace(MapService.ServiceToken))
-			{
-				System.Diagnostics.Debug.WriteLine("Map API key is required on UWP to reverse geolocate.");
-				return null;
-			}
-
-			if (!string.IsNullOrWhiteSpace(mapKey))
-				MapService.ServiceToken = mapKey;
+            SetMapKey(mapKey);
 
             var queryResults =
                 await MapLocationFinder.FindLocationsAtAsync(
@@ -184,6 +190,34 @@ namespace Plugin.Geolocator
 
             return queryResults?.Locations.ToAddresses();
 		}
+
+        /// <summary>
+        /// Retrieve positions for address.
+        /// </summary>
+        /// <param name="address">Desired address</param>
+        /// <param name="mapKey">Map Key required only on UWP</param>
+        /// <returns>Positions of the desired address</returns>
+        public async Task<IEnumerable<Position>> GetPositionsForAddressAsync(string address, string mapKey = null)
+        {
+            if (address == null)
+                throw new ArgumentNullException(nameof(address));
+
+            SetMapKey(mapKey);
+
+            var queryResults = await MapLocationFinder.FindLocationsAsync(address, null, 10);
+            var positions = new List<Position>();
+            if (queryResults?.Locations == null)
+                return positions;
+
+			foreach (var p in queryResults.Locations)
+				positions.Add(new Position
+				{
+					Latitude = p.Point.Position.Latitude,
+					Longitude = p.Point.Position.Longitude
+				});
+
+            return positions;
+        }
 
 
 		/// <summary>

@@ -24,7 +24,7 @@ namespace Plugin.Geolocator
         bool deferringUpdates;
         readonly CLLocationManager manager;
         bool isListening;
-        Position position;
+        Position lastPosition;
         ListenerSettings listenerSettings;
 
 		/// <summary>
@@ -276,7 +276,7 @@ namespace Plugin.Geolocator
 
 
             tcs = new TaskCompletionSource<Position>();
-            if (position == null)
+            if (lastPosition == null)
             {
                 if (cancelToken != CancellationToken.None)
                 {
@@ -302,25 +302,49 @@ namespace Plugin.Geolocator
                 PositionChanged += gotPosition;
             }
             else
-                tcs.SetResult(position);
+                tcs.SetResult(lastPosition);
 
 
             return await tcs.Task;
         }
 
         /// <summary>
+        /// Retrieve positions for address.
+        /// </summary>
+        /// <param name="address">Desired address</param>
+        /// <param name="mapKey">Map Key required only on UWP</param>
+        /// <returns>Positions of the desired address</returns>
+        public async Task<IEnumerable<Position>> GetPositionsForAddressAsync(string address, string mapKey = null)
+        {
+            if (address == null)
+                throw new ArgumentNullException(nameof(address));
+
+            using (var geocoder = new CLGeocoder())
+            {
+                var positionList = await geocoder.GeocodeAddressAsync(address);
+                return positionList.Select(p => new Position
+                {
+                    Latitude = p.Location.Coordinate.Latitude,
+                    Longitude = p.Location.Coordinate.Longitude
+                });
+            }
+        }
+
+        /// <summary>
         /// Retrieve addresses for position.
         /// </summary>
-        /// <param name="location">Desired position (latitude and longitude)</param>
+        /// <param name="position">Desired position (latitude and longitude)</param>
         /// <returns>Addresses of the desired position</returns>
-        public async Task<IEnumerable<Address>> GetAddressesForPositionAsync(Position location, string mapKey = null)
+        public async Task<IEnumerable<Address>> GetAddressesForPositionAsync(Position position, string mapKey = null)
         {
-            if (location == null)
-                return null;
+            if (position == null)
+                throw new ArgumentNullException(nameof(position));
 
-            var geocoder = new CLGeocoder();
-            var addressList = await geocoder.ReverseGeocodeLocationAsync(new CLLocation(location.Latitude, location.Longitude));
-            return addressList.ToAddresses();
+            using (var geocoder = new CLGeocoder())
+            {
+                var addressList = await geocoder.ReverseGeocodeLocationAsync(new CLLocation(position.Latitude, position.Longitude));
+                return addressList.ToAddresses();
+            }
         }
 
 		/// <summary>
@@ -439,7 +463,7 @@ namespace Plugin.Geolocator
 #endif
 
             listenerSettings = null;
-            position = null;
+            lastPosition = null;
 
             return Task.FromResult(true);
         }
@@ -457,11 +481,11 @@ namespace Plugin.Geolocator
             if (e.NewHeading.TrueHeading == -1)
                 return;
 
-            var p = (position == null) ? new Position() : new Position(position);
+            var p = (lastPosition == null) ? new Position() : new Position(lastPosition);
 
             p.Heading = e.NewHeading.TrueHeading;
 
-            position = p;
+            lastPosition = p;
 
             OnPositionChanged(new PositionEventArgs(p));
         }
@@ -491,7 +515,7 @@ namespace Plugin.Geolocator
 
         void UpdatePosition(CLLocation location)
         {
-            var p = (position == null) ? new Position() : new Position(this.position);
+            var p = (lastPosition == null) ? new Position() : new Position(this.lastPosition);
 
             if (location.HorizontalAccuracy > -1)
             {
@@ -522,7 +546,7 @@ namespace Plugin.Geolocator
             }
             
 
-            position = p;
+            lastPosition = p;
 
             OnPositionChanged(new PositionEventArgs(p));
 
@@ -553,5 +577,6 @@ namespace Plugin.Geolocator
                 OnPositionError(new PositionErrorEventArgs(GeolocationError.Unauthorized));
         }
 
-     }
+       
+    }
 }

@@ -22,6 +22,8 @@ namespace Plugin.Geolocator.Abstractions
             SubLocality = address.SubLocality;
             Thoroughfare = address.Thoroughfare;
             SubThoroughfare = address.SubThoroughfare;
+            SubAdminArea = address.SubAdminArea;
+            AdminArea = address.AdminArea;
         }
 
         /// <summary>
@@ -73,5 +75,15 @@ namespace Plugin.Geolocator.Abstractions
         /// Gets or sets a city/town.
         /// </summary>
         public string Locality { get; set; }
+
+        /// <summary>
+        /// Gets or sets the administrative area name of the address, for example, "CA", or null if it is unknown
+        /// </summary>
+        public string AdminArea { get; set; }
+
+        /// <summary>
+        /// Gets or sets the sub-administrative area name of the address, for example, "Santa Clara County", or null if it is unknown
+        /// </summary>
+        public string SubAdminArea { get; set; }
     }
 }

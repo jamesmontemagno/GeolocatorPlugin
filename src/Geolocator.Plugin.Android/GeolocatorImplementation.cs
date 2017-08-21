@@ -232,6 +232,29 @@ namespace Plugin.Geolocator
         public Task<IEnumerable<Abstractions.Address>> GetAddressesForPositionAsync(Position position, string mapKey = null) =>
                 GeolocationUtils.GetAddressesForPositionAsync(position);
 
+
+        /// <summary>
+        /// Retrieve positions for address.
+        /// </summary>
+        /// <param name="address">Desired address</param>
+        /// <param name="mapKey">Map Key required only on UWP</param>
+        /// <returns>Positions of the desired address</returns>
+        public async Task<IEnumerable<Position>> GetPositionsForAddressAsync(string address, string mapKey = null)
+        {
+            if (address == null)
+                throw new ArgumentNullException(nameof(address));
+
+            using (var geocoder = new Geocoder(Application.Context))
+            {
+                var addressList = await geocoder.GetFromLocationNameAsync(address, 10);
+                return addressList.Select(p => new Position
+                {
+                    Latitude = p.Latitude,
+                    Longitude = p.Longitude
+                });
+            }
+        }
+
 		/// <summary>
 		/// Start listening for changes
 		/// </summary>

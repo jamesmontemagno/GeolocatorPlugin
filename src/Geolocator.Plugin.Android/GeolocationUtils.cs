@@ -126,7 +126,9 @@ namespace Plugin.Geolocator
                 CountryName = address.CountryName,
                 Thoroughfare = address.Thoroughfare,
                 SubThoroughfare = address.SubThoroughfare,
-                Locality = address.Locality
+                Locality = address.Locality,
+                AdminArea = address.AdminArea,
+                SubAdminArea = address.SubAdminArea
             });
         }
 
