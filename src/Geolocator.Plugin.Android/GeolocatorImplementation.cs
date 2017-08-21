@@ -239,30 +239,17 @@ namespace Plugin.Geolocator
         /// <param name="address">Desired address</param>
         /// <param name="mapKey">Map Key required only on UWP</param>
         /// <returns>Positions of the desired address</returns>
-        public async Task<IEnumerable<Position>> GetPositionsForAddressAsync(string address, string mapKey = null)
-        {
-            if (address == null)
-                throw new ArgumentNullException(nameof(address));
+        public Task<IEnumerable<Position>> GetPositionsForAddressAsync(string address, string mapKey = null) =>
+            GeolocationUtils.GetPositionsForAddressAsync(address);
 
-            using (var geocoder = new Geocoder(Application.Context))
-            {
-                var addressList = await geocoder.GetFromLocationNameAsync(address, 10);
-                return addressList.Select(p => new Position
-                {
-                    Latitude = p.Latitude,
-                    Longitude = p.Longitude
-                });
-            }
-        }
-
-		/// <summary>
-		/// Start listening for changes
-		/// </summary>
-		/// <param name="minimumTime">Time</param>
-		/// <param name="minimumDistance">Distance</param>
-		/// <param name="includeHeading">Include heading or not</param>
-		/// <param name="listenerSettings">Optional settings (iOS only)</param>
-		public async Task<bool> StartListeningAsync(TimeSpan minimumTime, double minimumDistance, bool includeHeading = false, ListenerSettings listenerSettings = null)
+        /// <summary>
+        /// Start listening for changes
+        /// </summary>
+        /// <param name="minimumTime">Time</param>
+        /// <param name="minimumDistance">Distance</param>
+        /// <param name="includeHeading">Include heading or not</param>
+        /// <param name="listenerSettings">Optional settings (iOS only)</param>
+        public async Task<bool> StartListeningAsync(TimeSpan minimumTime, double minimumDistance, bool includeHeading = false, ListenerSettings listenerSettings = null)
 		{
 			var hasPermission = await GeolocationUtils.CheckPermissions();
 			if (!hasPermission)

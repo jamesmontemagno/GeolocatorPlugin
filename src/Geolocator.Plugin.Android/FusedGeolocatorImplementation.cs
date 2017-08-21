@@ -18,8 +18,7 @@ using Android.Support.V4.App;
 
 namespace Plugin.Geolocator
 {
-    class FusedGeolocatorImplementation : Java.Lang.Object, GmsLocation.ILocationListener,
-                                        IGeolocator
+    class FusedGeolocatorImplementation : LocationCallback, IGeolocator
     {
 
         public FusedGeolocatorImplementation(IntPtr handle, JniHandleOwnership transfer) : base(handle, transfer)
@@ -31,12 +30,10 @@ namespace Plugin.Geolocator
         {
             context = Application.Context;
         }
-
-
+		
 
         readonly object positionSync = new object();
         readonly Context context;
-        GoogleApiClient googleApiClient;
         Position lastKnownPosition;
 
         /// <summary>
@@ -77,75 +74,48 @@ namespace Plugin.Geolocator
         public bool IsGeolocationAvailable
         {
             get
-            {
-                if (googleApiClient?.IsConnected == true)
-                {
-                    var avalibility = LocationServices.FusedLocationApi.GetLocationAvailability(googleApiClient);
-                    if (avalibility != null)
-                        return avalibility.IsLocationAvailable;
-                }
+			{
 
-                return IsLocationServicesEnabled();
-            }
+				var task = FusedClient.GetLocationAvailabilityAsync();
+				task.RunSynchronously();
+				return task.IsCompleted && task.Result.IsLocationAvailable;
+			}
         }
 
-        async Task Initialize()
-        {
-            if (googleApiClient?.IsConnected ?? false)
-                return;
+		FusedLocationProviderClient fusedClient;
+		FusedLocationProviderClient FusedClient => fusedClient ?? (fusedClient = LocationServices.GetFusedLocationProviderClient(Application.Context));
+		
+		public override void OnLocationResult(LocationResult result)
+		{
+			base.OnLocationResult(result);
+			if (result?.LastLocation == null)
+				return;
 
-            var builder = new GoogleApiClient.Builder(context)
-                                             .EnableAutoManage(CrossCurrentActivity.Current.Activity as FragmentActivity,
-                                                               (obj) => 
-							            {
-							                
-							            })
-                                         .AddApi(LocationServices.API)
-                                         .AddConnectionCallbacks((obj) =>
-                                           {
-                                               System.Diagnostics.Debug.WriteLine("Geolocator: Connected to google api client.");
-                                           })
-                                         .AddOnConnectionFailedListener((result) =>
-                                            {
-                                                PositionError?.Invoke(this, new PositionErrorEventArgs(GeolocationError.PositionUnavailable));
+			var position = result.LastLocation.ToPosition();
+			lock (positionSync)
+			{
+				lastKnownPosition = position;
+			}
+			PositionChanged?.Invoke(this, new PositionEventArgs(position));
+		}
+			
 
-                                                googleApiClient?.Reconnect();
-                                                System.Diagnostics.Debug.WriteLine($"Geolocator: Connection Failes: {result.ErrorMessage}");
-                                            });
-
-            googleApiClient = await builder.BuildAndConnectAsync((i) =>
-            {
-                System.Diagnostics.Debug.WriteLine($"Geolocator: Connection paused: {i}");
-
-            });
-        }
-
-        public void OnLocationChanged(Location location)
-        {
-            var position = location.ToPosition();
-            lock (positionSync)
-            {
-                lastKnownPosition = position;
-            }
-            PositionChanged?.Invoke(this, new PositionEventArgs(position));
-        }
-
-        /// <summary>
-        /// Gets position async with specified parameters
-        /// </summary>
-        /// <param name="timeout">Timeout to wait, Default Infinite</param>
-        /// <param name="token">Cancelation token</param>
-        /// <param name="includeHeading">If you would like to include heading</param>
-        /// <returns>Position</returns>
-        public async Task<Position> GetPositionAsync(TimeSpan? timeout = default(TimeSpan?), CancellationToken? token = default(CancellationToken?), bool includeHeading = false)
-        {
+		/// <summary>
+		/// Gets position async with specified parameters
+		/// </summary>
+		/// <param name="timeout">Timeout to wait, Default Infinite</param>
+		/// <param name="cancelToken">Cancelation token</param>
+		/// <param name="includeHeading">If you would like to include heading</param>
+		/// <returns>Position</returns>
+		public async Task<Position> GetPositionAsync(TimeSpan? timeout, CancellationToken? cancelToken = null, bool includeHeading = false)
+		{
             var timeoutMilliseconds = timeout.HasValue ? (int)timeout.Value.TotalMilliseconds : Timeout.Infinite;
 
             if (timeoutMilliseconds <= 0 && timeoutMilliseconds != Timeout.Infinite)
                 throw new ArgumentOutOfRangeException(nameof(timeout), "timeout must be greater than or equal to 0");
 
-            if (!token.HasValue)
-                token = CancellationToken.None;
+            if (!cancelToken.HasValue)
+				cancelToken = CancellationToken.None;
 
             // If we're already listening, just use the current listener
             if (IsListening)
@@ -164,23 +134,26 @@ namespace Plugin.Geolocator
 
                 return lastPosition;
             }
+			
+            var minTime = (long)timeout.Value.TotalMilliseconds;
+			var locationRequest = new LocationRequest();
+			
+			locationRequest.SetMaxWaitTime(minTime);
+			locationRequest.SetPriority(Priority);
 
-            await Initialize();
-             var minTime = (long)minimumTime.TotalMilliseconds;
 
-            var locationRequest = new LocationRequest();
-         
-            locationRequest.SetSmallestDisplacement(Convert.ToSingle(DesiredAccuracy))
-                .SetFastestInterval(minTime)
-                .SetInterval(minTime * 3)
-                .SetMaxWaitTime(minTime * 6)
-               .SetPriority(GetPriority());
+			
 
-            var result = await LocationServices.FusedLocationApi.RequestLocationUpdatesAsync(googleApiClient, locationRequest, this);
+			//set new request
+			await FusedClient.RequestLocationUpdatesAsync(locationRequest, this);
 
-            if (result.IsSuccess)
+			//get position
+			var position = await NextLocationAsync();
 
-            return null;
+			//remove updates
+			await FusedClient.RemoveLocationUpdatesAsync(this);
+
+			return position;
         }
 
         /// <summary>
@@ -194,12 +167,8 @@ namespace Plugin.Geolocator
             if (!hasPermission)
                 throw new GeolocationException(GeolocationError.Unauthorized);
 
-            await Initialize();
 
-            if (!(googleApiClient?.IsConnected ?? false))
-                throw new GeolocationException(GeolocationError.CanNotConnect);
-
-            var location = LocationServices.FusedLocationApi.GetLastLocation(googleApiClient);
+            var location = await FusedClient.GetLastLocationAsync();
             return location.ToPosition();
         }
 
@@ -210,6 +179,16 @@ namespace Plugin.Geolocator
         /// <returns>Addresses of the desired position</returns>
         public Task<IEnumerable<Abstractions.Address>> GetAddressesForPositionAsync(Position position, string mapKey = null) =>
                 GeolocationUtils.GetAddressesForPositionAsync(position);
+
+
+        /// <summary>
+        /// Retrieve positions for address.
+        /// </summary>
+        /// <param name="address">Desired address</param>
+        /// <param name="mapKey">Map Key required only on UWP</param>
+        /// <returns>Positions of the desired address</returns>
+        public Task<IEnumerable<Position>> GetPositionsForAddressAsync(string address, string mapKey = null) =>
+            GeolocationUtils.GetPositionsForAddressAsync(address);
 
         /// <summary>
         /// Start listening for changes
@@ -225,27 +204,51 @@ namespace Plugin.Geolocator
             if (!hasPermission)
                 throw new GeolocationException(GeolocationError.Unauthorized);
 
-            await Initialize();
-
-            if (!(googleApiClient?.IsConnected ?? false))
-                throw new GeolocationException(GeolocationError.CanNotConnect);
-
-            var minTime = (long)minimumTime.TotalMilliseconds;
-
+			
             var locationRequest = new LocationRequest();
-         
-            locationRequest.SetSmallestDisplacement(Convert.ToSingle(minimumDistance))
-                .SetFastestInterval(minTime)
-                .SetInterval(minTime * 3)
-                .SetMaxWaitTime(minTime * 6)
-               .SetPriority(GetPriority());
 
-            var result = await LocationServices.FusedLocationApi.RequestLocationUpdatesAsync(googleApiClient, locationRequest, this);
+			locationRequest.SetSmallestDisplacement((float)minimumDistance);
+			locationRequest.SetMaxWaitTime((long)minimumTime.TotalMilliseconds);
 
-            if (result.IsSuccess)
-                IsListening = true;
+			switch(listenerSettings?.Priority)
+			{
+				case ListenerPriority.HighAccuracy:
+					locationRequest.SetPriority(LocationRequest.PriorityHighAccuracy);
+					break;
+				case ListenerPriority.BalancedPowerAccuracy:
+					locationRequest.SetPriority(LocationRequest.PriorityBalancedPowerAccuracy);
+					break;
+				case ListenerPriority.LowPower:
+					locationRequest.SetPriority(LocationRequest.PriorityLowPower);
+					break;
+				case ListenerPriority.NoPower:
+					locationRequest.SetPriority(LocationRequest.PriorityNoPower);
+					break;
+				case null:
+					locationRequest.SetPriority(Priority);
+					break;
+			}
 
-            return result.IsSuccess;
+			if (listenerSettings?.Interval.HasValue ?? false)
+				locationRequest.SetInterval((int)listenerSettings.Interval.Value.TotalMilliseconds);
+
+			if (listenerSettings?.FastestInterval.HasValue ?? false)
+				locationRequest.SetFastestInterval((int)listenerSettings.FastestInterval.Value.TotalMilliseconds);
+
+			try
+			{
+				await FusedClient.RequestLocationUpdatesAsync(locationRequest, this);
+
+				IsListening = true;
+
+				return true;
+			}
+			catch (Exception ex)
+			{
+				System.Diagnostics.Debug.WriteLine($"Unable to stop location updates: {ex}");
+			}
+
+			return false;
         }
 
         /// <summary>
@@ -254,35 +257,42 @@ namespace Plugin.Geolocator
         /// <returns>If successfully stopped</returns>
         public async Task<bool> StopListeningAsync()
         {
-            if (googleApiClient == null)
-                return true;
 
-            if (googleApiClient.IsConnected)
-            {
-                await LocationServices.FusedLocationApi.RemoveLocationUpdatesAsync(googleApiClient, this);
-            }
+			if (!IsListening)
+				return true;
 
-            IsListening = false;
-            googleApiClient.StopAutoManage(CrossCurrentActivity.Current.Activity as FragmentActivity);
-            googleApiClient.Disconnect();
-            googleApiClient.Dispose();
-            googleApiClient = null;
+			try
+			{
 
-            return true;
+				await FusedClient.RemoveLocationUpdatesAsync(this);
+
+				IsListening = false;
+
+				return true;
+			}
+			catch(Exception ex)
+			{
+				System.Diagnostics.Debug.WriteLine($"Unable to stop location updates: {ex}");
+			}
+
+			return false;
         }
 
-        int GetPriority()
+        int Priority
         {
-            if (DesiredAccuracy < 50)
-                return LocationRequest.PriorityHighAccuracy;
+			get
+			{
+				if (DesiredAccuracy < 100)
+					return LocationRequest.PriorityHighAccuracy;
 
-            if (DesiredAccuracy < 100)
-                return LocationRequest.PriorityBalancedPowerAccuracy;
+				if (DesiredAccuracy < 500)
+					return LocationRequest.PriorityBalancedPowerAccuracy;
 
-            if (DesiredAccuracy < 200)
-                return LocationRequest.PriorityLowPower;
+				if (DesiredAccuracy < 20000)
+					return LocationRequest.PriorityLowPower;
 
-            return LocationRequest.PriorityNoPower;
+				return LocationRequest.PriorityNoPower;
+			}
         }
 
 
@@ -307,7 +317,7 @@ namespace Plugin.Geolocator
 
         bool IsLocationServicesEnabled()
         {
-            int locationMode = 0;
+            var locationMode = 0;
             string locationProviders;
 
             if (Build.VERSION.SdkInt >= BuildVersionCodes.Kitkat)

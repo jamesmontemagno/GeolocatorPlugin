@@ -94,6 +94,22 @@ namespace Plugin.Geolocator
 
         }
 
+		internal static async Task<IEnumerable<Position>> GetPositionsForAddressAsync(string address)
+        {
+            if (address == null)
+                throw new ArgumentNullException(nameof(address));
+
+            using (var geocoder = new Geocoder(Application.Context))
+            {
+                var addressList = await geocoder.GetFromLocationNameAsync(address, 10);
+                return addressList.Select(p => new Position
+                {
+                    Latitude = p.Latitude,
+                    Longitude = p.Longitude
+                });
+            }
+        }
+
         internal static async Task<bool> CheckPermissions()
         {
             var status = await CrossPermissions.Current.CheckPermissionStatusAsync(Permission.Location);

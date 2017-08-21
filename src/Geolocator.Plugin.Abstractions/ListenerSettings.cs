@@ -42,5 +42,50 @@ namespace Plugin.Geolocator.Abstractions
 		/// </summary>
 		/// <value>The time between updates (default:  5 minutes).</value>
 		public TimeSpan? DeferralTime { get; set; } = TimeSpan.FromMinutes(5);
+
+
+		/// <summary>
+		/// Gets or sets the fastest rate for active location updates. This interval is exact, and your
+		/// application will never receive updates faster than this value.
+		/// </summary>
+		public TimeSpan? FastestInterval { get; set; }
+
+		/// <summary>
+		/// Gets or sets the desired interval for active location updates. This interval is
+		/// inexact. You may not receive updates at all if no location sources are available, or
+		/// you may receive them slower than requested. You may also receive updates faster than
+		/// requested if other applications are requesting location at a faster interval.
+		/// </summary>
+		public TimeSpan? Interval { get; set; }
+		/// <summary>
+		/// Set the priority of the request, a strong hit to the listener for which location sources to use. For example, high accuracy is 
+		/// more likely to use GPS and balanced is more likely to use Wi-Fi and Cell positioning.
+		/// </summary>
+		public ListenerPriority Priority { get; set; } = ListenerPriority.HighAccuracy;
+
+
+	}
+
+	/// <summary>
+	/// Priority options
+	/// </summary>
+	public enum ListenerPriority
+	{
+		/// <summary>
+		/// REquest best accuracy possible with zero additional power consumption
+		/// </summary>
+		NoPower,
+		/// <summary>
+		/// Request city level accuracy. City level accuracy is considered to be about 10km accuracy. 
+		/// </summary>
+		LowPower,
+		/// <summary>
+		/// Request block level accuracy. Block level accuracy is considered to be about 100 meter accuracy. 
+		/// </summary>
+		BalancedPowerAccuracy,
+		/// <summary>
+		/// The ost accurate locations available
+		/// </summary>
+		HighAccuracy
 	}
 }

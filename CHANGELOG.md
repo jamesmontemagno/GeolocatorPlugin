@@ -1,5 +1,9 @@
 ## Changelog
 
+### 5.0.0
+- Android: Use Fused Locator from Google Play services when Available
+
+
 ### 4.0.2
 - All: Add Geocoding of Address to Position Coordinates
 - Add Admin/SubAdmin area to Address
