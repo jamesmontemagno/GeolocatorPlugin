@@ -20,6 +20,11 @@ namespace Plugin.Geolocator.Abstractions
         /// </summary>
         event EventHandler<PositionEventArgs> PositionChanged;
 
+		/// <summary>
+		/// Position updates paused event handler, only raised on iOS
+		/// </summary>
+		event EventHandler PositionUpdatesPaused;
+
         /// <summary>
         /// Desired accuracy in meters
         /// </summary>
