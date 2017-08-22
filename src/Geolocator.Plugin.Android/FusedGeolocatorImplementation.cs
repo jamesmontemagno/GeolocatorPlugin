@@ -5,27 +5,34 @@ using System.Threading.Tasks;
 using Android.Content;
 using Android.Gms.Common.Apis;
 using Android.Gms.Location;
-using Android.Locations;
 using Android.OS;
 using Android.Provider;
 using Plugin.Geolocator.Abstractions;
-using GmsLocation = Android.Gms.Location;
 using Android.Runtime;
 using Android.App;
 using Android.Gms.Extensions;
-using Plugin.CurrentActivity;
-using Android.Support.V4.App;
 
 namespace Plugin.Geolocator
 {
-    class FusedGeolocatorImplementation : LocationCallback, IGeolocator
+	/// <summary>
+	/// Implementation for Feature
+	/// </summary>
+	[Preserve(AllMembers = true)]
+	public class FusedGeolocatorImplementation : LocationCallback, IGeolocator
     {
-
+		/// <summary>
+		/// Default constructor with handles
+		/// </summary>
+		/// <param name="handle"></param>
+		/// <param name="transfer"></param>
         public FusedGeolocatorImplementation(IntPtr handle, JniHandleOwnership transfer) : base(handle, transfer)
         {
             context = Application.Context;
         }
 
+		/// <summary>
+		/// Default constructor
+		/// </summary>
         public FusedGeolocatorImplementation()
         {
             context = Application.Context;
@@ -75,7 +82,6 @@ namespace Plugin.Geolocator
         {
             get
 			{
-
 				var task = FusedClient.GetLocationAvailabilityAsync();
 				task.RunSynchronously();
 				return task.IsCompleted && task.Result.IsLocationAvailable;
@@ -84,7 +90,12 @@ namespace Plugin.Geolocator
 
 		FusedLocationProviderClient fusedClient;
 		FusedLocationProviderClient FusedClient => fusedClient ?? (fusedClient = LocationServices.GetFusedLocationProviderClient(Application.Context));
-		
+
+
+		SettingsClient settingsClient;
+		SettingsClient SettingsClient => settingsClient ?? (settingsClient = LocationServices.GetSettingsClient(Application.Context));
+
+
 		public override void OnLocationResult(LocationResult result)
 		{
 			base.OnLocationResult(result);
@@ -109,7 +120,11 @@ namespace Plugin.Geolocator
 		/// <returns>Position</returns>
 		public async Task<Position> GetPositionAsync(TimeSpan? timeout, CancellationToken? cancelToken = null, bool includeHeading = false)
 		{
-            var timeoutMilliseconds = timeout.HasValue ? (int)timeout.Value.TotalMilliseconds : Timeout.Infinite;
+			var hasPermission = await GeolocationUtils.CheckPermissions();
+			if (!hasPermission)
+				throw new GeolocationException(GeolocationError.Unauthorized);
+
+			var timeoutMilliseconds = timeout.HasValue ? (int)timeout.Value.TotalMilliseconds : Timeout.Infinite;
 
             if (timeoutMilliseconds <= 0 && timeoutMilliseconds != Timeout.Infinite)
                 throw new ArgumentOutOfRangeException(nameof(timeout), "timeout must be greater than or equal to 0");
@@ -141,20 +156,43 @@ namespace Plugin.Geolocator
 			locationRequest.SetMaxWaitTime(minTime);
 			locationRequest.SetPriority(Priority);
 
+			Position position = null;
+			try
+			{
+				//check availability
+				await CheckLocationSettings(locationRequest);
 
-			
+				//set new request
+				await FusedClient.RequestLocationUpdatesAsync(locationRequest, this);
 
-			//set new request
-			await FusedClient.RequestLocationUpdatesAsync(locationRequest, this);
+				//get position
+				position = await NextLocationAsync();
 
-			//get position
-			var position = await NextLocationAsync();
+				//remove updates
+				await FusedClient.RemoveLocationUpdatesAsync(this);
+			}
+			catch (ApiException apiEx)
+			{
+				System.Diagnostics.Debug.WriteLine($"ApiException: {apiEx.StatusCode} - {apiEx.StatusMessage}");
+				
 
-			//remove updates
-			await FusedClient.RemoveLocationUpdatesAsync(this);
+				throw new GeolocationException(GeolocationError.LocationServicesNotAvailable, apiEx);
+	}
+			catch (Exception ex)
+			{
+				System.Diagnostics.Debug.WriteLine($"Unable to start location updates: {ex}");
+				throw ex;
+			}
 
 			return position;
         }
+
+
+		Task CheckLocationSettings(LocationRequest request)
+		{
+			var settingsRequest = new LocationSettingsRequest.Builder().AddLocationRequest(request).Build();
+			return SettingsClient.CheckLocationSettingsAsync(settingsRequest);
+		}
 
         /// <summary>
         /// Gets the last known and most accurate location.
@@ -235,20 +273,30 @@ namespace Plugin.Geolocator
 			if (listenerSettings?.FastestInterval.HasValue ?? false)
 				locationRequest.SetFastestInterval((int)listenerSettings.FastestInterval.Value.TotalMilliseconds);
 
+
 			try
 			{
+				//check availability
+				await CheckLocationSettings(locationRequest);
+
 				await FusedClient.RequestLocationUpdatesAsync(locationRequest, this);
 
 				IsListening = true;
 
 				return true;
 			}
+			catch (ApiException apiEx)
+			{
+				System.Diagnostics.Debug.WriteLine($"ApiException: {apiEx.StatusCode} - {apiEx.StatusMessage}");
+				
+
+				throw new GeolocationException(GeolocationError.LocationServicesNotAvailable, apiEx);
+			}
 			catch (Exception ex)
 			{
-				System.Diagnostics.Debug.WriteLine($"Unable to stop location updates: {ex}");
+				System.Diagnostics.Debug.WriteLine($"Unable to start location updates: {ex}");
+				throw ex;
 			}
-
-			return false;
         }
 
         /// <summary>

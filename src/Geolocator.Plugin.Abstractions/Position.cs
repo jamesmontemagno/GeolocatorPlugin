@@ -223,6 +223,10 @@ namespace Plugin.Geolocator.Abstractions
         /// <summary>
         /// Unable to connect to client
         /// </summary>
-        CanNotConnect
+        CanNotConnect,
+		/// <summary>
+		/// Location services not available, check to ensure user has turned them on
+		/// </summary>
+		LocationServicesNotAvailable
     }
 }
