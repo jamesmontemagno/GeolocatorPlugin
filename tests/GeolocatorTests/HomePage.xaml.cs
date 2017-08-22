@@ -22,6 +22,19 @@ namespace GeolocatorTests
 		{
 			InitializeComponent();
 			ListViewPositions.ItemsSource = Positions;
+
+			ButtonEnabled.Clicked += ButtonEnabled_Clicked;
+			ButtonAvailable.Clicked += ButtonAvailable_Clicked;
+		}
+
+		private void ButtonAvailable_Clicked(object sender, EventArgs e)
+		{
+			DisplayAlert("Available?", "Answer is: " + CrossGeolocator.Current.IsGeolocationAvailable, "OK");
+		}
+
+		private void ButtonEnabled_Clicked(object sender, EventArgs e)
+		{
+			DisplayAlert("Enabled?", "Answer is: " + CrossGeolocator.Current.IsGeolocationEnabled, "OK");
 		}
 
 		private async void ButtonCached_Clicked(object sender, EventArgs e)

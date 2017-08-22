@@ -11,6 +11,7 @@ using Plugin.Geolocator.Abstractions;
 using Android.Runtime;
 using Android.App;
 using Android.Gms.Extensions;
+using Android.Locations;
 
 namespace Plugin.Geolocator
 {
@@ -18,18 +19,9 @@ namespace Plugin.Geolocator
 	/// Implementation for Feature
 	/// </summary>
 	[Preserve(AllMembers = true)]
-	public class FusedGeolocatorImplementation : LocationCallback, IGeolocator
+	public class FusedGeolocatorImplementation : IGeolocator
     {
-		/// <summary>
-		/// Default constructor with handles
-		/// </summary>
-		/// <param name="handle"></param>
-		/// <param name="transfer"></param>
-        public FusedGeolocatorImplementation(IntPtr handle, JniHandleOwnership transfer) : base(handle, transfer)
-        {
-            context = Application.Context;
-        }
-
+		
 		/// <summary>
 		/// Default constructor
 		/// </summary>
@@ -37,7 +29,8 @@ namespace Plugin.Geolocator
         {
             context = Application.Context;
         }
-		
+
+		MyLocationCallback listeningCallback, singleCallback;
 
         readonly object positionSync = new object();
         readonly Context context;
@@ -74,16 +67,39 @@ namespace Plugin.Geolocator
         public bool IsGeolocationEnabled => IsLocationServicesEnabled();
 
 
-       
-        /// <summary>
-        /// Gets if geolocation is enabled on device
-        /// </summary>
-        public bool IsGeolocationAvailable
+		class MyLocationCallback : LocationCallback
+		{
+			public EventHandler<Location> LocationUpdated;
+			public override void OnLocationResult(LocationResult result)
+			{
+				base.OnLocationResult(result);
+				LocationUpdated?.Invoke(this, result.LastLocation);
+			}
+		}
+
+		void OnLocationResult(object sender, Location location)
+		{
+			if (location == null)
+				return;
+
+			var position = location.ToPosition();
+			lock (positionSync)
+			{
+				lastKnownPosition = position;
+			}
+			PositionChanged?.Invoke(this, new PositionEventArgs(position));
+		}
+
+
+		/// <summary>
+		/// Gets if geolocation is enabled on device
+		/// </summary>
+		public bool IsGeolocationAvailable
         {
             get
 			{
 				var task = FusedClient.GetLocationAvailabilityAsync();
-				task.RunSynchronously();
+				task.Wait(TimeSpan.FromSeconds(10));
 				return task.IsCompleted && task.Result.IsLocationAvailable;
 			}
         }
@@ -94,22 +110,6 @@ namespace Plugin.Geolocator
 
 		SettingsClient settingsClient;
 		SettingsClient SettingsClient => settingsClient ?? (settingsClient = LocationServices.GetSettingsClient(Application.Context));
-
-
-		public override void OnLocationResult(LocationResult result)
-		{
-			base.OnLocationResult(result);
-			if (result?.LastLocation == null)
-				return;
-
-			var position = result.LastLocation.ToPosition();
-			lock (positionSync)
-			{
-				lastKnownPosition = position;
-			}
-			PositionChanged?.Invoke(this, new PositionEventArgs(position));
-		}
-			
 
 		/// <summary>
 		/// Gets position async with specified parameters
@@ -152,24 +152,50 @@ namespace Plugin.Geolocator
 			
             var minTime = (long)timeout.Value.TotalMilliseconds;
 			var locationRequest = new LocationRequest();
-			
+			locationRequest.SetInterval(minTime);
+			locationRequest.SetFastestInterval(minTime / 2);
 			locationRequest.SetMaxWaitTime(minTime);
 			locationRequest.SetPriority(Priority);
 
 			Position position = null;
 			try
 			{
+				
+
+
 				//check availability
 				await CheckLocationSettings(locationRequest);
 
+				var client = FusedClient;
+
+
+				if (singleCallback == null)
+					singleCallback = new MyLocationCallback();
+
+
+				var locationSource = new TaskCompletionSource<Position>();
+				EventHandler<Location> handler = null;
+
+				handler = (sender, location) =>
+				{
+					singleCallback.LocationUpdated -= handler;
+					locationSource.SetResult(location.ToPosition());
+				};
+
+				singleCallback.LocationUpdated += handler;
+				
+
+
 				//set new request
-				await FusedClient.RequestLocationUpdatesAsync(locationRequest, this);
+				await client.RequestLocationUpdatesAsync(locationRequest, singleCallback, Looper.MyLooper());
 
-				//get position
-				position = await NextLocationAsync();
+				position = await locationSource.Task;
 
-				//remove updates
-				await FusedClient.RemoveLocationUpdatesAsync(this);
+				client.RemoveLocationUpdatesAsync(singleCallback).ContinueWith((r)=>
+				{
+					if(r.Exception != null)
+						System.Diagnostics.Debug.WriteLine(r.Exception);
+				}, TaskScheduler.FromCurrentSynchronizationContext());
 			}
 			catch (ApiException apiEx)
 			{
@@ -177,7 +203,7 @@ namespace Plugin.Geolocator
 				
 
 				throw new GeolocationException(GeolocationError.LocationServicesNotAvailable, apiEx);
-	}
+			}
 			catch (Exception ex)
 			{
 				System.Diagnostics.Debug.WriteLine($"Unable to start location updates: {ex}");
@@ -279,7 +305,12 @@ namespace Plugin.Geolocator
 				//check availability
 				await CheckLocationSettings(locationRequest);
 
-				await FusedClient.RequestLocationUpdatesAsync(locationRequest, this);
+				if (listeningCallback == null)
+					listeningCallback = new MyLocationCallback();
+
+				listeningCallback.LocationUpdated += OnLocationResult;
+
+				await FusedClient.RequestLocationUpdatesAsync(locationRequest, listeningCallback);
 
 				IsListening = true;
 
@@ -311,8 +342,13 @@ namespace Plugin.Geolocator
 
 			try
 			{
+				FusedClient.RemoveLocationUpdatesAsync(listeningCallback).ContinueWith((r) =>
+				{
+					if (r.Exception != null)
+						System.Diagnostics.Debug.WriteLine(r.Exception);
+				}, TaskScheduler.FromCurrentSynchronizationContext());
 
-				await FusedClient.RemoveLocationUpdatesAsync(this);
+				listeningCallback.LocationUpdated -= OnLocationResult;
 
 				IsListening = false;
 
@@ -363,7 +399,28 @@ namespace Plugin.Geolocator
             return locationSource.Task;
         }
 
-        bool IsLocationServicesEnabled()
+
+		/// <summary>
+		/// Gets the next location event from the current listener.
+		/// </summary>
+		/// <returns>The location async.</returns>
+		Task<Position> NextLocationSingleAsync()
+		{
+			var locationSource = new TaskCompletionSource<Position>();
+			EventHandler<Location> handler = null;
+
+			handler = (sender, location) =>
+			{
+				singleCallback.LocationUpdated -= handler;
+				locationSource.SetResult(location.ToPosition());
+			};
+
+			singleCallback.LocationUpdated += handler;
+			
+			return locationSource.Task;
+		}
+
+		bool IsLocationServicesEnabled()
         {
             var locationMode = 0;
             string locationProviders;

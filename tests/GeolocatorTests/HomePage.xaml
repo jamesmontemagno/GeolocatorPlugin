@@ -5,6 +5,8 @@
 	<ContentPage Title="Try It">
 		<ScrollView>
 			<StackLayout Spacing="10" Padding="10">
+				<Button x:Name="ButtonAvailable" Text="Check if Available"/>
+				<Button x:Name="ButtonEnabled" Text="Check if Enabled"/>
 				<Button x:Name="ButtonCached" Text="Get Last Known Location" Clicked="ButtonCached_Clicked">
 					<Button.IsVisible>
 						<OnPlatform x:TypeArguments="x:Boolean" iOS="true" WinPhone="false" Android="true"/>
