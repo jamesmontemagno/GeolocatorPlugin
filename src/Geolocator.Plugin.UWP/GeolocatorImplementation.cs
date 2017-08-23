@@ -37,6 +37,9 @@ namespace Plugin.Geolocator
         /// </summary>
         public event EventHandler<PositionErrorEventArgs> PositionError;
 
+		/// <inheritdoc/>
+		public event EventHandler PositionUpdatesPaused;
+
         /// <summary>
         /// Gets if device supports heading
         /// </summary>

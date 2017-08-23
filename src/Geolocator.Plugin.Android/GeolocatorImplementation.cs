@@ -56,6 +56,8 @@ namespace Plugin.Geolocator
 		/// <inheritdoc/>
 		public event EventHandler<PositionEventArgs> PositionChanged;
 		/// <inheritdoc/>
+		public event EventHandler PositionUpdatesPaused;
+		/// <inheritdoc/>
 		public bool IsListening => listener != null;
 
 

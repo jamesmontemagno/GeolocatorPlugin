@@ -100,6 +100,12 @@ namespace Plugin.Geolocator
         /// </summary>
         public event EventHandler<PositionEventArgs> PositionChanged;
 
+		/// <summary>
+		/// Position updates have been paused by the OS, it's the responsability of the app to restart the tracking
+		/// see https://developer.apple.com/documentation/corelocation/cllocationmanager/1620553-pauseslocationupdatesautomatical 
+		/// </summary>
+		public event EventHandler PositionUpdatesPaused;
+
         /// <summary>
         /// Desired accuracy in meters
         /// </summary>
@@ -388,6 +394,11 @@ namespace Plugin.Geolocator
             if (UIDevice.CurrentDevice.CheckSystemVersion(6, 0))
             {
                 manager.PausesLocationUpdatesAutomatically = listenerSettings.PauseLocationUpdatesAutomatically;
+
+                if(manager.PausesLocationUpdatesAutomatically)
+                {
+                    manager.LocationUpdatesPaused += (sender, e) => PositionUpdatesPaused?.Invoke(this, e);
+                }
 
                 switch(listenerSettings.ActivityType)
                 {
