@@ -45,39 +45,37 @@ namespace Plugin.Geolocator
         /// <summary>
         /// Gets if geolocation is available on device
         /// </summary>
-        public bool IsGeolocationAvailable
+        public async Task<bool> GetIsGeolocationAvailableAsync()
         {
-            get
+           
+            var status = GetGeolocatorStatus();
+
+            while (status == PositionStatus.Initializing)
             {
-                var status = GetGeolocatorStatus();
-
-                while (status == PositionStatus.Initializing)
-                {
-                    Task.Delay(10).Wait();
-                    status = GetGeolocatorStatus();
-                }
-
-                return status != PositionStatus.NotAvailable;
+                await Task.Delay(10);
+                status = GetGeolocatorStatus();
             }
+
+            return status != PositionStatus.NotAvailable;
+            
         }
 
         /// <summary>
         /// Gets if geolocation is enabled on device
         /// </summary>
-        public bool IsGeolocationEnabled
+        public async Task<bool> GetIsGeolocationEnabledAsync()
         {
-            get
+            
+            var status = GetGeolocatorStatus();
+
+            while (status == PositionStatus.Initializing)
             {
-                var status = GetGeolocatorStatus();
-
-                while (status == PositionStatus.Initializing)
-                {
-                    Task.Delay(10).Wait();
-                    status = GetGeolocatorStatus();
-                }
-
-                return status != PositionStatus.Disabled && status != PositionStatus.NotAvailable;
+                await Task.Delay(10);
+                status = GetGeolocatorStatus();
             }
+
+            return status != PositionStatus.Disabled && status != PositionStatus.NotAvailable;
+            
         }
 
         /// <summary>
@@ -104,7 +102,7 @@ namespace Plugin.Geolocator
         /// This is usually cached and best to display first before querying for full position.
         /// </summary>
         /// <returns>Best and most recent location or null if none found</returns>
-        public Task<Position> GetLastKnownLocationAsync() =>
+        public Task<Position> GetLastKnownPositionAsync() =>
 			Task.Factory.StartNew<Position>(()=> { return null; });
 
 

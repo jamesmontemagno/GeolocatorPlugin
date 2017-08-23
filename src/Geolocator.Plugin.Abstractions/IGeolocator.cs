@@ -35,24 +35,22 @@ namespace Plugin.Geolocator.Abstractions
         /// </summary>
         bool SupportsHeading { get; }
 
-        /// <summary>
-        /// Gets if geolocation is available on device
-        /// </summary>
-        bool IsGeolocationAvailable { get; }
+		/// <summary>
+		/// Gets if geolocation is available on device
+		/// </summary>
+		Task<bool> GetIsGeolocationAvailableAsync();
 
-        /// <summary>
-        /// Gets if geolocation is enabled on device
-        /// </summary>
-        bool IsGeolocationEnabled { get; }
-
-
+		/// <summary>
+		/// Gets if geolocation is enabled on device
+		/// </summary>
+		Task<bool> GetIsGeolocationEnabledAsync();
 
         /// <summary>
         /// Gets the last known and most accurate location.
         /// This is usually cached and best to display first before querying for full position.
         /// </summary>
         /// <returns>Best and most recent location or null if none found</returns>
-        Task<Position> GetLastKnownLocationAsync();
+        Task<Position> GetLastKnownPositionAsync();
 
         /// <summary>
         /// Gets position async with specified parameters

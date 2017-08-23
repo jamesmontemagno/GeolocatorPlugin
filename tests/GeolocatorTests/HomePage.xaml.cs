@@ -27,14 +27,14 @@ namespace GeolocatorTests
 			ButtonAvailable.Clicked += ButtonAvailable_Clicked;
 		}
 
-		private void ButtonAvailable_Clicked(object sender, EventArgs e)
+		private async  void ButtonAvailable_Clicked(object sender, EventArgs e)
 		{
-			DisplayAlert("Available?", "Answer is: " + CrossGeolocator.Current.IsGeolocationAvailable, "OK");
+			DisplayAlert("Available?", "Answer is: " + await CrossGeolocator.Current.GetIsGeolocationAvailableAsync(), "OK");
 		}
 
-		private void ButtonEnabled_Clicked(object sender, EventArgs e)
+		private async void ButtonEnabled_Clicked(object sender, EventArgs e)
 		{
-			DisplayAlert("Enabled?", "Answer is: " + CrossGeolocator.Current.IsGeolocationEnabled, "OK");
+			DisplayAlert("Enabled?", "Answer is: " + await CrossGeolocator.Current.GetIsGeolocationEnabledAsync(), "OK");
 		}
 
 		private async void ButtonCached_Clicked(object sender, EventArgs e)
@@ -51,7 +51,7 @@ namespace GeolocatorTests
 				locator.DesiredAccuracy = DesiredAccuracy.Value;
 				LabelCached.Text = "Getting gps...";
 
-				var position = await locator.GetLastKnownLocationAsync();
+				var position = await locator.GetLastKnownPositionAsync();
 
 				if (position == null)
 				{
@@ -169,7 +169,7 @@ namespace GeolocatorTests
 				}
 
 				var a = address.FirstOrDefault();
-				LabelAddress.Text = $"Address: Thoroughfare = {a.Thoroughfare}\nLocality = {a.Locality}\nCountryCode = {a.CountryCode}\nCountryName = {a.CountryName}\nPostalCode = {a.PostalCode}\nSubLocality = {a.SubLocality}\nSubThoroughfare = {a.SubThoroughfare}";
+				LabelAddress.Text = $"Address: Thoroughfare = {a.Thoroughfare}\nLocality = {a.Locality}\nCountryCode = {a.CountryCode}\nCountryName = {a.CountryName}\nPostalCode = {a.PostalCode}\nSubLocality = {a.SubLocality}\nSubThoroughfare = {a.SubThoroughfare}\nAdminArea = {a.AdminArea}\nSubAdminArea = {a.SubAdminArea}";
 
 			}
 			catch (Exception ex)

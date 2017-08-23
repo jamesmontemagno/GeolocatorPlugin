@@ -9,6 +9,8 @@ using Android.Content;
 using Android.App;
 using Plugin.Permissions;
 using Plugin.Permissions.Abstractions;
+using Android.OS;
+using Android.Provider;
 
 namespace Plugin.Geolocator
 {
@@ -17,7 +19,34 @@ namespace Plugin.Geolocator
 
         static int TwoMinutes = 120000;
 
-        internal static bool IsBetterLocation(Location location, Location bestLocation)
+		internal static bool IsLocationServicesEnabled(Context context)
+		{
+			var locationMode = 0;
+			string locationProviders;
+
+			if (Build.VERSION.SdkInt >= BuildVersionCodes.Kitkat)
+			{
+				try
+				{
+					locationMode = Settings.Secure.GetInt(
+						context.ContentResolver,
+						Settings.Secure.LocationMode);
+				}
+				catch
+				{
+					return false;
+				}
+
+				return locationMode != (int)SecurityLocationMode.Off;
+			}
+
+			locationProviders = Settings.Secure.GetString(
+				context.ContentResolver,
+				Settings.Secure.LocationProvidersAllowed);
+
+			return !string.IsNullOrEmpty(locationProviders);
+		}
+		internal static bool IsBetterLocation(Location location, Location bestLocation)
         {
 
             if (bestLocation == null)

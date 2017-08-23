@@ -85,13 +85,13 @@ namespace Plugin.Geolocator
         /// <summary>
         /// Gets if geolocation is available on device
         /// </summary>
-        public bool IsGeolocationAvailable => Providers.Length > 0;
+        public Task<bool> GetIsGeolocationAvailableAsync() => Task.FromResult(Providers.Length > 0);
 
 
         /// <summary>
         /// Gets if geolocation is enabled on device
         /// </summary>
-        public bool IsGeolocationEnabled => Providers.Any(p => !IgnoredProviders.Contains(p) && Manager.IsProviderEnabled(p));
+        public Task<bool> GetIsGeolocationEnabledAsync() => Task.FromResult(Providers.Any(p => !IgnoredProviders.Contains(p) && Manager.IsProviderEnabled(p)));
 
 
 		/// <summary>
@@ -99,7 +99,7 @@ namespace Plugin.Geolocator
 		/// This is usually cached and best to display first before querying for full position.
 		/// </summary>
 		/// <returns>Best and most recent location or null if none found</returns>
-		public async Task<Position> GetLastKnownLocationAsync()
+		public async Task<Position> GetLastKnownPositionAsync()
 		{
 			var hasPermission = await GeolocationUtils.CheckPermissions();
 			if (!hasPermission)

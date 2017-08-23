@@ -130,20 +130,13 @@ namespace Plugin.Geolocator
         /// <summary>
         /// Gets if geolocation is available on device
         /// </summary>
-        public bool IsGeolocationAvailable => true; //all iOS devices support Geolocation
+        public Task<bool> GetIsGeolocationAvailableAsync() => Task.FromResult(true); //all iOS devices support Geolocation
 
         /// <summary>
         /// Gets if geolocation is enabled on device
         /// </summary>
-        public bool IsGeolocationEnabled
-        {
-            get
-            {         
-                var status = CLLocationManager.Status;
-                return CLLocationManager.LocationServicesEnabled;
-            }
-        }
-
+        public Task<bool> GetIsGeolocationEnabledAsync() => Task.FromResult(CLLocationManager.LocationServicesEnabled);
+            
         void RequestAuthorization()
         {
 #if __IOS__
@@ -178,7 +171,7 @@ namespace Plugin.Geolocator
         /// This is usually cached and best to display first before querying for full position.
         /// </summary>
         /// <returns>Best and most recent location or null if none found</returns>
-        public async Task<Position> GetLastKnownLocationAsync()
+        public async Task<Position> GetLastKnownPositionAsync()
         {
 #if __IOS__
 			var hasPermission = await CheckPermissions();

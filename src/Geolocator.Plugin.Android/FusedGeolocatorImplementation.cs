@@ -64,7 +64,7 @@ namespace Plugin.Geolocator
         /// <summary>
         /// Gets if geolocation is available on device
         /// </summary>
-        public bool IsGeolocationEnabled => IsLocationServicesEnabled();
+        public Task<bool> GetIsGeolocationEnabledAsync() => Task.FromResult(GeolocationUtils.IsLocationServicesEnabled(context));
 
 
 		class MyLocationCallback : LocationCallback
@@ -94,14 +94,10 @@ namespace Plugin.Geolocator
 		/// <summary>
 		/// Gets if geolocation is enabled on device
 		/// </summary>
-		public bool IsGeolocationAvailable
-        {
-            get
-			{
-				var task = FusedClient.GetLocationAvailabilityAsync();
-				task.Wait(TimeSpan.FromSeconds(10));
-				return task.IsCompleted && task.Result.IsLocationAvailable;
-			}
+		public async Task<bool> GetIsGeolocationAvailableAsync()
+		{
+			var status = await FusedClient.GetLocationAvailabilityAsync();
+			return status.IsLocationAvailable;
         }
 
 		FusedLocationProviderClient fusedClient;
@@ -225,7 +221,7 @@ namespace Plugin.Geolocator
         /// This is usually cached and best to display first before querying for full position.
         /// </summary>
         /// <returns>Best and most recent location or null if none found</returns>
-        public async Task<Position> GetLastKnownLocationAsync()
+        public async Task<Position> GetLastKnownPositionAsync()
         {
             var hasPermission = await GeolocationUtils.CheckPermissions();
             if (!hasPermission)
@@ -419,34 +415,6 @@ namespace Plugin.Geolocator
 			
 			return locationSource.Task;
 		}
-
-		bool IsLocationServicesEnabled()
-        {
-            var locationMode = 0;
-            string locationProviders;
-
-            if (Build.VERSION.SdkInt >= BuildVersionCodes.Kitkat)
-            {
-                try
-                {
-                    locationMode = Settings.Secure.GetInt(
-                        context.ContentResolver,
-                        Settings.Secure.LocationMode);
-                }
-                catch
-                {
-                    return false;
-                }
-
-                return locationMode != (int)SecurityLocationMode.Off;
-            }
-
-            locationProviders = Settings.Secure.GetString(
-                context.ContentResolver,
-                Settings.Secure.LocationProvidersAllowed);
-
-            return !string.IsNullOrEmpty(locationProviders);
-        }
-
+		
     }
 }
