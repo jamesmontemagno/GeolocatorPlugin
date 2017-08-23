@@ -397,7 +397,7 @@ namespace Plugin.Geolocator
 
                 if(manager.PausesLocationUpdatesAutomatically)
                 {
-                    manager.LocationUpdatesPaused += (sender, e) => PositionUpdatesPaused?.Invoke(this, e);
+                    manager.LocationUpdatesPaused += OnLocationUpdatesPaused; 
                 }
 
                 switch(listenerSettings.ActivityType)
@@ -447,6 +447,11 @@ namespace Plugin.Geolocator
             return true;
         }
 
+        void OnLocationUpdatesPaused(object sender, EventArgs e)
+        {
+            PositionUpdatesPaused?.Invoke(this, e);
+        }
+
         /// <summary>
         /// Stop listening
         /// </summary>
@@ -459,6 +464,11 @@ namespace Plugin.Geolocator
 #if __IOS__
             if (CLLocationManager.HeadingAvailable)
                 manager.StopUpdatingHeading();
+
+			if (manager.PausesLocationUpdatesAutomatically)
+			{
+				manager.LocationUpdatesPaused -= OnLocationUpdatesPaused;
+			}
 
             // it looks like deferred location updates can apply to the standard service or significant change service. disallow deferral in either case.
             if ((listenerSettings?.DeferLocationUpdates ?? false) && CanDeferLocationUpdate)
