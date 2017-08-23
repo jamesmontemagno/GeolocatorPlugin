@@ -51,12 +51,9 @@ namespace Plugin.Geolocator.Abstractions
 		public TimeSpan? FastestInterval { get; set; }
 
 		/// <summary>
-		/// Gets or sets the desired interval for active location updates. This interval is
-		/// inexact. You may not receive updates at all if no location sources are available, or
-		/// you may receive them slower than requested. You may also receive updates faster than
-		/// requested if other applications are requesting location at a faster interval.
+		/// Gets or sets the maximum amount of time to wait between updates
 		/// </summary>
-		public TimeSpan? Interval { get; set; }
+		public TimeSpan? MaxWaitTime { get; set; }
 		/// <summary>
 		/// Set the priority of the request, a strong hit to the listener for which location sources to use. For example, high accuracy is 
 		/// more likely to use GPS and balanced is more likely to use Wi-Fi and Cell positioning.

@@ -268,7 +268,7 @@ namespace Plugin.Geolocator
             var locationRequest = new LocationRequest();
 
 			locationRequest.SetSmallestDisplacement((float)minimumDistance);
-			locationRequest.SetMaxWaitTime((long)minimumTime.TotalMilliseconds);
+			locationRequest.SetInterval((long)minimumTime.TotalMilliseconds);
 
 			switch(listenerSettings?.Priority)
 			{
@@ -289,8 +289,8 @@ namespace Plugin.Geolocator
 					break;
 			}
 
-			if (listenerSettings?.Interval.HasValue ?? false)
-				locationRequest.SetInterval((int)listenerSettings.Interval.Value.TotalMilliseconds);
+			if (listenerSettings?.MaxWaitTime.HasValue ?? false)
+				locationRequest.SetMaxWaitTime((int)listenerSettings.MaxWaitTime.Value.TotalMilliseconds);
 
 			if (listenerSettings?.FastestInterval.HasValue ?? false)
 				locationRequest.SetFastestInterval((int)listenerSettings.FastestInterval.Value.TotalMilliseconds);
