@@ -75,6 +75,8 @@ async Task StartListening()
 }
 ```
 
+For iOS if ```PauseLocationUpdatesAutomatically``` is set to ```true``` then the corresponding event, ```PositionUpdatesPaused```, will be raised when the OS is pausing the background tracking. It's the responsability of the app to restart the tracking, see [Apple documentation](https://developer.apple.com/documentation/corelocation/cllocationmanager/1620553-pauseslocationupdatesautomatical)
+
 ### Android
 For this you will want to integrate a foreground service that subscribes to location changes and the user interface binds to. Please read through the [Xamarin.Android Services documentation](https://developer.xamarin.com/guides/android/application_fundamentals/services/)
 
