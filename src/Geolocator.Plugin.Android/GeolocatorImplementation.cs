@@ -40,6 +40,8 @@ namespace Plugin.Geolocator
 		string[] Providers => Manager.GetProviders(enabledOnly: false).ToArray();
 		string[] IgnoredProviders => new string[] { LocationManager.PassiveProvider, "local_database" };
 
+		public static string[] ProvidersToIgnoreWhileListening { get; set; } = new string[] { };
+
 		LocationManager Manager
 		{
 			get
@@ -242,6 +244,8 @@ namespace Plugin.Geolocator
         public Task<IEnumerable<Position>> GetPositionsForAddressAsync(string address, string mapKey = null) =>
             GeolocationUtils.GetPositionsForAddressAsync(address);
 
+
+		List<string> listeningProviders { get; } = new List<string>();
         /// <summary>
         /// Start listening for changes
         /// </summary>
@@ -270,8 +274,17 @@ namespace Plugin.Geolocator
 			listener.PositionError += OnListenerPositionError;
 
 			var looper = Looper.MyLooper() ?? Looper.MainLooper;
+			listeningProviders.Clear();
 			for (var i = 0; i < providers.Length; ++i)
-				Manager.RequestLocationUpdates(providers[i], (long)minTimeMilliseconds, (float)minimumDistance, listener, looper);
+			{
+				var provider = providers[i];
+
+				if (ProvidersToIgnoreWhileListening?.Contains(provider) ?? false)
+					continue;
+
+				listeningProviders.Add(provider);
+				Manager.RequestLocationUpdates(provider, (long)minTimeMilliseconds, (float)minimumDistance, listener, looper);
+			}
 
 			return true;
 		}
@@ -285,11 +298,11 @@ namespace Plugin.Geolocator
 			if (listener == null)
 				return Task.FromResult(true);
 
-			var providers = Providers;
+			var providers = listeningProviders;
 			listener.PositionChanged -= OnListenerPositionChanged;
 			listener.PositionError -= OnListenerPositionError;
 
-			for (var i = 0; i < providers.Length; ++i)
+			for (var i = 0; i < listeningProviders.Count; ++i)
 				Manager.RemoveUpdates(listener);
 
 			listener = null;
