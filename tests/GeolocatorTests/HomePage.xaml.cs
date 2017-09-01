@@ -241,8 +241,10 @@ namespace GeolocatorTests
 
 		void CrossGeolocator_Current_PositionError(object sender, PositionErrorEventArgs e)
 		{
-
-			labelGPSTrack.Text = "Location error: " + e.Error.ToString();
+			Device.BeginInvokeOnMainThread(() =>
+			{
+				labelGPSTrack.Text = "Location error: " + e.Error.ToString();
+			});
 		}
 
 		void CrossGeolocator_Current_PositionChanged(object sender, PositionEventArgs e)

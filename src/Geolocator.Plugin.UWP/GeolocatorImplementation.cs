@@ -48,9 +48,8 @@ namespace Plugin.Geolocator
         public async Task<bool> GetIsGeolocationAvailableAsync()
         {
            
-            var status = GetGeolocatorStatus();
-
-            while (status == PositionStatus.Initializing)
+			var status = GetGeolocatorStatus();
+			while (status == PositionStatus.Initializing)
             {
                 await Task.Delay(10);
                 status = GetGeolocatorStatus();
@@ -64,9 +63,9 @@ namespace Plugin.Geolocator
         /// Gets if geolocation is enabled on device
         /// </summary>
         public async Task<bool> GetIsGeolocationEnabledAsync()
-        {
-            
-            var status = GetGeolocatorStatus();
+		{ 
+
+			var status = GetGeolocatorStatus();
 
             while (status == PositionStatus.Initializing)
             {
@@ -97,13 +96,22 @@ namespace Plugin.Geolocator
         public bool IsListening => isListening;
 
 
-        /// <summary>
-        /// Gets the last known and most accurate location.
-        /// This is usually cached and best to display first before querying for full position.
-        /// </summary>
-        /// <returns>Best and most recent location or null if none found</returns>
-        public Task<Position> GetLastKnownPositionAsync() =>
+		/// <summary>
+		/// Gets the last known and most accurate location.
+		/// This is usually cached and best to display first before querying for full position.
+		/// </summary>
+		/// <returns>Best and most recent location or null if none found</returns>
+		public Task<Position> GetLastKnownPositionAsync() =>
 			Task.Factory.StartNew<Position>(()=> { return null; });
+
+		private static async Task<GeolocationAccessStatus> CheckPermissionAsync(bool throwEx = true)
+		{
+			var status = await Windows.Devices.Geolocation.Geolocator.RequestAccessAsync();
+			if (throwEx && status != GeolocationAccessStatus.Allowed)
+				throw new GeolocationException(GeolocationError.Unauthorized);
+
+			return status;
+		}
 
 
 		/// <summary>
@@ -113,7 +121,7 @@ namespace Plugin.Geolocator
 		/// <param name="cancelToken">Cancelation token</param>
 		/// <param name="includeHeading">If you would like to include heading</param>
 		/// <returns>Position</returns>
-		public Task<Position> GetPositionAsync(TimeSpan? timeout, CancellationToken? cancelToken = null, bool includeHeading = false)
+		public async Task<Position> GetPositionAsync(TimeSpan? timeout, CancellationToken? cancelToken = null, bool includeHeading = false)
         {
             var timeoutMilliseconds = timeout.HasValue ? (int)timeout.Value.TotalMilliseconds : Timeout.Infite;
 
@@ -123,7 +131,10 @@ namespace Plugin.Geolocator
             if (!cancelToken.HasValue)
                 cancelToken = CancellationToken.None;
 
-            var pos = GetGeolocator().GetGeopositionAsync(TimeSpan.FromTicks(0), TimeSpan.FromDays(365));
+			await CheckPermissionAsync();
+
+			var geolocator = GetGeolocator();
+            var pos = geolocator.GetGeopositionAsync(TimeSpan.FromTicks(0), TimeSpan.FromDays(365));
             cancelToken.Value.Register(o => ((IAsyncOperation<Geoposition>)o).Cancel(), pos);
 
 
@@ -153,7 +164,7 @@ namespace Plugin.Geolocator
                 }
             };
 
-            return tcs.Task;
+            return await tcs.Task;
         }
 
         void SetMapKey(string mapKey)
@@ -310,7 +321,9 @@ namespace Plugin.Geolocator
             if (loc == null)
             {
                 locator = new Windows.Devices.Geolocation.Geolocator();
-                locator.StatusChanged += OnLocatorStatusChanged;
+				
+
+				locator.StatusChanged += OnLocatorStatusChanged;
                 loc = locator;
             }
 
