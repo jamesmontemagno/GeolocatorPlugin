@@ -6,7 +6,6 @@ using Android.Content;
 using Android.Gms.Common.Apis;
 using Android.Gms.Location;
 using Android.OS;
-using Android.Provider;
 using Plugin.Geolocator.Abstractions;
 using Android.Runtime;
 using Android.App;
@@ -152,13 +151,9 @@ namespace Plugin.Geolocator
 			locationRequest.SetFastestInterval(minTime / 2);
 			locationRequest.SetMaxWaitTime(minTime);
 			locationRequest.SetPriority(Priority);
-
-			Position position = null;
+			
 			try
 			{
-				
-
-
 				//check availability
 				await CheckLocationSettings(locationRequest);
 
@@ -172,31 +167,51 @@ namespace Plugin.Geolocator
 				var locationSource = new TaskCompletionSource<Position>();
 				EventHandler<Location> handler = null;
 
+				bool removed = false;
+				void Cleanup()
+				{
+					if (removed)
+						return;
+
+					removed = true;
+					singleCallback.LocationUpdated -= handler;
+					client.RemoveLocationUpdatesAsync(singleCallback).ContinueWith((r) =>
+					{
+						if (r.Exception != null)
+							System.Diagnostics.Debug.WriteLine(r.Exception);
+					}, TaskScheduler.FromCurrentSynchronizationContext());
+				}
+
 				handler = (sender, location) =>
 				{
-					singleCallback.LocationUpdated -= handler;
+					Cleanup();
 					locationSource.SetResult(location.ToPosition());
 				};
 
 				singleCallback.LocationUpdated += handler;
+
 				
 
+				if (timeoutMilliseconds != Timeout.Infinite)
+				{
+					var ct = new CancellationTokenSource(timeoutMilliseconds);
+
+					ct.Token.Register(() =>
+					{
+						Cleanup();
+						locationSource.TrySetCanceled();
+					}, true);
+				}
 
 				//set new request
 				await client.RequestLocationUpdatesAsync(locationRequest, singleCallback, Looper.MyLooper());
 
-				position = await locationSource.Task;
-
-				client.RemoveLocationUpdatesAsync(singleCallback).ContinueWith((r)=>
-				{
-					if(r.Exception != null)
-						System.Diagnostics.Debug.WriteLine(r.Exception);
-				}, TaskScheduler.FromCurrentSynchronizationContext());
+				return await locationSource.Task;
 			}
 			catch (ApiException apiEx)
 			{
 				System.Diagnostics.Debug.WriteLine($"ApiException: {apiEx.StatusCode} - {apiEx.StatusMessage}");
-				
+
 
 				throw new GeolocationException(GeolocationError.LocationServicesNotAvailable, apiEx);
 			}
@@ -206,7 +221,7 @@ namespace Plugin.Geolocator
 				throw ex;
 			}
 
-			return position;
+			return null;
         }
 
 

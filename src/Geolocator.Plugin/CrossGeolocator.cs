@@ -1,6 +1,6 @@
 ﻿using Plugin.Geolocator.Abstractions;
 using System;
-#if !NETSTANDARD1_0
+#if __ANDROID__
 using Android.Gms.Common;
 using Android.App;
 #endif
@@ -34,19 +34,25 @@ namespace Plugin.Geolocator
             }
         }
 
-        static IGeolocator CreateGeolocator()
+#if __ANDROID__
+		public static bool UseFusedLocationProvider { get; set; } = true;
+#endif
+
+		static IGeolocator CreateGeolocator()
         {
 #if NETSTANDARD1_0
             return null;
-#else
-            if (GoogleApiAvailability.Instance.IsGooglePlayServicesAvailable(Application.Context) == ConnectionResult.Success)
+#elif __ANDROID__
+            if (UseFusedLocationProvider && GoogleApiAvailability.Instance.IsGooglePlayServicesAvailable(Application.Context) == ConnectionResult.Success)
                 return new FusedGeolocatorImplementation();
-            
+
+		    return new GeolocatorImplementation();
+#else
 		    return new GeolocatorImplementation();
 #endif
-        }
+		}
 
-        internal static Exception NotImplementedInReferenceAssembly() =>
+		internal static Exception NotImplementedInReferenceAssembly() =>
 			new NotImplementedException("This functionality is not implemented in the portable version of this assembly.  You should reference the NuGet package from your main application project in order to reference the platform-specific implementation.");
         
     }
