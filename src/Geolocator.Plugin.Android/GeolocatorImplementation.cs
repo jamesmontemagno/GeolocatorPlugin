@@ -25,6 +25,7 @@ namespace Plugin.Geolocator
 		LocationManager locationManager;
 
 		GeolocationContinuousListener listener;
+		GeolocationSingleListener singleListener = null;
 
 		readonly object positionSync = new object();
 		Position lastPosition;
@@ -147,13 +148,21 @@ namespace Plugin.Geolocator
 			if (!IsListening)
 			{
 				var providers = Providers;
-				GeolocationSingleListener singleListener = null;
-				singleListener = new GeolocationSingleListener(Manager, (float)DesiredAccuracy, timeoutMilliseconds, providers.Where(Manager.IsProviderEnabled),
-					finishedCallback: () =>
+
+				void SingleListnerFinishCallback()
 				{
-					for (int i = 0; i < providers.Length; ++i)
+					if (singleListener == null)
+						return;
+
+					for (var i = 0; i < providers.Length; ++i)
 						Manager.RemoveUpdates(singleListener);
-				});
+				}
+
+				singleListener = new GeolocationSingleListener(Manager, 
+					(float)DesiredAccuracy,
+					timeoutMilliseconds, 
+					providers.Where(Manager.IsProviderEnabled),
+					finishedCallback: SingleListnerFinishCallback);
 
 				if (cancelToken != CancellationToken.None)
 				{
