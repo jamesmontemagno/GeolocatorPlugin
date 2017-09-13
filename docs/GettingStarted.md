@@ -17,7 +17,7 @@ public bool IsLocationAvailable()
 }
 ```
 
-There may be instances where you install a plugin into a platform that it isn't supported yet. This means you will have access to the interface, but no implementation exists. You can make a simple check before calling any API to see if it is supported on the platform where the code is running. This if nifty when unit testing:
+There may be instances where you install a plugin into a platform that it isn't supported yet. This means you will have access to the interface, but no implementation exists. You can make a simple check before calling any API to see if it is supported on the platform where the code is running. This is nifty when unit testing:
 
 ```csharp
 public bool IsLocationAvailable()
@@ -32,7 +32,7 @@ public bool IsLocationAvailable()
 
 
 ## Permissions & Additional Setup Considerations
-Before making any calls to the geolocator that requires the permissions you should consider checking that the user has granted proper permission. The geolocator plugin will attempt to ask for permission, but it is not guaranteed.
+Before making any calls to the geolocator that requires the permissions, you should consider checking that the user has granted proper permission. The geolocator plugin will attempt to ask for permission, but it is not guaranteed.
 
 ### Android:
 You MUST set your Target version to API 25+ and Compile against API 25+
@@ -48,7 +48,7 @@ By adding these permissions [Google Play will automatically filter out devices](
 [assembly: UsesFeature("android.hardware.location.network", Required = false)]
 ```
 
-This plugin leverages the [Permission Plugin](http://github.com/jamesmontemagno/permissionsplugin), which means you must add the following code your BaseActivity or MainActivity in Xamarin.Forms:
+This plugin leverages the [Permission Plugin](http://github.com/jamesmontemagno/permissionsplugin), which means you must add the following code to your BaseActivity or MainActivity in Xamarin.Forms:
 
 ```csharp
 public override void OnRequestPermissionsResult(int requestCode, string[] permissions, Permission[] grantResults)
@@ -58,7 +58,7 @@ public override void OnRequestPermissionsResult(int requestCode, string[] permis
 ```
 
 ### iOS/tvOS/macOS
-Your app is required to have keys in your Info.plist for `NSLocationWhenInUseUsageDescription` or `NSLocationAlwaysUsageDescription` in order to access the device's locationy. You can read more here: https://blog.xamarin.com/new-ios-10-privacy-permission-settings/
+Your app is required to have keys in your Info.plist for `NSLocationWhenInUseUsageDescription` or `NSLocationAlwaysUsageDescription` in order to access the device's location. You can read more here: https://blog.xamarin.com/new-ios-10-privacy-permission-settings/
 
 Such as:
 ```xml
