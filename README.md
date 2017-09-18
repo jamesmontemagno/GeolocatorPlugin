@@ -24,6 +24,10 @@ Version 4.X
 |macOS|All|
 |tvOS|10+|
 
+**Feature requests**
+Vote for a feature requests at
+https://github.com/jamesmontemagno/GeolocatorPlugin/labels/feature
+
 ### Created By: [@JamesMontemagno](http://twitter.com/jamesmontemagno)
 * Twitter: [@JamesMontemagno](http://twitter.com/jamesmontemagno)
 * Blog: [MotzCod.es](http://motzcod.es), [Micro Blog](http://motz.micro.blog)
