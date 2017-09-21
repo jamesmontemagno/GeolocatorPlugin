@@ -16,14 +16,14 @@ bool IsListening { get; }
 
 Once you are ready to start listening for changes you can call the `StartListeningAsync`. After this, you can add event handlers to get the changes.
 ```csharp
-  /// <summary>
-  /// Start listening for changes
-  /// </summary>
-  /// <param name="minimumTime">Minimum time between updates</param>
-  /// <param name="minimumDistance">Distance distance in meters between updates</param>
-  /// <param name="includeHeading">Include heading or not</param>
-  /// <param name="listenerSettings">Optional settings (iOS only)</param>
-  Task<bool> StartListeningAsync(TimeSpan minimumTime, double minimumDistance, bool includeHeading = false, ListenerSettings listenerSettings = null);
+/// <summary>
+/// Start listening for changes
+/// </summary>
+/// <param name="minimumTime">Minimum time between updates</param>
+/// <param name="minimumDistance">Distance distance in meters between updates</param>
+/// <param name="includeHeading">Include heading or not</param>
+/// <param name="listenerSettings">Optional settings (iOS only)</param>
+Task<bool> StartListeningAsync(TimeSpan minimumTime, double minimumDistance, bool includeHeading = false, ListenerSettings listenerSettings = null);
 ```
 
 `ListenerSettings` are details more in the [Background Updates](BackgroundUpdates.md) documentation.
@@ -66,8 +66,8 @@ Example:
 ```csharp
 async Task StartListening()
 {
-	if(CrossGeolocator.Current.IsListening)
-		return;
+  if(CrossGeolocator.Current.IsListening)
+    return;
 	
   await CrossGeolocator.Current.StartListeningAsync(TimeSpan.FromSeconds(5), 10, true);
 
@@ -98,10 +98,10 @@ private void PositionError(object sender, PositionErrorEventArgs e)
 
 async Task StopListening()
 {
-	if(!CrossGeolocator.Current.IsListening)
-		return;
+  if(!CrossGeolocator.Current.IsListening)
+    return;
 	
-  await CrossGeolocator.Current.StopListening);
+  await CrossGeolocator.Current.StopListening();
 
   CrossGeolocator.Current.PositionChanged -= PositionChanged;
   CrossGeolocator.Current.PositionError -= PositionError;
