@@ -71,6 +71,12 @@ If you want the dialogs to be translated you must support the specific languages
 
 If you need location updates in the background be sure to read the [Background Updates](BackgroundUpdates.md) section for additional setup.
 
+If targeting iOS 11 you may need to add: **NSLocationAlwaysAndWhenInUseUsageDescription**
+```xml
+<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+<string>This app needs access location when open and in the background.</string>
+```
+
 ### UWP
 You must set the `ID_CAP_LOCATION` permission.
 
