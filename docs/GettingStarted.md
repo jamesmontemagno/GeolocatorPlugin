@@ -11,21 +11,21 @@
 It is drop dead simple to gain access to the Geolocator APIs in any project. All you need to do is get a reference to the current instance of IGeolocator via `CrossGeolocator.Current`:
 
 ```csharp
-public bool IsLocationAvailable()
+public Task<bool> IsLocationAvailable()
 {
-    return CrossGeolocator.Current.IsGeolocationAvailable;
+    return CrossGeolocator.Current.GetIsGeolocationAvailableAsync();
 }
 ```
 
 There may be instances where you install a plugin into a platform that it isn't supported yet. This means you will have access to the interface, but no implementation exists. You can make a simple check before calling any API to see if it is supported on the platform where the code is running. This is nifty when unit testing:
 
 ```csharp
-public bool IsLocationAvailable()
+public Task<bool> IsLocationAvailable()
 {
     if(!CrossGeolocator.IsSupported)
         return false;
 
-    return CrossGeolocator.Current.IsGeolocationAvailable;
+    return CrossGeolocator.Current.GetIsGeolocationAvailableAsync();
 }
 ```
 
@@ -35,7 +35,7 @@ public bool IsLocationAvailable()
 Before making any calls to the geolocator that requires the permissions, you should consider checking that the user has granted proper permission. The geolocator plugin will attempt to ask for permission, but it is not guaranteed.
 
 ### Android:
-You MUST set your Target version to API 25+ and Compile against API 25+
+You MUST set your Target version to API 25+ and Compile against API 25+. This must be set manually and can NOT be set to automatic use the compile. You must pick it from the list.
 
 #### Permissions:
 The `ACCESS_COARSE_LOCATION` and `ACCESS_FINE_LOCATION` permissions are required and are automatically added to your Android Manifest when you compile. No need to add them manually!
