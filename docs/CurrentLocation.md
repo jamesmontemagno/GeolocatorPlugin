@@ -24,7 +24,7 @@ Determines if the device and OS supports returning the heading of the location.
 /// <summary>
 /// Gets if geolocation is available on device
 /// </summary>
-bool IsGeolocationAvailable { get; }
+Task<bool> GetIsGeolocationAvailableAsync();
 ```
 Determines if geolocation is actually available and capable of getting geolocation.
 
@@ -32,7 +32,7 @@ Determines if geolocation is actually available and capable of getting geolocati
 /// <summary>
 /// Gets if geolocation is enabled on device
 /// </summary>
-bool IsGeolocationEnabled { get; }
+Task<bool> GetIsGeolocationEnabledAsync();
 ```
 If the geolocation mechanisms of the device are actually enabled.
 
@@ -79,8 +79,10 @@ public async Task<Position> GetCurrentLocation()
       //got a cahched position, so let's use it.
       return;
     }
-
-    if(!locator.IsGeolocationAvailable || !locator.IsGeolocationEnabled)
+	
+		var available = await locator.GetIsGeolocationAvailableAsync();
+		var enabled = await locator.GetIsGeolocationEnabled();
+    if(!available || !enabled)
     {
       //not available or enabled
       return;
