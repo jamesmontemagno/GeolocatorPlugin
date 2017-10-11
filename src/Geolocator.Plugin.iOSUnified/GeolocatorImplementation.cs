@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Threading;
 using CoreLocation;
 using Foundation;
+using Plugin.Geolocator.Abstractions;
 #if __IOS__ || __TVOS__
 using UIKit;
 #elif __MACOS__
@@ -12,7 +13,7 @@ using AppKit;
 #endif
 
 #if __IOS__
-using Plugin.Geolocator.Abstractions;
+using Plugin.Permissions.Abstractions;
 #endif
 
 namespace Plugin.Geolocator
