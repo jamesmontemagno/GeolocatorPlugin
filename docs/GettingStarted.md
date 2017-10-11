@@ -62,14 +62,33 @@ Your app is required to have keys in your Info.plist for `NSLocationWhenInUseUsa
 
 Such as:
 ```xml
-<key>NSLocationAlwaysUsageDescription</key>
-<string>This app needs access always to location.</string>
 <key>NSLocationWhenInUseUsageDescription</key>
 <string>This app needs access location when open.</string>
 ```
+or
+```xml
+<key>NSLocationAlwaysUsageDescription</key>
+<string>This app needs access always to location.</string>
+```
+
+**iOS 11 Introduces importanct chagnes when using Always Usage**
+
+You are required to include the NSLocationWhenInUseUsageDescription and NSLocationAlwaysAndWhenInUseUsageDescription keys in your app's Info.plist file. (If your app supports iOS 10 and earlier, the NSLocationAlwaysUsageDescription key is also required.) If those keys are not present, authorization requests fail immediately.
+
+```xml
+<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+<string>This app needs access location when open and in the background.</string>
+```
+
+If you are targeting devices running older than iOS 8 you must add **NSLocationUsageDescription**.
+
 If you want the dialogs to be translated you must support the specific languages in your app. Read the [iOS Localization Guide](https://developer.xamarin.com/guides/ios/advanced_topics/localization_and_internationalization/)
 
 If you need location updates in the background be sure to read the [Background Updates](BackgroundUpdates.md) section for additional setup.
+
+
+
+Please see the [Apple Documentation](https://devstreaming-cdn.apple.com/videos/wwdc/2017/713tkef4yl0sv3k/713/713_whats_new_in_location_technologies.pdf)
 
 ### UWP
 You must set the `ID_CAP_LOCATION` permission.

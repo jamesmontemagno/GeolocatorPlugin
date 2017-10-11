@@ -41,9 +41,9 @@ namespace GeolocatorTests
 		{
 			try
 			{
-				var hasPermission = await Utils.CheckPermissions(Permission.Location);
-				if (!hasPermission)
-					return;
+				//var hasPermission = await Utils.CheckPermissions(Permission.Location);
+				//if (!hasPermission)
+				//	return;
 
 				ButtonCached.IsEnabled = false;
 
@@ -80,9 +80,9 @@ namespace GeolocatorTests
 		{
 			try
 			{
-				var hasPermission = await Utils.CheckPermissions(Permission.Location);
-				if (!hasPermission)
-					return;
+				//var hasPermission = await Utils.CheckPermissions(Permission.Location);
+				//if (!hasPermission)
+				//	return;
 
 				ButtonGetGPS.IsEnabled = false;
 
@@ -119,9 +119,9 @@ namespace GeolocatorTests
 			try
 			{
 
-				var hasPermission = await Utils.CheckPermissions(Permission.Location);
-				if (!hasPermission)
-					return;
+				//var hasPermission = await Utils.CheckPermissions(Permission.Location);
+				//if (!hasPermission)
+				//	return;
 
 				ButtonPositionForAddress.IsEnabled = false;
 
@@ -186,9 +186,9 @@ namespace GeolocatorTests
 		{
 			try
 			{
-				var hasPermission = await Utils.CheckPermissions(Permission.Location);
-				if (!hasPermission)
-					return;
+				//var hasPermission = await Utils.CheckPermissions(Permission.Location);
+				//if (!hasPermission)
+				//	return;
 
 				if (tracking)
 				{

@@ -5,9 +5,12 @@
 
 
 ### 4.0.2
-- All: Add Geocoding of Address to Position Coordinates
-- Add Admin/SubAdmin area to Address
-- Add Distance Utilities into Abstractions
+* All: Add Geocoding of Address to Position Coordinates
+* Add Admin/SubAdmin area to Address
+* Add Distance Utilities into Abstractions
+* Android/iOS Enhance permissions support
+* Android: Add ability to filter out providers
+
 
 
 ### 4.0.1
