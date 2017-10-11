@@ -11,8 +11,10 @@ using UIKit;
 #elif __MACOS__
 using AppKit;
 #endif
-using Plugin.Geolocator.Abstractions;
 
+#if __IOS__
+using Plugin.Geolocator.Abstractions;
+#endif
 
 namespace Plugin.Geolocator
 {
