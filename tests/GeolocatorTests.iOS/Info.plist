@@ -41,8 +41,12 @@
 	<key>XSAppIconAssets</key>
 	<string>Resources/Images.xcassets/AppIcons.appiconset</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Gimme Location!</string>
+	<string>Need location when in use</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Always and when in use!</string>
+	<key>NSLocationUsageDescription</key>
+	<string>Older devices need location.</string>
 	<key>NSLocationAlwaysUsageDescription</key>
-	<string>Gimme Location!</string>
+	<string>Can I haz location always?</string>
 </dict>
 </plist>

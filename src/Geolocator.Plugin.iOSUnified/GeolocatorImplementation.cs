@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Threading;
 using CoreLocation;
 using Foundation;
+using Plugin.Permissions.Abstractions;
 #if __IOS__ || __TVOS__
 using UIKit;
 #elif __MACOS__
@@ -70,16 +71,16 @@ namespace Plugin.Geolocator
 #endif
 
 #if __IOS__
-		async Task<bool> CheckPermissions()
+		async Task<bool> CheckPermissions(Permission permission)
 		{
-			var status = await Permissions.CrossPermissions.Current.CheckPermissionStatusAsync(Permissions.Abstractions.Permission.Location);
-			if (status != Permissions.Abstractions.PermissionStatus.Granted)
+			var status = await Permissions.CrossPermissions.Current.CheckPermissionStatusAsync(permission);
+			if (status != PermissionStatus.Granted)
 			{
 				Console.WriteLine("Currently does not have Location permissions, requesting permissions");
 
-				var request = await Permissions.CrossPermissions.Current.RequestPermissionsAsync(Permissions.Abstractions.Permission.Location);
+				var request = await Permissions.CrossPermissions.Current.RequestPermissionsAsync(permission);
 
-				if (request[Permissions.Abstractions.Permission.Location] != Permissions.Abstractions.PermissionStatus.Granted)
+				if (request[permission] != PermissionStatus.Granted)
 				{
 					Console.WriteLine("Location permission denied, can not get positions async.");
 					return false;
@@ -181,7 +182,7 @@ namespace Plugin.Geolocator
         public async Task<Position> GetLastKnownLocationAsync()
         {
 #if __IOS__
-			var hasPermission = await CheckPermissions();
+			var hasPermission = await CheckPermissions(Permission.LocationWhenInUse);
 			if (!hasPermission)
 				throw new GeolocationException(GeolocationError.Unauthorized);
 #endif
@@ -224,7 +225,7 @@ namespace Plugin.Geolocator
 		public async Task<Position> GetPositionAsync(TimeSpan? timeout, CancellationToken? cancelToken = null, bool includeHeading = false)
         {
 #if __IOS__
-			var hasPermission = await CheckPermissions();
+			var hasPermission = await CheckPermissions(Permission.LocationWhenInUse);
 			if (!hasPermission)
 				throw new GeolocationException(GeolocationError.Unauthorized);
 #endif
@@ -357,7 +358,7 @@ namespace Plugin.Geolocator
 		public async Task<bool> StartListeningAsync(TimeSpan minimumTime, double minimumDistance, bool includeHeading = false, ListenerSettings listenerSettings = null)
         {
 #if __IOS__
-			var hasPermission = await CheckPermissions();
+			var hasPermission = await CheckPermissions(Permission.LocationAlways);
 			if (!hasPermission)
 				throw new GeolocationException(GeolocationError.Unauthorized);
 #endif
