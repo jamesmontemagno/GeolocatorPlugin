@@ -18,7 +18,7 @@ Version 4.X
 
 |Platform|Version|
 | ------------------- |  :------------------: |
-|Xamarin.iOS|iOS 7+|
+|Xamarin.iOS|iOS 8+|
 |Xamarin.Android|API 14+|
 |Windows 10 UWP|10+|
 |macOS|All|

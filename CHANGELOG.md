@@ -4,7 +4,7 @@
 - Android: Use Fused Locator from Google Play services when Available
 
 
-### 4.0.2
+### 4.1.0
 * All: Add Geocoding of Address to Position Coordinates
 * Add Admin/SubAdmin area to Address
 * Add Distance Utilities into Abstractions
