@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using System.Threading;
 using CoreLocation;
 using Foundation;
-using Plugin.Permissions.Abstractions;
 #if __IOS__ || __TVOS__
 using UIKit;
 #elif __MACOS__
@@ -227,7 +226,19 @@ namespace Plugin.Geolocator
 		public async Task<Position> GetPositionAsync(TimeSpan? timeout, CancellationToken? cancelToken = null, bool includeHeading = false)
         {
 #if __IOS__
-			var hasPermission = await CheckPermissions(Permission.LocationWhenInUse);
+			//if older then just check location, else check if background mode exists
+			var permission = Permission.Location;
+			// permit background updates if background location mode is enabled
+			if (UIDevice.CurrentDevice.CheckSystemVersion(9, 0))
+			{
+				var backgroundModes = NSBundle.MainBundle.InfoDictionary[(NSString)"UIBackgroundModes"] as NSArray;
+				var allowBack = backgroundModes != null && (backgroundModes.Contains((NSString)"Location") || backgroundModes.Contains((NSString)"location"));
+				if (allowBack)
+					permission = Permission.LocationAlways;
+				else
+					permission = Permission.LocationWhenInUse;
+			}
+			var hasPermission = await CheckPermissions(permission);
 			if (!hasPermission)
 				throw new GeolocationException(GeolocationError.Unauthorized);
 #endif
