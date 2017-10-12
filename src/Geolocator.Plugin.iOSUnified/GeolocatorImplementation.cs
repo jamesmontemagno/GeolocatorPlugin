@@ -230,14 +230,9 @@ namespace Plugin.Geolocator
 			//if older then just check location, else check if background mode exists
 			var permission = Permission.Location;
 			// permit background updates if background location mode is enabled
-			if (UIDevice.CurrentDevice.CheckSystemVersion(9, 0))
+			if (UIDevice.CurrentDevice.CheckSystemVersion(8, 0))
 			{
-				var backgroundModes = NSBundle.MainBundle.InfoDictionary[(NSString)"UIBackgroundModes"] as NSArray;
-				var allowBack = backgroundModes != null && (backgroundModes.Contains((NSString)"Location") || backgroundModes.Contains((NSString)"location"));
-				if (allowBack)
-					permission = Permission.LocationAlways;
-				else
-					permission = Permission.LocationWhenInUse;
+				permission = Permission.LocationWhenInUse;
 			}
 			var hasPermission = await CheckPermissions(permission);
 			if (!hasPermission)
