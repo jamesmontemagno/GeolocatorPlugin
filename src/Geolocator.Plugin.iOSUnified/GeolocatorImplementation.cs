@@ -227,13 +227,7 @@ namespace Plugin.Geolocator
 		public async Task<Position> GetPositionAsync(TimeSpan? timeout, CancellationToken? cancelToken = null, bool includeHeading = false)
         {
 #if __IOS__
-			//if older then just check location, else check if background mode exists
 			var permission = Permission.Location;
-			// permit background updates if background location mode is enabled
-			if (UIDevice.CurrentDevice.CheckSystemVersion(8, 0))
-			{
-				permission = Permission.LocationWhenInUse;
-			}
 			var hasPermission = await CheckPermissions(permission);
 			if (!hasPermission)
 				throw new GeolocationException(GeolocationError.Unauthorized);
@@ -257,8 +251,15 @@ namespace Plugin.Geolocator
                 if (UIDevice.CurrentDevice.CheckSystemVersion(9, 0))
                 {
                     var backgroundModes = NSBundle.MainBundle.InfoDictionary[(NSString)"UIBackgroundModes"] as NSArray;
-                    m.AllowsBackgroundLocationUpdates = backgroundModes != null && (backgroundModes.Contains((NSString)"Location") || backgroundModes.Contains((NSString)"location"));
-                }
+					var allow = backgroundModes != null && (backgroundModes.Contains((NSString)"Location") || backgroundModes.Contains((NSString)"location"));
+
+					if(allow)
+					{
+						allow = await CheckPermissions(Permission.LocationAlways);
+						
+					}
+					m.AllowsBackgroundLocationUpdates = allow;
+				}
 
                 // always prevent location update pausing since we're only listening for a single update.
                 if (UIDevice.CurrentDevice.CheckSystemVersion(6, 0))
@@ -366,11 +367,7 @@ namespace Plugin.Geolocator
 		/// <param name="listenerSettings">Optional settings (iOS only)</param>
 		public async Task<bool> StartListeningAsync(TimeSpan minimumTime, double minimumDistance, bool includeHeading = false, ListenerSettings listenerSettings = null)
         {
-#if __IOS__
-			var hasPermission = await CheckPermissions(Permission.LocationAlways);
-			if (!hasPermission)
-				throw new GeolocationException(GeolocationError.Unauthorized);
-#endif
+
 
 			if (minimumDistance < 0)
                 throw new ArgumentOutOfRangeException(nameof(minimumDistance));
@@ -384,8 +381,26 @@ namespace Plugin.Geolocator
             if (listenerSettings == null)
 				listenerSettings = new ListenerSettings();
 
-            // keep reference to settings so that we can stop the listener appropriately later
-            this.listenerSettings = listenerSettings;
+#if __IOS__
+
+			var permission = Permission.Location;
+			if (UIDevice.CurrentDevice.CheckSystemVersion(9, 0))
+			{
+				if (listenerSettings.AllowBackgroundUpdates)
+					permission = Permission.LocationAlways;
+				else
+					permission = Permission.LocationWhenInUse;
+			}
+
+			var hasPermission = await CheckPermissions(permission);
+
+
+			if (!hasPermission)
+				throw new GeolocationException(GeolocationError.Unauthorized);
+#endif
+
+			// keep reference to settings so that we can stop the listener appropriately later
+			this.listenerSettings = listenerSettings;
 
             var desiredAccuracy = DesiredAccuracy;
 
