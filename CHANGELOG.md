@@ -1,4 +1,6 @@
 ## Changelog
+### 4.1.2
+* Optimize iOS permission handling for iOS 11
 
 ### 4.1.0
 * All: Add Geocoding of Address to Position Coordinates
