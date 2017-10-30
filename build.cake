@@ -1,7 +1,11 @@
+#addin nuget:?package=Cake.Android.SdkManager
+
 var TARGET = Argument ("target", Argument ("t", "Default"));
 var VERSION = EnvironmentVariable ("APPVEYOR_BUILD_VERSION") ?? Argument("version", "0.0.9999");
 var CONFIG = Argument("configuration", EnvironmentVariable ("CONFIGURATION") ?? "Release");
 var SLN = "./src/Geolocator.sln";
+
+var ANDROID_HOME = EnvironmentVariable ("ANDROID_HOME") ?? Argument ("android_home", "");
 
 Task("Libraries").Does(()=>
 {
@@ -13,6 +17,7 @@ Task("Libraries").Does(()=>
 });
 
 Task ("NuGet")
+	.IsDependentOn ("AndroidSDK")
 	.IsDependentOn ("Libraries")
 	.Does (() =>
 {
@@ -24,6 +29,26 @@ Task ("NuGet")
 		OutputDirectory = "./Build/nuget/",
 		BasePath = "./"
 	});	
+});
+
+Task ("AndroidSDK")
+	.Does (() =>
+{
+	Information ("ANDROID_HOME: {0}", ANDROID_HOME);
+
+	var androidSdkSettings = new AndroidSdkManagerToolSettings { 
+		SdkRoot = ANDROID_HOME,
+		SkipVersionCheck = true
+	};
+
+	try { AcceptLicenses (androidSdkSettings); } catch { }
+
+	AndroidSdkManagerInstall (new [] { 
+			"platforms;android-15",
+			"platforms;android-23",
+			"platforms;android-25",
+			"platforms;android-26"
+		}, androidSdkSettings);
 });
 
 //Build the component, which build samples, nugets, and libraries
