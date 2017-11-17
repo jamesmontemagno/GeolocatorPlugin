@@ -1,4 +1,6 @@
 ## Changelog
+### 4.1.2
+* Optimize iOS permission handling for iOS 11
 
 ### 5.0.0
 - Android: Use Fused Locator from Google Play services when Available
