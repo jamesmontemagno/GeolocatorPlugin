@@ -345,11 +345,11 @@ namespace Plugin.Geolocator
         /// Stop listening
         /// </summary>
         /// <returns>If successfully stopped</returns>
-        public async Task<bool> StopListeningAsync()
+        public Task<bool> StopListeningAsync()
         {
 
 			if (!IsListening)
-				return true;
+				return Task.FromResult(true);
 
 			try
 			{
@@ -363,14 +363,14 @@ namespace Plugin.Geolocator
 
 				IsListening = false;
 
-				return true;
+				return Task.FromResult(true);
 			}
 			catch(Exception ex)
 			{
 				System.Diagnostics.Debug.WriteLine($"Unable to stop location updates: {ex}");
 			}
 
-			return false;
+			return Task.FromResult(false);
         }
 
         int Priority
