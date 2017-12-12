@@ -40,6 +40,17 @@ namespace Plugin.Geolocator
 
 		string[] Providers => Manager.GetProviders(enabledOnly: false).ToArray();
 		string[] IgnoredProviders => new string[] { LocationManager.PassiveProvider, "local_database" };
+		
+		/// <summary>
+		/// Gets or sets the location manager providers to ignore when getting postition
+		/// </summary>
+		public static string[] ProvidersToUse { get; set; } = new string[] { };
+
+		/// <summary>
+		/// Gets or sets the location manager providers to ignore when doing
+		/// continuous listening
+		/// </summary>
+		public static string[] ProvidersToUseWhileListening { get; set; } = new string[] { };
 
 		LocationManager Manager
 		{
@@ -76,7 +87,8 @@ namespace Plugin.Geolocator
 
 
 		/// <inheritdoc/>
-		public bool IsGeolocationEnabled => Providers.Any(p => !IgnoredProviders.Contains(p) && Manager.IsProviderEnabled(p));
+		public bool IsGeolocationEnabled => Providers.Any(p => !IgnoredProviders.Contains(p) &&
+			Manager.IsProviderEnabled(p));
 
 
 		/// <summary>
@@ -147,14 +159,28 @@ namespace Plugin.Geolocator
 
 			if (!IsListening)
 			{
-				var providers = Providers;
+				var providers = new List<string>();
+				if (ProvidersToUse == null || ProvidersToUse.Length == 0)
+					providers.AddRange(Providers);
+				else
+				{
+					//only add providers requested.
+					foreach (var provider in Providers)
+					{
+						if (ProvidersToUse?.Contains(provider) ?? false)
+							continue;
+
+						providers.Add(provider);
+					}
+				}
+				
 
 				void SingleListnerFinishCallback()
 				{
 					if (singleListener == null)
 						return;
 
-					for (var i = 0; i < providers.Length; ++i)
+					for (var i = 0; i < providers.Count; ++i)
 						Manager.RemoveUpdates(singleListener);
 				}
 
@@ -170,7 +196,7 @@ namespace Plugin.Geolocator
 					{
 						singleListener.Cancel();
 
-						for (var i = 0; i < providers.Length; ++i)
+						for (var i = 0; i < providers.Count; ++i)
 							Manager.RemoveUpdates(singleListener);
 					}, true);
 				}
@@ -179,8 +205,8 @@ namespace Plugin.Geolocator
 				{
 					var looper = Looper.MyLooper() ?? Looper.MainLooper;
 
-					int enabled = 0;
-					for (int i = 0; i < providers.Length; ++i)
+					var enabled = 0;
+					for (var i = 0; i < providers.Count; ++i)
 					{
 						if (Manager.IsProviderEnabled(providers[i]))
 							enabled++;
@@ -190,7 +216,7 @@ namespace Plugin.Geolocator
 
 					if (enabled == 0)
 					{
-						for (int i = 0; i < providers.Length; ++i)
+						for (int i = 0; i < providers.Count; ++i)
 							Manager.RemoveUpdates(singleListener);
 
 						tcs.SetException(new GeolocationException(GeolocationError.PositionUnavailable));
@@ -273,6 +299,7 @@ namespace Plugin.Geolocator
             }
         }
 
+		List<string> listeningProviders { get; } = new List<string>();
 		/// <summary>
 		/// Start listening for changes
 		/// </summary>
@@ -301,9 +328,24 @@ namespace Plugin.Geolocator
 			listener.PositionError += OnListenerPositionError;
 
 			var looper = Looper.MyLooper() ?? Looper.MainLooper;
+			listeningProviders.Clear();
 			for (var i = 0; i < providers.Length; ++i)
-				Manager.RequestLocationUpdates(providers[i], (long)minTimeMilliseconds, (float)minimumDistance, listener, looper);
+			{
+				var provider = providers[i];
+				
+				//we have limited set of providers
+				if(ProvidersToUseWhileListening != null &&
+					ProvidersToUseWhileListening.Length > 0)
+				{
+					//the provider is not in the list, so don't use it.
+					if (!ProvidersToUseWhileListening.Contains(provider))
+						continue;
+				}
+				
 
+				listeningProviders.Add(provider);
+				Manager.RequestLocationUpdates(provider, (long)minTimeMilliseconds, (float)minimumDistance, listener, looper);
+			}
 			return true;
 		}
 		/// <inheritdoc/>
@@ -312,11 +354,11 @@ namespace Plugin.Geolocator
 			if (listener == null)
 				return Task.FromResult(true);
 
-			var providers = Providers;
+			var providers = listeningProviders;
 			listener.PositionChanged -= OnListenerPositionChanged;
 			listener.PositionError -= OnListenerPositionError;
 
-			for (var i = 0; i < providers.Length; ++i)
+			for (var i = 0; i < providers.Count; ++i)
 				Manager.RemoveUpdates(listener);
 
 			listener = null;
