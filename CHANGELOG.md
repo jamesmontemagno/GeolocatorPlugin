@@ -1,4 +1,8 @@
 ## Changelog
+
+### 4.1.3
+* Android: Add ProvidersToUseWhileListening and ProvidersToUse Helpers to limit providers used.
+
 ### 4.1.2
 * Optimize iOS permission handling for iOS 11
 
