@@ -17,6 +17,7 @@
        <summary>Easly access geolocation across Xamarin.iOS, Xamarin.Android, and Windows. View full project page for README
        </summary>
      <releaseNotes>
+			 Please see: https://raw.githubusercontent.com/jamesmontemagno/GeolocatorPlugin/master/CHANGELOG.md
      </releaseNotes>
        <tags>xamarin, geolocator, geolocation, gps, pcl, xam.pcl, plugin, plugin for xamarin, windows phone, winphone, wp8, winrt, android, xamarin.forms, ios</tags>
        <dependencies>
