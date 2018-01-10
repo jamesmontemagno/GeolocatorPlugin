@@ -10,6 +10,14 @@ http://motzcod.es/post/162402194007/plugins-for-xamarin-go-dotnet-standard
 ## Android 
 You must set your app to compile against API 25 or higher and be able to install the latest android support libraries.
 
+This plugin uses the [Current Activity Plugin](https://github.com/jamesmontemagno/CurrentActivityPlugin/blob/master/README.md) to get access to the current Android Activity. Be sure to complete the full setup if a MainApplication.cs file was not automatically added to your application. Please fully read through the [Current Activity Plugin Documentation](https://github.com/jamesmontemagno/CurrentActivityPlugin/blob/master/README.md). At an absolute minimum you must set the following in your Activity's OnCreate method:
+
+```csharp
+Plugin.CurrentActivity.CrossCurrentActivity.Current.Activity = this;
+```
+
+It is highly recommended that you use a custom Application that are outlined in the Current Activity Plugin Documentation](https://github.com/jamesmontemagno/CurrentActivityPlugin/blob/master/README.md)
+
 ## Android specific in your BaseActivity or MainActivity (for Xamarin.Forms) add this code:
 
 Add usings:
