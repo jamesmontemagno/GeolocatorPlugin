@@ -86,7 +86,7 @@ or
 <string>This app needs access always to location.</string>
 ```
 
-**iOS 11 Introduces importanct chagnes when using Always Usage**
+**iOS 11 Introduces important changes when using Always Usage**
 
 You are required to include the NSLocationWhenInUseUsageDescription and NSLocationAlwaysAndWhenInUseUsageDescription keys in your app's Info.plist file. (If your app supports iOS 10 and earlier, the NSLocationAlwaysUsageDescription key is also required.) If those keys are not present, authorization requests fail immediately.
 
