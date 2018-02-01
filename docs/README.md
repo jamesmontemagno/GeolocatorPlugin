@@ -9,3 +9,4 @@ Here you will find detailed documentation on setting up and using the Geolocator
 * [Background Updates](BackgroundUpdates.md)
 * [Geocoding](Geocoding.md)
 * [Architecture](Architecture.md)
+* [FAQ & Common Issues](FAQ.md)
