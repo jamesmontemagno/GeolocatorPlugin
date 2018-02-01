@@ -41,3 +41,6 @@ https://github.com/jamesmontemagno/GeolocatorPlugin/labels/feature
 The MIT License (MIT) see [License file](LICENSE)
 
 This is a derivative to [Xamarin.Mobile's Geolocator](http://github.com/xamarin/xamarin.mobile) with a cross platform API and other enhancements.
+
+### Want To Support This Project?
+All I have ever asked is to be active by submitting bugs, features, and sending those pull requests down! Want to go further? Make sure to subscribe to my weekly development podcast [Merge Conflict](http://mergeconflict.fm), where I talk all about awesome Xamarin goodies and you can optionally support the show by becoming a [supporter on Patreon](https://www.patreon.com/mergeconflictfm).
