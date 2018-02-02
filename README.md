@@ -7,13 +7,19 @@ Get started by reading through the [Geolocator Plugin documentation](https://jam
 
 For common questions and issues see the [FAQ](https://jamesmontemagno.github.io/GeolocatorPlugin/FAQ.html)
 
-
 ### NuGet
 * Available on NuGet: [Xam.Plugin.Geolocator](http://www.nuget.org/packages/Xam.Plugin.Geolocator) [![NuGet](https://img.shields.io/nuget/v/Xam.Plugin.Geolocator.svg?label=NuGet)](https://www.nuget.org/packages/Xam.Plugin.Geolocator/)
 
 ### Build
 * [![Build status](https://ci.appveyor.com/api/projects/status/nan2cxlgeo11sc5u?svg=true)](https://ci.appveyor.com/project/JamesMontemagno/geolocatorplugin)
 * CI NuGet Feed: https://ci.appveyor.com/nuget/geolocatorplugin
+
+### Version 5.0 Beta
+This version introduces enhanced support for Android using Google Play services Location APIs. This greatly enhances the accuracy and reduces power consumption on Android devices running Google Play services. There are breaking changes to the API, so be sure to read through the [5.0 documentation](https://github.com/jamesmontemagno/GeolocatorPlugin/blob/android-fused/docs/README.md).
+
+NuGet:
+ [![NuGet](https://img.shields.io/nuget/vpre/Xam.Plugin.Geolocator.svg?label=NuGet)](https://www.nuget.org/packages/Xam.Plugin.Geolocator/)
+
 
 **Platform Support**
 
