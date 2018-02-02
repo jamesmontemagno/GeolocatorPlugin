@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27004.2009
+VisualStudioVersion = 15.0.27130.2027
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Geolocator.Plugin.iOS", "Geolocator.Plugin.iOSUnified\Geolocator.Plugin.iOS.csproj", "{2882AEEB-D4CD-4EB9-8A6C-6653B33681F0}"
 EndProject
@@ -33,6 +33,18 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Geolocator.Plugin", "Geolocator.Plugin\Geolocator.Plugin.csproj", "{36B8DD43-B679-4D13-8BA9-DED633E7B25F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Geolocator.Plugin.Abstractions", "Geolocator.Plugin.Abstractions\Geolocator.Plugin.Abstractions.csproj", "{4E7C1811-8CAA-42FD-9A61-5777F611EDFB}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{F1DD06B9-95E8-4536-9C20-FC282CAB1D91}"
+	ProjectSection(SolutionItems) = preProject
+		..\docs\Architecture.md = ..\docs\Architecture.md
+		..\docs\BackgroundUpdates.md = ..\docs\BackgroundUpdates.md
+		..\docs\CurrentLocation.md = ..\docs\CurrentLocation.md
+		..\docs\FAQ.md = ..\docs\FAQ.md
+		..\docs\Geocoding.md = ..\docs\Geocoding.md
+		..\docs\GettingStarted.md = ..\docs\GettingStarted.md
+		..\docs\LocationChanges.md = ..\docs\LocationChanges.md
+		..\docs\README.md = ..\docs\README.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
@@ -224,6 +236,7 @@ Global
 		{F447D32E-5A83-4905-9B55-D224CFDB44C0} = {22A61D68-4A56-49BF-8A28-0656EAE44A6D}
 		{36B8DD43-B679-4D13-8BA9-DED633E7B25F} = {22A61D68-4A56-49BF-8A28-0656EAE44A6D}
 		{4E7C1811-8CAA-42FD-9A61-5777F611EDFB} = {22A61D68-4A56-49BF-8A28-0656EAE44A6D}
+		{F1DD06B9-95E8-4536-9C20-FC282CAB1D91} = {33498B6F-E3B8-4C37-9BB6-600D0E089742}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {24798DB0-00A2-4F43-90FB-8CD0D14D6DB8}

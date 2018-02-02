@@ -30,12 +30,18 @@ public Task<bool> IsLocationAvailable()
 ```
 
 
+## Android + Google Play Location Services 
+Introduced in version 5.0 the Android implementation uses the Fused client which is part of Google Play services. The plugin will attempt to automatically detect if Google Play services are available on the device and use this implementation. You can default to the non-Google Play services version by setting this flag in your Android project startup code:
+
+```
+CrossGeolocator.UseFusedLocationProvider = false;
+```
+
 
 ## Permissions & Additional Setup Considerations
 Before making any calls to the geolocator that requires the permissions, you should consider checking that the user has granted proper permission. The geolocator plugin will attempt to ask for permission, but it is not guaranteed.
 
 ### Android:
-You MUST set your Target version to API 25+ and Compile against API 25+. This must be set manually and can NOT be set to automatic use the compile. You must pick it from the list.
 
 This plugin uses the [Current Activity Plugin](https://github.com/jamesmontemagno/CurrentActivityPlugin/blob/master/README.md) to get access to the current Android Activity. Be sure to complete the full setup if a MainApplication.cs file was not automatically added to your application. Please fully read through the [Current Activity Plugin Documentation](https://github.com/jamesmontemagno/CurrentActivityPlugin/blob/master/README.md). At an absolute minimum you must set the following in your Activity's OnCreate method:
 
