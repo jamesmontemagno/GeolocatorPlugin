@@ -17,6 +17,7 @@
        <summary>Easly access geolocation across Xamarin.iOS, Xamarin.Android, and Windows. View full project page for README
        </summary>
      <releaseNotes>
+			 Please see: https://raw.githubusercontent.com/jamesmontemagno/GeolocatorPlugin/master/CHANGELOG.md
      </releaseNotes>
        <tags>xamarin, geolocator, geolocation, gps, pcl, xam.pcl, plugin, plugin for xamarin, windows phone, winphone, wp8, winrt, android, xamarin.forms, ios</tags>
        <dependencies>
@@ -33,10 +34,10 @@
          </group>
          <group targetFramework="MonoAndroid10">
            <dependency id="Xamarin.GooglePlayServices.Location" version="60.1142.0"/>
-           <dependency id="Plugin.Permissions" version="2.1.0"/>
+           <dependency id="Plugin.Permissions" version="2.2.1"/>
          </group>
          <group targetFramework="Xamarin.iOS10">
-           <dependency id="Plugin.Permissions" version="2.1.0"/>
+           <dependency id="Plugin.Permissions" version="2.2.1"/>
          </group>
          <group targetFramework="Xamarin.Mac20">
          </group>

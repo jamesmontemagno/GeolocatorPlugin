@@ -37,6 +37,14 @@ Before making any calls to the geolocator that requires the permissions, you sho
 ### Android:
 You MUST set your Target version to API 25+ and Compile against API 25+. This must be set manually and can NOT be set to automatic use the compile. You must pick it from the list.
 
+This plugin uses the [Current Activity Plugin](https://github.com/jamesmontemagno/CurrentActivityPlugin/blob/master/README.md) to get access to the current Android Activity. Be sure to complete the full setup if a MainApplication.cs file was not automatically added to your application. Please fully read through the [Current Activity Plugin Documentation](https://github.com/jamesmontemagno/CurrentActivityPlugin/blob/master/README.md). At an absolute minimum you must set the following in your Activity's OnCreate method:
+
+```csharp
+Plugin.CurrentActivity.CrossCurrentActivity.Current.Activity = this;
+```
+
+It is highly recommended that you use a custom Application that are outlined in the Current Activity Plugin Documentation](https://github.com/jamesmontemagno/CurrentActivityPlugin/blob/master/README.md)
+
 #### Permissions:
 The `ACCESS_COARSE_LOCATION` and `ACCESS_FINE_LOCATION` permissions are required and are automatically added to your Android Manifest when you compile. No need to add them manually!
 
@@ -78,7 +86,7 @@ or
 <string>This app needs access always to location.</string>
 ```
 
-**iOS 11 Introduces importanct chagnes when using Always Usage**
+**iOS 11 Introduces important changes when using Always Usage**
 
 You are required to include the NSLocationWhenInUseUsageDescription and NSLocationAlwaysAndWhenInUseUsageDescription keys in your app's Info.plist file. (If your app supports iOS 10 and earlier, the NSLocationAlwaysUsageDescription key is also required.) If those keys are not present, authorization requests fail immediately.
 

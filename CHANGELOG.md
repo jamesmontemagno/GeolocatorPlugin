@@ -1,5 +1,8 @@
 ## Changelog
 
+### 4.2.0
+* Bump permissions plugin and other nugets
+
 ### 4.1.3
 * Android: Add ProvidersToUseWhileListening and ProvidersToUse Helpers to limit providers used.
 

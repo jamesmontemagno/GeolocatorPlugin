@@ -5,6 +5,9 @@ Simple cross platform plugin to get GPS location including heading, speed, and m
 ## Documentation
 Get started by reading through the [Geolocator Plugin documentation](https://jamesmontemagno.github.io/GeolocatorPlugin/).
 
+For common questions and issues see the [FAQ](https://jamesmontemagno.github.io/GeolocatorPlugin/FAQ.html)
+
+
 ### NuGet
 * Available on NuGet: [Xam.Plugin.Geolocator](http://www.nuget.org/packages/Xam.Plugin.Geolocator) [![NuGet](https://img.shields.io/nuget/v/Xam.Plugin.Geolocator.svg?label=NuGet)](https://www.nuget.org/packages/Xam.Plugin.Geolocator/)
 
@@ -38,3 +41,6 @@ https://github.com/jamesmontemagno/GeolocatorPlugin/labels/feature
 The MIT License (MIT) see [License file](LICENSE)
 
 This is a derivative to [Xamarin.Mobile's Geolocator](http://github.com/xamarin/xamarin.mobile) with a cross platform API and other enhancements.
+
+### Want To Support This Project?
+All I have ever asked is to be active by submitting bugs, features, and sending those pull requests down! Want to go further? Make sure to subscribe to my weekly development podcast [Merge Conflict](http://mergeconflict.fm), where I talk all about awesome Xamarin goodies and you can optionally support the show by becoming a [supporter on Patreon](https://www.patreon.com/mergeconflictfm).

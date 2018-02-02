@@ -337,12 +337,24 @@ namespace Plugin.Geolocator
 			if (listener == null)
 				return Task.FromResult(true);
 
+			if(listeningProviders == null)
+				return Task.FromResult(true);
+
 			var providers = listeningProviders;
 			listener.PositionChanged -= OnListenerPositionChanged;
 			listener.PositionError -= OnListenerPositionError;
 
-			for (var i = 0; i < providers.Count; ++i)
-				Manager.RemoveUpdates(listener);
+			for (var i = 0; i < providers.Count; i++)
+			{
+				try
+				{
+					Manager.RemoveUpdates(listener);
+				}
+				catch (Exception ex)
+				{
+					System.Diagnostics.Debug.WriteLine("Unable to remove updates: " + ex);
+				}
+			}
 
 			listener = null;
 			return Task.FromResult(true);
