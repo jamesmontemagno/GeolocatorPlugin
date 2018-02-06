@@ -73,24 +73,31 @@ public override void OnRequestPermissionsResult(int requestCode, string[] permis
 ```
 
 ### iOS/tvOS/macOS
-Your app is required to have keys in your Info.plist for `NSLocationWhenInUseUsageDescription` or `NSLocationAlwaysUsageDescription` in order to access the device's location. You can read more here: https://blog.xamarin.com/new-ios-10-privacy-permission-settings/
+Your app is required to have keys in your Info.plist for `NSLocationWhenInUseUsageDescription` in order to access the device's location. 
 
-Such as:
+Simply Add:
 ```xml
 <key>NSLocationWhenInUseUsageDescription</key>
 <string>This app needs access location when open.</string>
 ```
-or
-```xml
-<key>NSLocationAlwaysUsageDescription</key>
-<string>This app needs access always to location.</string>
+
+#### Background Updates
+Only implement this and add these properites if you need background updates for your application. Most likely you will not. Adding this also has direct impact on permissions and prompts to the user. Please be very careful when adding this information.
+
+Inside of your info.plist you must enable **Background Modes/UIBackgroundModes** for location updates. Here is a [full guide](https://developer.xamarin.com/guides/ios/application_fundamentals/backgrounding/ios_backgrounding_walkthroughs/location_walkthrough/). Your info.plist should contain something like this:
+
+```
+<key>UIBackgroundModes</key>
+<array>
+	<string>location</string>
+</array>
 ```
 
-**iOS 11 Introduces important changes when using Always Usage**
-
-You are required to include the NSLocationWhenInUseUsageDescription and NSLocationAlwaysAndWhenInUseUsageDescription keys in your app's Info.plist file. (If your app supports iOS 10 and earlier, the NSLocationAlwaysUsageDescription key is also required.) If those keys are not present, authorization requests fail immediately.
+In addition to `NSLocationWhenInUseUsageDescription`` you are required to add `NSLocationAlwaysAndWhenInUseUsageDescription` keys in your app's Info.plist file. (If your app supports iOS 10 and earlier, the `NSLocationAlwaysUsageDescription` key is also required.) If those keys are not present, authorization requests fail immediately.
 
 ```xml
+<key>NSLocationAlwaysUsageDescription</key>
+<string>This app needs access location when in the background.</string>
 <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 <string>This app needs access location when open and in the background.</string>
 ```
@@ -99,8 +106,9 @@ If you are targeting devices running older than iOS 8 you must add **NSLocationU
 
 If you want the dialogs to be translated you must support the specific languages in your app. Read the [iOS Localization Guide](https://developer.xamarin.com/guides/ios/advanced_topics/localization_and_internationalization/)
 
-If you need location updates in the background be sure to read the [Background Updates](BackgroundUpdates.md) section for additional setup.
+Be sure to read the [Background Updates](BackgroundUpdates.md) section for additional instructions.
 
+**When using background updates on iOS it is highly recommended that you manage your own permissions inside of iOS. Due to changes in iOS 11 with Always and When In Use deadlocks may happen if you are not careful and have the correct permissions. It is recommended to create a location manager and monitor your own changes for correct permissions**
 
 
 Please see the [Apple Documentation](https://devstreaming-cdn.apple.com/videos/wwdc/2017/713tkef4yl0sv3k/713/713_whats_new_in_location_technologies.pdf)
