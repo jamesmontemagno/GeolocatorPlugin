@@ -93,7 +93,7 @@ Inside of your info.plist you must enable **Background Modes/UIBackgroundModes**
 </array>
 ```
 
-In addition to `NSLocationWhenInUseUsageDescription`` you are required to add `NSLocationAlwaysAndWhenInUseUsageDescription` keys in your app's Info.plist file. (If your app supports iOS 10 and earlier, the `NSLocationAlwaysUsageDescription` key is also required.) If those keys are not present, authorization requests fail immediately.
+In addition to `NSLocationWhenInUseUsageDescription` you are required to add `NSLocationAlwaysAndWhenInUseUsageDescription` keys in your app's Info.plist file. (If your app supports iOS 10 and earlier, the `NSLocationAlwaysUsageDescription` key is also required.) If those keys are not present, authorization requests fail immediately.
 
 ```xml
 <key>NSLocationAlwaysUsageDescription</key>
