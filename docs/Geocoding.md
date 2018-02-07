@@ -19,13 +19,14 @@ Example:
 ```csharp
 try
 { 
-  var addresses = await locator.GetAddressesForPositionAsync (position, string mapKey = null);
+	string mapKey = null; //only needed on UWP
+  var addresses = await locator.GetAddressesForPositionAsync (position, mapKey);
   var address = addresses.FirstOrDefault();
   
   if(address == null)
     Console.WriteLine ("No address found for position.");
   else
-    Console.WriteLine ("Addresss: {0} {1} {2}", address.Thoroughfare, address.Locality, address.Country);
+    Console.WriteLine ("Addresss: {0} {1} {2}", address.Thoroughfare, address.Locality, address.CountryCode);
 }
 catch(Exception ex)
 {
