@@ -66,42 +66,47 @@ Full Example:
 ```csharp
 public async Task<Position> GetCurrentLocation()
 {
-  Position position = null;
-  try
-  {
-    var locator = CrossGeolocator.Current;
-    locator.DesiredAccuracy = 100;
+   public static async Task<Position> GetCurrentPosition()
+	{
+			Position position = null;
+			try
+			{
+					var locator = CrossGeolocator.Current;
+					locator.DesiredAccuracy = 100;
 
-    position = await locator.GetLastKnownLocationAsync();
+					position = await locator.GetLastKnownLocationAsync();
 
-    if (position != null)
-    {
-      //got a cahched position, so let's use it.
-      return;
-    }
+					if (position != null)
+					{
+							//got a cahched position, so let's use it.
+							return position;
+					}
 
-    if(!locator.IsGeolocationAvailable || !locator.IsGeolocationEnabled)
-    {
-      //not available or enabled
-      return;
-    }
+					if (!locator.IsGeolocationAvailable || !locator.IsGeolocationEnabled)
+					{
+							//not available or enabled
+							return null;
+					}
 
-    position = await locator.GetPositionAsync(TimeSpan.FromSeconds(20), null, true);
+					position = await locator.GetPositionAsync(TimeSpan.FromSeconds(20), null, true);
 
-  }
-  catch (Exception ex)
-  {
-    //Display error as we have timed out or can't get location.
-  }
+			}
+			catch (Exception ex)
+			{
+					Debug.WriteLine("Unable to get location: " + ex);
+			}
 
-  if(position == null)
-    return;
+			if (position == null)
+					return null;
 
-  var output = string.Format("Time: {0} \nLat: {1} \nLong: {2} \nAltitude: {3} \nAltitude Accuracy: {4} \nAccuracy: {5} \nHeading: {6} \nSpeed: {7}",
-      position.Timestamp, position.Latitude, position.Longitude,
-      position.Altitude, position.AltitudeAccuracy, position.Accuracy, position.Heading, position.Speed);
+			var output = string.Format("Time: {0} \nLat: {1} \nLong: {2} \nAltitude: {3} \nAltitude Accuracy: {4} \nAccuracy: {5} \nHeading: {6} \nSpeed: {7}",
+					position.Timestamp, position.Latitude, position.Longitude,
+					position.Altitude, position.AltitudeAccuracy, position.Accuracy, position.Heading, position.Speed);
 
-  Debug.WriteLine(output);
+			Debug.WriteLine(output);
+
+			return position;
+	}
 }
 ```
 
