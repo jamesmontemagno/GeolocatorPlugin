@@ -188,7 +188,7 @@ namespace Plugin.Geolocator
                 await MapLocationFinder.FindLocationsAtAsync(
                         new Geopoint(new BasicGeoposition { Latitude = position.Latitude, Longitude = position.Longitude })).AsTask();
 
-            return queryResults?.Locations.ToAddresses();
+            return queryResults?.Locations?.ToAddresses() ?? null;
 		}
 
         /// <summary>

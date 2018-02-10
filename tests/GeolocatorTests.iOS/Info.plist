@@ -48,5 +48,9 @@
 	<string>Older devices need location.</string>
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>Can I haz location always?</string>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>location</string>
+	</array>
 </dict>
 </plist>

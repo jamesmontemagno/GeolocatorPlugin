@@ -354,7 +354,8 @@ namespace Plugin.Geolocator
             using (var geocoder = new CLGeocoder())
             {
                 var addressList = await geocoder.ReverseGeocodeLocationAsync(new CLLocation(position.Latitude, position.Longitude));
-                return addressList.ToAddresses();
+
+				return addressList?.ToAddresses() ?? null;
             }
         }
 

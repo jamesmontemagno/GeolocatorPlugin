@@ -273,7 +273,7 @@ namespace Plugin.Geolocator
             using (var geocoder = new Geocoder(Application.Context))
             {
                 var addressList = await geocoder.GetFromLocationAsync(position.Latitude, position.Longitude, 10);
-                return addressList.ToAddresses();
+                return addressList?.ToAddresses() ?? null;
             }
 		}
 
