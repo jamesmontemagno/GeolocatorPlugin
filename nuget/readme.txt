@@ -24,12 +24,11 @@ It is highly recommended that you use a custom Application that are outlined in 
 Add usings:
 
 using Plugin.Permissions;
-using Plugin.Permissions.Abstractions;
 
 Then add to Activity:
 
-public override void OnRequestPermissionsResult(int requestCode, string[] permissions, Permission[] grantResults)
+public override void OnRequestPermissionsResult(int requestCode, string[] permissions, Android.Content.PM.Permission[] grantResults)
 {
-    PermissionsImplementation.Current.OnRequestPermissionsResult(requestCode, permissions, grantResults);
+    Plugin.Permissions.PermissionsImplementation.Current.OnRequestPermissionsResult(requestCode, permissions, grantResults);
 }
 
