@@ -58,17 +58,11 @@ By adding these permissions [Google Play will automatically filter out devices](
 
 This plugin leverages the [Permission Plugin](http://github.com/jamesmontemagno/permissionsplugin), which means you must add the following code to your BaseActivity or MainActivity in Xamarin.Forms:
 
-Add usings:
-```csharp
-using Plugin.Permissions;
-using Plugin.Permissions.Abstractions;
-```
-
 Add in Activity:
 ```csharp
-public override void OnRequestPermissionsResult(int requestCode, string[] permissions, Permission[] grantResults)
+public override void OnRequestPermissionsResult(int requestCode, string[] permissions, Android.Content.PM.Permission[] grantResults)
 {
-    PermissionsImplementation.Current.OnRequestPermissionsResult(requestCode, permissions, grantResults);
+    Plugin.Permissions.PermissionsImplementation.Current.OnRequestPermissionsResult(requestCode, permissions, grantResults);
 }
 ```
 
