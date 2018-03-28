@@ -43,6 +43,19 @@ https://github.com/jamesmontemagno/GeolocatorPlugin/labels/feature
 * Podcasts: [Merge Conflict](http://mergeconflict.fm), [Coffeehouse Blunders](http://blunders.fm), [The Xamarin Podcast](http://xamarinpodcast.com)
 * Video: [The Xamarin Show on Channel 9](http://xamarinshow.com), [YouTube Channel](https://www.youtube.com/jamesmontemagno) 
 
+### Here are some other popular Xamarin plugins
+
+|Name|Description|NuGet|Docs & Source|Creator|
+| ------------------- | --------------------------------- | :-----------: | :-----------: |-------------------- |
+|Audio Recorder|Record audio on a device's microphone input.|[NuGet](https://www.nuget.org/packages/Plugin.AudioRecorder)|[GitHub](https://github.com/NateRickard/Plugin.AudioRecorder)|[@NateRickard](https://github.com/NateRickard)|
+|Battery Status|Gather battery level, charging status, and type.|[NuGet](https://www.nuget.org/packages/Xam.Plugin.Battery/)|[GitHub](https://github.com/jamesmontemagno/BatteryPlugin)|[@JamesMontemagno](http://www.twitter.com/jamesmontemagno)|
+|Barcode Scanner|Scan and create barcodes with ZXing.NET.Mobile.|[NuGet](https://www.nuget.org/packages/ZXing.Net.Mobile)|[GitHub](https://github.com/Redth/ZXing.Net.Mobile)|[@Redth](https://twitter.com/redth)|
+|Bluetooth LE|Scan and connect to Bluetooth devices.|[NuGet](https://www.nuget.org/packages/Plugin.BluetoothLE/)|[GitHub](https://github.com/aritchie/bluetoothle)|[@allanritchie911](https://twitter.com/allanritchie911)|
+|Calendar|Query and modify device calendars|[NuGet](https://www.nuget.org/packages/CClarke.Plugin.Calendars)|[GitHub](https://github.com/TheAlmightyBob/Calendars/)|[Caleb Clarke](https://github.com/TheAlmightyBob)|
+|Compass|Access device compass heading.|[NuGet](https://www.nuget.org/packages/Plugin.Compass/)|[GitHub](https://github.com/JarleySoft/Xamarin.Plugins/tree/master/Compass)|[@cbartonnh](http://www.twitter.com/cbartonnh) & [@JamesMontemagno](http://www.twitter.com/jamesmontemagno)|
+|Config|Define the settings of the application for each environment in which it will run.|[NuGet](https://www.nuget.org/packages/Xamarin.ConfigPlugin/)|[GitHub](https://github.com/AgustinBonilla/ConfigPlugin)|[@abonilla93](https://twitter.com/abonilla93)|
+
+The full list can be seen [here](https://github.com/xamarin/XamarinComponents/blob/master/README.md).
 #### License
 The MIT License (MIT) see [License file](LICENSE)
 
