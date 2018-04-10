@@ -72,7 +72,7 @@ Your app is required to have keys in your Info.plist for `NSLocationWhenInUseUsa
 Simply Add:
 ```xml
 <key>NSLocationWhenInUseUsageDescription</key>
-<string>This app needs access location when open.</string>
+<string>This app needs access to location when open.</string>
 ```
 
 #### Background Updates
@@ -91,9 +91,9 @@ In addition to `NSLocationWhenInUseUsageDescription` you are required to add `NS
 
 ```xml
 <key>NSLocationAlwaysUsageDescription</key>
-<string>This app needs access location when in the background.</string>
+<string>This app needs access to location when in the background.</string>
 <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-<string>This app needs access location when open and in the background.</string>
+<string>This app needs access to location when open and in the background.</string>
 ```
 
 If you are targeting devices running older than iOS 8 you must add **NSLocationUsageDescription**.
