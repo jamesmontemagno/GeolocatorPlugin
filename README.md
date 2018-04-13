@@ -32,6 +32,7 @@ Version 4.X
 |Windows 10 UWP|10+|
 |macOS|All|
 |tvOS|10+|
+|Tizen|4.0+|
 
 **Feature requests**
 Vote for a feature requests at

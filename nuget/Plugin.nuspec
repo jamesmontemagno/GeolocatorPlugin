@@ -50,6 +50,8 @@
          </group>
          <group targetFramework="xamarinwatchos">
          </group>
+         <group targetFramework="tizen40">
+         </group>
        </dependencies>
    </metadata>
    <files>
@@ -73,5 +75,9 @@
 
         <!--tvOS-->
        <file src="src\Geolocator.Plugin.tvOS\bin\Release\Plugin.Geolocator.*" target="lib\XamarinTVOS" />
+
+       <!--Tizen-->
+       <file src="src\Geolocator.Plugin.Tizen\bin\Release\tizen40\Plugin.Geolocator.*" target="lib\tizen40" />
+
    </files>
 </package>

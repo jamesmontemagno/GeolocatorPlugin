@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27004.2002
+VisualStudioVersion = 15.0.27004.2008
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Geolocator.Plugin.iOS", "Geolocator.Plugin.iOSUnified\Geolocator.Plugin.iOS.csproj", "{2882AEEB-D4CD-4EB9-8A6C-6653B33681F0}"
 EndProject
@@ -34,9 +34,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Geolocator.Plugin", "Geoloc
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Geolocator.Plugin.Abstractions", "Geolocator.Plugin.Abstractions\Geolocator.Plugin.Abstractions.csproj", "{4E7C1811-8CAA-42FD-9A61-5777F611EDFB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Geolocator.Plugin.Tizen", "Geolocator.Plugin.Tizen\Geolocator.Plugin.Tizen.csproj", "{28494A9B-CDA8-4CC5-8CC2-7A5BBD793A67}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		Geolocator.Shared\Geolocator.Shared.projitems*{14318cb2-06ec-4b31-be72-c4702d8aeb5f}*SharedItemsImports = 4
+		Geolocator.Shared\Geolocator.Shared.projitems*{28494a9b-cda8-4cc5-8cc2-7a5bbd793a67}*SharedItemsImports = 4
 		Geolocator.Shared\Geolocator.Shared.projitems*{2882aeeb-d4cd-4eb9-8a6c-6653b33681f0}*SharedItemsImports = 4
 		Geolocator.Shared\Geolocator.Shared.projitems*{56a56f17-7de1-4ca1-9617-bf32e971ac84}*SharedItemsImports = 4
 		Geolocator.Shared\Geolocator.Shared.projitems*{71a925b6-f452-4a2b-9038-4fc611db2c17}*SharedItemsImports = 4
@@ -214,6 +217,30 @@ Global
 		{4E7C1811-8CAA-42FD-9A61-5777F611EDFB}.Release|x64.Build.0 = Release|Any CPU
 		{4E7C1811-8CAA-42FD-9A61-5777F611EDFB}.Release|x86.ActiveCfg = Release|Any CPU
 		{4E7C1811-8CAA-42FD-9A61-5777F611EDFB}.Release|x86.Build.0 = Release|Any CPU
+		{28494A9B-CDA8-4CC5-8CC2-7A5BBD793A67}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{28494A9B-CDA8-4CC5-8CC2-7A5BBD793A67}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{28494A9B-CDA8-4CC5-8CC2-7A5BBD793A67}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{28494A9B-CDA8-4CC5-8CC2-7A5BBD793A67}.Debug|ARM.Build.0 = Debug|Any CPU
+		{28494A9B-CDA8-4CC5-8CC2-7A5BBD793A67}.Debug|iPhone.ActiveCfg = Debug|Any CPU
+		{28494A9B-CDA8-4CC5-8CC2-7A5BBD793A67}.Debug|iPhone.Build.0 = Debug|Any CPU
+		{28494A9B-CDA8-4CC5-8CC2-7A5BBD793A67}.Debug|iPhoneSimulator.ActiveCfg = Debug|Any CPU
+		{28494A9B-CDA8-4CC5-8CC2-7A5BBD793A67}.Debug|iPhoneSimulator.Build.0 = Debug|Any CPU
+		{28494A9B-CDA8-4CC5-8CC2-7A5BBD793A67}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{28494A9B-CDA8-4CC5-8CC2-7A5BBD793A67}.Debug|x64.Build.0 = Debug|Any CPU
+		{28494A9B-CDA8-4CC5-8CC2-7A5BBD793A67}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{28494A9B-CDA8-4CC5-8CC2-7A5BBD793A67}.Debug|x86.Build.0 = Debug|Any CPU
+		{28494A9B-CDA8-4CC5-8CC2-7A5BBD793A67}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{28494A9B-CDA8-4CC5-8CC2-7A5BBD793A67}.Release|Any CPU.Build.0 = Release|Any CPU
+		{28494A9B-CDA8-4CC5-8CC2-7A5BBD793A67}.Release|ARM.ActiveCfg = Release|Any CPU
+		{28494A9B-CDA8-4CC5-8CC2-7A5BBD793A67}.Release|ARM.Build.0 = Release|Any CPU
+		{28494A9B-CDA8-4CC5-8CC2-7A5BBD793A67}.Release|iPhone.ActiveCfg = Release|Any CPU
+		{28494A9B-CDA8-4CC5-8CC2-7A5BBD793A67}.Release|iPhone.Build.0 = Release|Any CPU
+		{28494A9B-CDA8-4CC5-8CC2-7A5BBD793A67}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
+		{28494A9B-CDA8-4CC5-8CC2-7A5BBD793A67}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
+		{28494A9B-CDA8-4CC5-8CC2-7A5BBD793A67}.Release|x64.ActiveCfg = Release|Any CPU
+		{28494A9B-CDA8-4CC5-8CC2-7A5BBD793A67}.Release|x64.Build.0 = Release|Any CPU
+		{28494A9B-CDA8-4CC5-8CC2-7A5BBD793A67}.Release|x86.ActiveCfg = Release|Any CPU
+		{28494A9B-CDA8-4CC5-8CC2-7A5BBD793A67}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -225,5 +252,8 @@ Global
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {24798DB0-00A2-4F43-90FB-8CD0D14D6DB8}
+	EndGlobalSection
+        GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {980C024A-9514-4C18-975B-3CECFB8CCDF3}
 	EndGlobalSection
 EndGlobal
