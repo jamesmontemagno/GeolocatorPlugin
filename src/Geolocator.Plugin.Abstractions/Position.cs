@@ -109,7 +109,16 @@ namespace Plugin.Geolocator.Abstractions
             get;
             set;
         }
-    }
+
+	    /// <summary>
+	    /// Gets or sets the source which provided the location.
+	    /// </summary>
+	    public string Provider
+	    {
+		    get;
+		    set;
+	    }
+	}
 
     /// <summary>
     /// Position args
