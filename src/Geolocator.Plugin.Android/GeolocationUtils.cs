@@ -73,6 +73,7 @@ namespace Plugin.Geolocator
             p.Longitude = location.Longitude;
             p.Latitude = location.Latitude;
             p.Timestamp = location.GetTimestamp();
+	        p.Provider = location.Provider;
             return p;
         }
 
