@@ -167,10 +167,8 @@ namespace Plugin.Geolocator
 					//only add providers requested.
 					foreach (var provider in Providers)
 					{
-						if (ProvidersToUse?.Contains(provider) ?? false)
-							continue;
-
-						providers.Add(provider);
+						if (ProvidersToUse.Contains(provider))
+							providers.Add(provider);
 					}
 				}
 				
