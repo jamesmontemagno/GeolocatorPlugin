@@ -21,6 +21,7 @@ namespace GeolocatorSample.Droid
 
 			base.OnCreate(bundle);
 
+			Plugin.CurrentActivity.CrossCurrentActivity.Current.Init(this, bundle);
             global::Xamarin.Forms.Forms.Init(this, bundle);
             LoadApplication(new App());
         }

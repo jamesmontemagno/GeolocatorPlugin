@@ -48,11 +48,15 @@
     </array>
     <key>UILaunchStoryboardName</key>
     <string>LaunchScreen</string>
+		<key>NSLocationWhenInUseUsageDescription</key>
+		<string>This app needs access to location when open.</string>
+		<key>NSLocationAlwaysUsageDescription</key>
+		<string>This app needs access to location when in the background.</string>
 		<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-		<string>This app needs access location when open and in the background.</string>
-    <key>NSLocationAlwaysUsageDescription</key>
-    <string>Need location for geolocator plugin.</string>
-    <key>RequestWhenInUseAuthorization</key>
-    <string>Need location for geolocator plugin.</string>
+		<string>This app needs access to location when open and in the background.</string>
+		<key>UIBackgroundModes</key>
+		<array>
+			<string>location</string>
+		</array>
   </dict>
 </plist>
