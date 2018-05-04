@@ -35,12 +35,11 @@ public bool IsLocationAvailable()
 Before making any calls to the geolocator that requires the permissions, you should consider checking that the user has granted proper permission. The geolocator plugin will attempt to ask for permission, but it is not guaranteed.
 
 ### Android:
-You MUST set your Target version to API 25+ and Compile against API 25+
 
 This plugin uses the [Current Activity Plugin](https://github.com/jamesmontemagno/CurrentActivityPlugin/blob/master/README.md) to get access to the current Android Activity. Be sure to complete the full setup if a MainApplication.cs file was not automatically added to your application. Please fully read through the [Current Activity Plugin Documentation](https://github.com/jamesmontemagno/CurrentActivityPlugin/blob/master/README.md). At an absolute minimum you must set the following in your Activity's OnCreate method:
 
 ```csharp
-Plugin.CurrentActivity.CrossCurrentActivity.Current.Activity = this;
+CrossCurrentActivity.Current.Activity.Init(this, bundle);
 ```
 
 It is highly recommended that you use a custom Application that are outlined in the Current Activity Plugin Documentation](https://github.com/jamesmontemagno/CurrentActivityPlugin/blob/master/README.md)
@@ -63,6 +62,7 @@ Add in Activity:
 public override void OnRequestPermissionsResult(int requestCode, string[] permissions, Android.Content.PM.Permission[] grantResults)
 {
     Plugin.Permissions.PermissionsImplementation.Current.OnRequestPermissionsResult(requestCode, permissions, grantResults);
+	base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
 }
 ```
 

@@ -33,10 +33,10 @@
            <dependency id="NETStandard.Library" version="1.6.1" />
          </group>
          <group targetFramework="MonoAndroid10">
-           <dependency id="Plugin.Permissions" version="2.2.1"/>
+           <dependency id="Plugin.Permissions" version="3.0.0.8"/>
          </group>
          <group targetFramework="Xamarin.iOS10">
-           <dependency id="Plugin.Permissions" version="2.2.1"/>
+           <dependency id="Plugin.Permissions" version="3.0.0.8"/>
          </group>
          <group targetFramework="Xamarin.Mac20">
          </group>

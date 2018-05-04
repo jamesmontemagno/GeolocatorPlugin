@@ -34,6 +34,18 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Geolocator.Plugin", "Geoloc
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Geolocator.Plugin.Abstractions", "Geolocator.Plugin.Abstractions\Geolocator.Plugin.Abstractions.csproj", "{4E7C1811-8CAA-42FD-9A61-5777F611EDFB}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{651D989C-FFDF-4618-9A72-235C83BE8E7B}"
+	ProjectSection(SolutionItems) = preProject
+		..\docs\Architecture.md = ..\docs\Architecture.md
+		..\docs\BackgroundUpdates.md = ..\docs\BackgroundUpdates.md
+		..\docs\CurrentLocation.md = ..\docs\CurrentLocation.md
+		..\docs\FAQ.md = ..\docs\FAQ.md
+		..\docs\Geocoding.md = ..\docs\Geocoding.md
+		..\docs\GettingStarted.md = ..\docs\GettingStarted.md
+		..\docs\LocationChanges.md = ..\docs\LocationChanges.md
+		..\docs\README.md = ..\docs\README.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		Geolocator.Shared\Geolocator.Shared.projitems*{14318cb2-06ec-4b31-be72-c4702d8aeb5f}*SharedItemsImports = 4
