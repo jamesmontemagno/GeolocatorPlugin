@@ -32,8 +32,8 @@ namespace Plugin.Geolocator
 
         static IGeolocator CreateGeolocator()
         {
-#if NETSTANDARD1_0
-            return null;
+#if NETSTANDARD1_0 || NETSTANDARD2_0
+			return null;
 #else
 			return new GeolocatorImplementation();
 #endif

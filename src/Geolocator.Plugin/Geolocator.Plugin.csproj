@@ -1,20 +1,82 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>netstandard1.0</TargetFramework>
-    <AssemblyName>Plugin.Geolocator</AssemblyName>
-    <RootNamespace>Plugin.Geolocator</RootNamespace>
-    <AssemblyVersion>1.0.0.0</AssemblyVersion>
-    <AssemblyFileVersion>1.0.0.0</AssemblyFileVersion>
-    <Version>1.0.0.0</Version>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFrameworks>netstandard1.0;netstandard2.0;MonoAndroid71;Xamarin.iOS10;uap10.0.10240;Xamarin.TVOS10;Xamarin.Mac20</TargetFrameworks>
+		<AssemblyName>Plugin.Geolocator</AssemblyName>
+		<RootNamespace>Plugin.Geolocator</RootNamespace>
+		<Product>$(AssemblyName) ($(TargetFramework))</Product>
+		<AssemblyVersion>1.0.0.0</AssemblyVersion>
+		<AssemblyFileVersion>1.0.0.0</AssemblyFileVersion>
+		<Version>1.0.0.0</Version>
+		<Authors>James Montemagno</Authors>
+		<PackageId>Xam.Plugin.Geolocator</PackageId>
+		<PackOnBuild>true</PackOnBuild>
+		<PackageIconUrl>https://raw.githubusercontent.com/jamesmontemagno/GeolocatorPlugin/master/art/icon.png</PackageIconUrl>
+		<PackageLicenseUrl>https://github.com/jamesmontemagno/GeolocatorPlugin/blob/master/LICENSE</PackageLicenseUrl>
+		<Owners>JamesMontemagno</Owners>
+		<PackageProjectUrl>https://github.com/jamesmontemagno/GeolocatorPlugin</PackageProjectUrl>
+		<Summary>Easly access geolocation across Xamarin.iOS, Xamarin.Android, and Windows.</Summary>
+		<PackageTags>xamarin, xamarin.forms, plugin, plugin for xamarin, geolocation, geocoding, ios, android, uwp</PackageTags>
+		<Title>Geolocator Plugin for Xamarin and Windows</Title>
+		<Description>
+			Easly access geolocation across Xamarin.iOS, Xamarin.Android, and Windows.
+		</Description>
+		<Copyright>Copyright 2018</Copyright>
+		<RepositoryUrl>https://github.com/jamesmontemagno/GeolocatorPlugin</RepositoryUrl>
+		<PackageReleaseNotes>See: https://github.com/jamesmontemagno/GeolocatorPlugin </PackageReleaseNotes>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DocumentationFile>bin\Release\netstandard1.0\Plugin.Geolocator.xml</DocumentationFile>
-  </PropertyGroup>
+		<NeutralLanguage>en</NeutralLanguage>
+		<LangVersion>default</LangVersion>
+		<EnableDefaultCompileItems>false</EnableDefaultCompileItems>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Geolocator.Plugin.Abstractions\Geolocator.Plugin.Abstractions.csproj" />
-  </ItemGroup>
+
+		<GenerateDocumentationFile Condition=" '$(Configuration)' == 'Release' ">true</GenerateDocumentationFile>
+
+		<DefineConstants>$(DefineConstants);</DefineConstants>
+
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+	</PropertyGroup>
+	<PropertyGroup Condition=" '$(Configuration)'=='Debug' ">
+		<DebugType>full</DebugType>
+		<DebugSymbols>true</DebugSymbols>
+	</PropertyGroup>
+	<PropertyGroup Condition=" '$(Configuration)'=='Release' ">
+		<DebugType>pdbonly</DebugType>
+	</PropertyGroup>
+	<ItemGroup>
+		<None Include="..\..\nuget\readme.txt" PackagePath="readme.txt" Pack="true" />
+		<PackageReference Include="MSBuild.Sdk.Extras" Version="1.2.0" PrivateAssets="All" />
+		<Compile Include="**\*.shared.cs" />
+	</ItemGroup>
+
+	<ItemGroup Condition=" $(TargetFramework.StartsWith('netstandard')) ">
+	</ItemGroup>
+
+	<ItemGroup Condition=" $(TargetFramework.StartsWith('uap10.0')) ">
+		<PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform" Version="5.2.3" />
+		<Compile Include="**\*.uwp.cs" />
+	</ItemGroup>
+
+	<ItemGroup Condition=" $(TargetFramework.StartsWith('MonoAndroid')) ">
+    <PackageReference Include="Plugin.Permissions" Version="3.0.0.8" />
+		<Compile Include="**\*.android.cs" />
+	</ItemGroup>
+
+	<ItemGroup Condition=" $(TargetFramework.StartsWith('Xamarin.iOS')) ">
+    <PackageReference Include="Plugin.Permissions" Version="3.0.0.8" />
+		<Compile Include="**\*.apple.cs" />
+	</ItemGroup>
+
+
+	<ItemGroup Condition=" $(TargetFramework.StartsWith('Xamarin.TVOS')) ">
+		<Compile Include="**\*.apple.cs" />
+	</ItemGroup>
+
+
+	<ItemGroup Condition=" $(TargetFramework.StartsWith('Xamarin.Mac')) ">
+		<Compile Include="**\*.apple.cs" />
+	</ItemGroup>
+
+	<Import Project="$(MSBuildSDKExtrasTargets)" Condition="Exists('$(MSBuildSDKExtrasTargets)')" />
 
 </Project>
