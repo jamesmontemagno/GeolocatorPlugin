@@ -45,7 +45,7 @@
 	</PropertyGroup>
 	<ItemGroup>
 		<None Include="..\..\nuget\readme.txt" PackagePath="readme.txt" Pack="true" />
-		<PackageReference Include="MSBuild.Sdk.Extras" Version="1.2.0" PrivateAssets="All" />
+		<PackageReference Include="MSBuild.Sdk.Extras" Version="1.4.0" PrivateAssets="All" />
 		<Compile Include="**\*.shared.cs" />
 	</ItemGroup>
 
@@ -58,12 +58,12 @@
 	</ItemGroup>
 
 	<ItemGroup Condition=" $(TargetFramework.StartsWith('MonoAndroid')) ">
-    <PackageReference Include="Plugin.Permissions" Version="3.0.0.8" />
+    <PackageReference Include="Plugin.Permissions" Version="3.0.0.9-beta" />
 		<Compile Include="**\*.android.cs" />
 	</ItemGroup>
 
 	<ItemGroup Condition=" $(TargetFramework.StartsWith('Xamarin.iOS')) ">
-    <PackageReference Include="Plugin.Permissions" Version="3.0.0.8" />
+    <PackageReference Include="Plugin.Permissions" Version="3.0.0.9-beta" />
 		<Compile Include="**\*.apple.cs" />
 	</ItemGroup>
 
