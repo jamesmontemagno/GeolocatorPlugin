@@ -58,12 +58,12 @@
 	</ItemGroup>
 
 	<ItemGroup Condition=" $(TargetFramework.StartsWith('MonoAndroid')) ">
-    <PackageReference Include="Plugin.Permissions" Version="3.0.0.9-beta" />
+    <PackageReference Include="Plugin.Permissions" Version="3.0.0.12" />
 		<Compile Include="**\*.android.cs" />
 	</ItemGroup>
 
 	<ItemGroup Condition=" $(TargetFramework.StartsWith('Xamarin.iOS')) ">
-    <PackageReference Include="Plugin.Permissions" Version="3.0.0.9-beta" />
+    <PackageReference Include="Plugin.Permissions" Version="3.0.0.12" />
 		<Compile Include="**\*.apple.cs" />
 	</ItemGroup>
 
