@@ -85,7 +85,7 @@ namespace Plugin.Geolocator
 
 
 #if __IOS__
-        public override bool ShouldDisplayHeadingCalibration(CLLocationManager manager) => true;
+        public override bool ShouldDisplayHeadingCalibration(CLLocationManager manager) => false;
 #endif
 
 #if __TVOS__
@@ -150,8 +150,7 @@ namespace Plugin.Geolocator
         }
 #endif
 
-
-        private void StopListening()
+		private void StopListening()
         {
 #if __IOS__
             if (CLLocationManager.HeadingAvailable)
