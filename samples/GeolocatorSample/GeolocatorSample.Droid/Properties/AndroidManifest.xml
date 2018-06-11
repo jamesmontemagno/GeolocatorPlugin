@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android" android:installLocation="auto" package="com.geo.samples" android:versionCode="1" android:versionName="1">
-	<uses-sdk android:minSdkVersion="15" android:targetSdkVersion="26" />
+	<uses-sdk android:minSdkVersion="15" android:targetSdkVersion="27" />
 	<application android:label="GeolocatorSample" android:icon="@drawable/icon" android:theme="@style/MyTheme"></application>
 	<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 	<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
