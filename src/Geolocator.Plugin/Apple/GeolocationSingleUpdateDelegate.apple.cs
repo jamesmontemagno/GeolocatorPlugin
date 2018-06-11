@@ -140,7 +140,16 @@ namespace Plugin.Geolocator
 
             bestHeading = newHeading;
             position.Heading = newHeading.TrueHeading;
-            haveHeading = true;
+			try
+			{
+				position.Timestamp = new DateTimeOffset(newHeading.Timestamp.ToDateTime());
+			}
+			catch (Exception ex)
+			{
+				position.Timestamp = DateTimeOffset.UtcNow;
+			}
+
+			haveHeading = true;
 
             if (haveLocation && position.Accuracy <= desiredAccuracy)
             {
