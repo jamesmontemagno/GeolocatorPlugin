@@ -33,6 +33,7 @@ namespace Plugin.Geolocator.Abstractions
             Accuracy = position.Accuracy;
             Heading = position.Heading;
             Speed = position.Speed;
+			IsFromMockProvider = position.IsFromMockProvider;
         }
 
 		/// <summary>
@@ -109,6 +110,15 @@ namespace Plugin.Geolocator.Abstractions
             get;
             set;
         }
+
+		/// <summary>
+		/// Gets or sets if from mock provider
+		/// </summary>
+		public bool IsFromMockProvider
+		{
+			get;
+			set;
+		}
     }
 
     /// <summary>

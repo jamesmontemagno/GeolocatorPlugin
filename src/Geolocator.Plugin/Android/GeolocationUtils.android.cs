@@ -73,6 +73,12 @@ namespace Plugin.Geolocator
             p.Longitude = location.Longitude;
             p.Latitude = location.Latitude;
             p.Timestamp = location.GetTimestamp();
+
+			if ((int)Android.OS.Build.VERSION.SdkInt >= 18)
+				p.IsFromMockProvider = location.IsFromMockProvider;
+			else
+				p.IsFromMockProvider = false;
+
             return p;
         }
 
