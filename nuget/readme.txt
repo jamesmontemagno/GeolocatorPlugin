@@ -30,7 +30,5 @@ Then add to Activity:
 public override void OnRequestPermissionsResult(int requestCode, string[] permissions, Android.Content.PM.Permission[] grantResults)
 {
     Plugin.Permissions.PermissionsImplementation.Current.OnRequestPermissionsResult(requestCode, permissions, grantResults);
-	base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
+    base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
 }
-
-IMPORTANT: Your Android app must target at least API 26 by August 2018, otherwise you will not be able to distribute through the Play Store. You can still set a lower Minimum Android Version. The easiest way to tackle this is to set "Compile using Android version" in Project Properties > Application to "Use Latest Platform" and "Target Android version" in Project Properties > Android Manifest to "Use Compile using SDK version". When those two are out of sync, other problems may occur, such as permission prompts not working.
