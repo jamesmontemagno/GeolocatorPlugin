@@ -75,6 +75,8 @@ Simply Add:
 <string>This app needs access to location when open.</string>
 ```
 
+Ensure the `CrossGeolocator.Current` instance is first accessed on the main thread to prevent any deadlocks when first accessing it on a background thread. If you're unsure about the first access simply call `CrossGeolocator.Current` in your `AppDelegate`.
+
 #### Background Updates
 Only implement this and add these properites if you need background updates for your application. Most likely you will not. Adding this also has direct impact on permissions and prompts to the user. Please be very careful when adding this information.
 
