@@ -227,7 +227,7 @@ namespace Plugin.Geolocator
 		public async Task<Position> GetPositionAsync(TimeSpan? timeout, CancellationToken? cancelToken = null, bool includeHeading = false)
         {
 #if __IOS__
-			var permission = Permission.Location;
+			var permission = Permission.LocationWhenInUse;
 			var hasPermission = await CheckPermissions(permission);
 			if (!hasPermission)
 				throw new GeolocationException(GeolocationError.Unauthorized);
