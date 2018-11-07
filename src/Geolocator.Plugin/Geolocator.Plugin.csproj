@@ -1,4 +1,4 @@
-﻿<Project Sdk="MSBuild.Sdk.Extras/1.6.47">
+﻿<Project Sdk="MSBuild.Sdk.Extras/1.6.61">
 
 	<PropertyGroup>
 		<TargetFrameworks>netstandard1.0;netstandard2.0;MonoAndroid71;MonoAndroid80;MonoAndroid81;Xamarin.iOS10;uap10.0.16299;Xamarin.TVOS10;Xamarin.Mac20</TargetFrameworks>
@@ -52,17 +52,16 @@
 	</ItemGroup>
 
 	<ItemGroup Condition=" $(TargetFramework.StartsWith('uap10.0')) ">
-		<PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform" Version="6.1.5" />
 		<Compile Include="**\*.uwp.cs" />
 	</ItemGroup>
 
 	<ItemGroup Condition=" $(TargetFramework.StartsWith('MonoAndroid')) ">
-    <PackageReference Include="Plugin.Permissions" Version="4.0.1-beta" />
+    <PackageReference Include="Plugin.Permissions" Version="4.0.2-beta" />
 		<Compile Include="**\*.android.cs" />
 	</ItemGroup>
 
 	<ItemGroup Condition=" $(TargetFramework.StartsWith('Xamarin.iOS')) ">
-    <PackageReference Include="Plugin.Permissions" Version="4.0.1-beta" />
+    <PackageReference Include="Plugin.Permissions" Version="4.0.2-beta" />
 		<Compile Include="**\*.apple.cs" />
 	</ItemGroup>
 
