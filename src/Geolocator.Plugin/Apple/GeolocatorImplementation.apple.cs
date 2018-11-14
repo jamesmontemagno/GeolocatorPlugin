@@ -246,25 +246,6 @@ namespace Plugin.Geolocator
             {
                 var m = GetManager();
 				m.DesiredAccuracy = DesiredAccuracy;
-#if __IOS__
-                // permit background updates if background location mode is enabled
-                if (UIDevice.CurrentDevice.CheckSystemVersion(9, 0))
-                {
-                    var backgroundModes = NSBundle.MainBundle.InfoDictionary[(NSString)"UIBackgroundModes"] as NSArray;
-					var allow = backgroundModes != null && (backgroundModes.Contains((NSString)"Location") || backgroundModes.Contains((NSString)"location"));
-
-					if(allow)
-					{
-						allow = await CheckPermissions(Permission.LocationAlways);
-						
-					}
-					m.AllowsBackgroundLocationUpdates = allow;
-				}
-
-                // always prevent location update pausing since we're only listening for a single update.
-                if (UIDevice.CurrentDevice.CheckSystemVersion(6, 0))
-                    m.PausesLocationUpdatesAutomatically = false;
-#endif
 
 				tcs = new TaskCompletionSource<Position>(m);
                 var singleListener = new GeolocationSingleUpdateDelegate(m, DesiredAccuracy, includeHeading, timeoutMilliseconds, cancelToken.Value);
