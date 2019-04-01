@@ -12,14 +12,8 @@ namespace Plugin.Geolocator
     [Preserve(AllMembers = true)]
     internal class GeolocationSingleUpdateDelegate : CLLocationManagerDelegate
     {
-
-
-        bool haveHeading;
         bool haveLocation;
         readonly Position position = new Position();
-#if __IOS__
-        CLHeading bestHeading;
-#endif
 
         readonly double desiredAccuracy;
         readonly bool includeHeading;
@@ -83,11 +77,6 @@ namespace Plugin.Geolocator
             }
         }
 
-
-#if __IOS__
-        public override bool ShouldDisplayHeadingCalibration(CLLocationManager manager) => false;
-#endif
-
 #if __TVOS__
         public override void LocationsUpdated(CLLocationManager manager, CLLocation[] locations)
         {
@@ -112,8 +101,12 @@ namespace Plugin.Geolocator
             position.Longitude = newLocation.Coordinate.Longitude;
 #if __IOS__ || __MACOS__
             position.Speed = newLocation.Speed;
+			if (includeHeading)
+			{
+				position.Heading = newLocation.Course;
+			}
 #endif
-            try
+			try
             {
                 position.Timestamp = new DateTimeOffset(newLocation.Timestamp.ToDateTime());
             }
@@ -122,50 +115,10 @@ namespace Plugin.Geolocator
                 position.Timestamp = DateTimeOffset.UtcNow;
             }
             haveLocation = true;
-
-            if ((!includeHeading || haveHeading) && position.Accuracy <= desiredAccuracy)
-            {
-                tcs.TrySetResult(new Position(position));
-                StopListening();
-            }
         }
-
-#if __IOS__
-        public override void UpdatedHeading(CLLocationManager manager, CLHeading newHeading)
-        {
-            if (newHeading.HeadingAccuracy < 0)
-                return;
-            if (bestHeading != null && newHeading.HeadingAccuracy >= bestHeading.HeadingAccuracy)
-                return;
-
-            bestHeading = newHeading;
-            position.Heading = newHeading.TrueHeading;
-			try
-			{
-				position.Timestamp = new DateTimeOffset(newHeading.Timestamp.ToDateTime());
-			}
-			catch (Exception ex)
-			{
-				position.Timestamp = DateTimeOffset.UtcNow;
-			}
-
-			haveHeading = true;
-
-            if (haveLocation && position.Accuracy <= desiredAccuracy)
-            {
-                tcs.TrySetResult(new Position(position));
-                StopListening();
-            }
-        }
-#endif
 
 		private void StopListening()
         {
-#if __IOS__
-            if (CLLocationManager.HeadingAvailable)
-                manager.StopUpdatingHeading();
-#endif
-
             manager.StopUpdatingLocation();
         }
     }

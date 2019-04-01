@@ -26,6 +26,7 @@ namespace Plugin.Geolocator
     {
         bool deferringUpdates;
         readonly CLLocationManager manager;
+		bool includeHeading;
         bool isListening;
         Position lastPosition;
         ListenerSettings listenerSettings;
@@ -46,8 +47,6 @@ namespace Plugin.Geolocator
                 manager.LocationsUpdated += OnLocationsUpdated;
             else
                 manager.UpdatedLocation += OnUpdatedLocation;
-
-            manager.UpdatedHeading += OnUpdatedHeading;
 #elif __MACOS__ || __TVOS__
             manager.LocationsUpdated += OnLocationsUpdated;
 #endif
@@ -118,10 +117,10 @@ namespace Plugin.Geolocator
         public bool IsListening => isListening;
 
 #if __IOS__ || __MACOS__
-        /// <summary>
-        /// Gets if device supports heading
-        /// </summary>
-        public bool SupportsHeading => CLLocationManager.HeadingAvailable;
+		/// <summary>
+		/// Gets if device supports heading (course)
+		/// </summary>
+		public bool SupportsHeading => true;
 #elif __TVOS__
         /// <summary>
         /// Gets if device supports heading
@@ -130,10 +129,10 @@ namespace Plugin.Geolocator
 #endif
 
 
-        /// <summary>
-        /// Gets if geolocation is available on device
-        /// </summary>
-        public bool IsGeolocationAvailable => true; //all iOS devices support Geolocation
+		/// <summary>
+		/// Gets if geolocation is available on device
+		/// </summary>
+		public bool IsGeolocationAvailable => true; //all iOS devices support Geolocation
 
         /// <summary>
         /// Gets if geolocation is enabled on device
@@ -257,12 +256,6 @@ namespace Plugin.Geolocator
                 m.RequestLocation();
 #endif
 
-
-#if __IOS__
-                if (includeHeading && SupportsHeading)
-                    m.StartUpdatingHeading();
-#endif
-
                 return await singleListener.Task;
             }
 
@@ -381,6 +374,10 @@ namespace Plugin.Geolocator
 				throw new GeolocationException(GeolocationError.Unauthorized);
 #endif
 
+#if __IOS__ || __MACOS__
+			this.includeHeading = includeHeading;
+#endif
+
 			// keep reference to settings so that we can stop the listener appropriately later
 			this.listenerSettings = listenerSettings;
 
@@ -435,11 +432,6 @@ namespace Plugin.Geolocator
             //not supported
 #endif
 
-#if __IOS__
-            if (includeHeading && CLLocationManager.HeadingAvailable)
-                manager.StartUpdatingHeading();
-#endif
-
             return true;
         }
 
@@ -453,9 +445,6 @@ namespace Plugin.Geolocator
 
             isListening = false;
 #if __IOS__
-            if (CLLocationManager.HeadingAvailable)
-                manager.StopUpdatingHeading();
-
             // it looks like deferred location updates can apply to the standard service or significant change service. disallow deferral in either case.
             if ((listenerSettings?.DeferLocationUpdates ?? false) && CanDeferLocationUpdate)
                 manager.DisallowDeferredLocationUpdates();
@@ -481,22 +470,6 @@ namespace Plugin.Geolocator
             new NSObject().InvokeOnMainThread(() => m = new CLLocationManager());
             return m;
         }
-
-#if __IOS__
-        void OnUpdatedHeading(object sender, CLHeadingUpdatedEventArgs e)
-        {
-            if (e.NewHeading.TrueHeading == -1)
-                return;
-
-            var p = (lastPosition == null) ? new Position() : new Position(lastPosition);
-
-            p.Heading = e.NewHeading.TrueHeading;
-
-            lastPosition = p;
-
-            OnPositionChanged(new PositionEventArgs(p));
-        }
-#endif
 
         void OnLocationsUpdated(object sender, CLLocationsUpdatedEventArgs e)
         {
@@ -540,6 +513,9 @@ namespace Plugin.Geolocator
 #if __IOS__ || __MACOS__
             if (location.Speed > -1)
                 p.Speed = location.Speed;
+
+			if (includeHeading && location.Course > -1)
+				p.Heading = location.Course;
 #endif
 
             try
