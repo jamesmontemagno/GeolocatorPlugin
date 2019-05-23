@@ -10,7 +10,7 @@ namespace Plugin.Geolocator
     public static class GeolocationUtils
     {
 
-        static int TwoMinutes = 120000;
+        static int twoMinutes = 120000;
 
         internal static bool IsBetterLocation(Location location, Location bestLocation)
         {
@@ -19,8 +19,8 @@ namespace Plugin.Geolocator
                 return true;
 
             var timeDelta = location.Time - bestLocation.Time;
-            var isSignificantlyNewer = timeDelta > TwoMinutes;
-            var isSignificantlyOlder = timeDelta < -TwoMinutes;
+            var isSignificantlyNewer = timeDelta > twoMinutes;
+            var isSignificantlyOlder = timeDelta < -twoMinutes;
             var isNewer = timeDelta > 0;
 
             if (isSignificantlyNewer)
@@ -101,16 +101,16 @@ namespace Plugin.Geolocator
             });
         }
 
-        private static readonly DateTime Epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        private static readonly DateTime epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
         internal static DateTimeOffset GetTimestamp(this Location location)
         {
             try
             {
-                return new DateTimeOffset(Epoch.AddMilliseconds(location.Time));
+                return new DateTimeOffset(epoch.AddMilliseconds(location.Time));
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                return new DateTimeOffset(Epoch);
+                return new DateTimeOffset(epoch);
             }
         }
     }

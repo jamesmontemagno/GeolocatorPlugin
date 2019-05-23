@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFramework>netstandard2.0</TargetFramework>
+	</PropertyGroup>
+	<ItemGroup>
+	  <PackageReference Include="Plugin.Permissions" Version="5.0.0-beta" />
+	  <PackageReference Include="Xamarin.Forms" Version="4.0.0.425677" />
+	</ItemGroup>
+	<ItemGroup>
+	  <ProjectReference Include="..\..\Geolocator.Plugin\Geolocator.Plugin.csproj" />
+	</ItemGroup>
+	<ItemGroup>
+	  <Folder Include="Properties\" />
+	</ItemGroup>
+
+</Project>
