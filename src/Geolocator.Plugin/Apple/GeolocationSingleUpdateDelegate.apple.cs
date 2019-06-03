@@ -47,6 +47,14 @@ namespace Plugin.Geolocator
                     t.Dispose();
                 }, null, timeout, 0);
             }
+			
+#if __IOS__
+			manager.ShouldDisplayHeadingCalibration += (CLLocationManager locationManager) =>
+			{
+				locationManager.DismissHeadingCalibrationDisplay();
+				return false;
+			};
+#endif
 
             cancelToken.Register(() =>
             {
@@ -56,7 +64,6 @@ namespace Plugin.Geolocator
         }
 
         public Task<Position> Task => tcs?.Task;
-
 
         public override void AuthorizationChanged(CLLocationManager manager, CLAuthorizationStatus status)
         {
@@ -83,9 +90,12 @@ namespace Plugin.Geolocator
             }
         }
 
-
 #if __IOS__
-        public override bool ShouldDisplayHeadingCalibration(CLLocationManager manager) => false;
+		public override bool ShouldDisplayHeadingCalibration(CLLocationManager locationManager)
+		{
+			locationManager.DismissHeadingCalibrationDisplay();
+			return false;
+		}
 #endif
 
 #if __TVOS__
