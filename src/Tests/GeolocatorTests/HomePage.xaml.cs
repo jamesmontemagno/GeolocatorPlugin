@@ -1,5 +1,6 @@
 ﻿using Plugin.Geolocator;
 using Plugin.Geolocator.Abstractions;
+using Plugin.Permissions;
 using Plugin.Permissions.Abstractions;
 using System;
 using System.Collections.ObjectModel;
@@ -141,7 +142,7 @@ namespace GeolocatorTests
 				if (savedPosition == null)
 					return;
 
-				var hasPermission = await Utils.CheckPermissions(Permission.Location);
+				var hasPermission = await Utils.CheckPermissions<LocationPermission>();
 				if (!hasPermission)
 					return;
 

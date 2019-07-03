@@ -105,6 +105,9 @@
     <CodesignKey>iPhone Distribution</CodesignKey>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Plugin.Permissions, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Plugin.Permissions.5.0.0-beta\lib\netstandard2.0\Plugin.Permissions.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
@@ -167,6 +170,7 @@
     <None Include="GettingStarted.Xamarin" />
     <None Include="Info.plist" />
     <None Include="Entitlements.plist" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Main.cs" />
@@ -180,15 +184,9 @@
     <InterfaceDefinition Include="Main.storyboard" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Geolocator.Plugin.Abstractions\Geolocator.Plugin.Abstractions.csproj">
-      <Project>{d8a817f4-a999-4bae-8fbf-fcf86ddf9990}</Project>
-      <Name>Geolocator.Plugin.Abstractions</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\src\Geolocator.Plugin.tvOS\Geolocator.Plugin.tvOS.csproj">
-      <Project>{71a925b6-f452-4a2b-9038-4fc611db2c17}</Project>
-      <Name>Geolocator.Plugin.tvOS</Name>
-      <IsAppExtension>false</IsAppExtension>
-      <IsWatchApp>false</IsWatchApp>
+    <ProjectReference Include="..\..\Geolocator.Plugin\Geolocator.Plugin.csproj">
+      <Project>{36b8dd43-b679-4d13-8ba9-ded633e7b25f}</Project>
+      <Name>Geolocator.Plugin</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\TVOS\Xamarin.TVOS.CSharp.targets" />

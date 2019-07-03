@@ -21,7 +21,7 @@ namespace Plugin.Geolocator
 	[Preserve(AllMembers = true)]
 	public class GeolocatorImplementation : IGeolocator
 	{
-		string[] allProviders;
+		readonly string[] allProviders;
 		LocationManager locationManager;
 
 		GeolocationContinuousListener listener;
@@ -116,14 +116,14 @@ namespace Plugin.Geolocator
 
 		async Task<bool> CheckPermissions()
 		{
-			var status = await CrossPermissions.Current.CheckPermissionStatusAsync(Permissions.Abstractions.Permission.Location);
+			var status = await CrossPermissions.Current.CheckPermissionStatusAsync<LocationPermission>();
 			if (status != Permissions.Abstractions.PermissionStatus.Granted)
 			{
 				Console.WriteLine("Currently does not have Location permissions, requesting permissions");
 
-				var request = await CrossPermissions.Current.RequestPermissionsAsync(Permissions.Abstractions.Permission.Location);
+				var request = await CrossPermissions.Current.RequestPermissionAsync<LocationPermission>();
 
-				if (request[Permissions.Abstractions.Permission.Location] != Permissions.Abstractions.PermissionStatus.Granted)
+				if (request != Permissions.Abstractions.PermissionStatus.Granted)
 				{
 					Console.WriteLine("Location permission denied, can not get positions async.");
 					return false;
@@ -299,7 +299,7 @@ namespace Plugin.Geolocator
             }
         }
 
-		List<string> listeningProviders { get; } = new List<string>();
+		List<string> ListeningProviders { get; } = new List<string>();
 		/// <summary>
 		/// Start listening for changes
 		/// </summary>
@@ -328,7 +328,7 @@ namespace Plugin.Geolocator
 			listener.PositionError += OnListenerPositionError;
 
 			var looper = Looper.MyLooper() ?? Looper.MainLooper;
-			listeningProviders.Clear();
+			ListeningProviders.Clear();
 			for (var i = 0; i < providers.Length; ++i)
 			{
 				var provider = providers[i];
@@ -343,7 +343,7 @@ namespace Plugin.Geolocator
 				}
 				
 
-				listeningProviders.Add(provider);
+				ListeningProviders.Add(provider);
 				Manager.RequestLocationUpdates(provider, (long)minTimeMilliseconds, (float)minimumDistance, listener, looper);
 			}
 			return true;
@@ -354,10 +354,10 @@ namespace Plugin.Geolocator
 			if (listener == null)
 				return Task.FromResult(true);
 
-			if(listeningProviders == null)
+			if(ListeningProviders == null)
 				return Task.FromResult(true);
 
-			var providers = listeningProviders;
+			var providers = ListeningProviders;
 			listener.PositionChanged -= OnListenerPositionChanged;
 			listener.PositionError -= OnListenerPositionError;
 
