@@ -49,9 +49,10 @@ namespace GeolocatorTests
 
 				savedPosition = position;
 				ButtonAddressForPosition.IsEnabled = true;
-				LabelCached.Text = string.Format("Time: {0} \nLat: {1} \nLong: {2} \nAltitude: {3} \nAltitude Accuracy: {4} \nAccuracy: {5} \nHeading: {6} \nSpeed: {7}",
+				LabelCached.Text = string.Format("Time: {0} \nHas Lat Lon: {8}\nLat: {1} \nLong: {2} \nHas Altitude: {9}\nAltitude: {3} \nAltitude Accuracy: {4} \nHas Accuracy: {10}\nAccuracy: {5} \nHas Heading: {11}\nHeading: {6} \nHas Speed: {12}\nSpeed: {7}",
 					position.Timestamp, position.Latitude, position.Longitude,
-					position.Altitude, position.AltitudeAccuracy, position.Accuracy, position.Heading, position.Speed);
+					position.Altitude, position.AltitudeAccuracy, position.Accuracy, position.Heading, position.Speed,
+					position.HasLatitudeLongitude, position.HasAltitude, position.HasAccuracy, position.HasHeading, position.HasSpeed);
 
 			}
 			catch (Exception ex)
@@ -87,9 +88,11 @@ namespace GeolocatorTests
 				}
 				savedPosition = position;
 				ButtonAddressForPosition.IsEnabled = true;
-				labelGPS.Text = string.Format("Time: {0} \nLat: {1} \nLong: {2} \nAltitude: {3} \nAltitude Accuracy: {4} \nAccuracy: {5} \nHeading: {6} \nSpeed: {7}",
+
+				labelGPS.Text = string.Format("Time: {0} \nHas Lat Lon: {8}\nLat: {1} \nLong: {2} \nHas Altitude: {9}\nAltitude: {3} \nAltitude Accuracy: {4} \nHas Accuracy: {10}\nAccuracy: {5} \nHas Heading: {11}\nHeading: {6} \nHas Speed: {12}\nSpeed: {7}",
 					position.Timestamp, position.Latitude, position.Longitude,
-					position.Altitude, position.AltitudeAccuracy, position.Accuracy, position.Heading, position.Speed);
+					position.Altitude, position.AltitudeAccuracy, position.Accuracy, position.Heading, position.Speed,
+					position.HasLatitudeLongitude, position.HasAltitude, position.HasAccuracy, position.HasHeading, position.HasSpeed);
 
 			}
 			catch (Exception ex)
@@ -242,11 +245,14 @@ namespace GeolocatorTests
 				Positions.Add(position);
 				count++;
 				LabelCount.Text = $"{count} updates";
-				labelGPSTrack.Text = string.Format("Time: {0} \nLat: {1} \nLong: {2} \nAltitude: {3} \nAltitude Accuracy: {4} \nAccuracy: {5} \nHeading: {6} \nSpeed: {7}",
+
+				labelGPSTrack.Text = string.Format("Time: {0} \nHas Lat Lon: {8}\nLat: {1} \nLong: {2} \nHas Altitude: {9}\nAltitude: {3} \nAltitude Accuracy: {4} \nHas Accuracy: {10}\nAccuracy: {5} \nHas Heading: {11}\nHeading: {6} \nHas Speed: {12}\nSpeed: {7}",
 					position.Timestamp, position.Latitude, position.Longitude,
-					position.Altitude, position.AltitudeAccuracy, position.Accuracy, position.Heading, position.Speed);
+					position.Altitude, position.AltitudeAccuracy, position.Accuracy, position.Heading, position.Speed,
+					position.HasLatitudeLongitude, position.HasAltitude, position.HasAccuracy, position.HasHeading, position.HasSpeed);
 
 			});
 		}
 	}
 }
+ 

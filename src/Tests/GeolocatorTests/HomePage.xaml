@@ -50,8 +50,8 @@
 	<ContentPage Title="Tracking">
 		<Grid>
 			<Grid.RowDefinitions>
-				<RowDefinition Height=".65*"/>
-				<RowDefinition Height=".35*"/>
+				<RowDefinition Height=".72*"/>
+				<RowDefinition Height=".28*"/>
 			</Grid.RowDefinitions>
 			<ScrollView Grid.Row="0">
 				<StackLayout Spacing="10" Padding="10">
