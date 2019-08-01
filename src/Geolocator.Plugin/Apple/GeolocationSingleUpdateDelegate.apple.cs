@@ -109,20 +109,25 @@ namespace Plugin.Geolocator
             if (haveLocation && newLocation.HorizontalAccuracy > position.Accuracy)
                 return;
 
+			position.HasAccuracy = true;
             position.Accuracy = newLocation.HorizontalAccuracy;
-            position.Altitude = newLocation.Altitude;
+			position.HasAltitude = newLocation.VerticalAccuracy >= 0;
+			position.Altitude = newLocation.Altitude;
             position.AltitudeAccuracy = newLocation.VerticalAccuracy;
-            position.Latitude = newLocation.Coordinate.Latitude;
+			position.HasLatitudeLongitude = newLocation.HorizontalAccuracy >= 0;
+			position.Latitude = newLocation.Coordinate.Latitude;
             position.Longitude = newLocation.Coordinate.Longitude;
 #if __IOS__ || __MACOS__
-            position.Speed = newLocation.Speed;
+			position.HasSpeed = newLocation.Speed >= 0;
+			position.Speed = newLocation.Speed;
 			if (includeHeading)
 			{
+				position.HasHeading = newLocation.Course >= 0;
 				position.Heading = newLocation.Course;
 			}
 #endif
 			try
-            {
+			{
                 position.Timestamp = new DateTimeOffset(newLocation.Timestamp.ToDateTime());
             }
             catch(Exception ex)
