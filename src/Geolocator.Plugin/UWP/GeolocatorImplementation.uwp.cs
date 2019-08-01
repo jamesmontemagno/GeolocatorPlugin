@@ -327,23 +327,33 @@ namespace Plugin.Geolocator
 
         private static Position GetPosition(Geoposition position)
         {
-            var pos = new Position
-            {
+			var pos = new Position
+			{
+				HasAccuracy = true,
                 Accuracy = position.Coordinate.Accuracy,
+				HasLatitudeLongitude = true,
                 Latitude = position.Coordinate.Point.Position.Latitude,
                 Longitude = position.Coordinate.Point.Position.Longitude,
                 Timestamp = position.Coordinate.Timestamp.ToUniversalTime(),
             };
 
+
             if (position.Coordinate.Heading != null)
-                pos.Heading = position.Coordinate.Heading.Value;
+			{
+				pos.HasHeading = true;
+				pos.Heading = position.Coordinate.Heading.Value;
+			}
 
             if (position.Coordinate.Speed != null)
-                pos.Speed = position.Coordinate.Speed.Value;
+			{
+				pos.HasSpeed = true;
+				pos.Speed = position.Coordinate.Speed.Value;
+			}
 
             if (position.Coordinate.AltitudeAccuracy.HasValue)
                 pos.AltitudeAccuracy = position.Coordinate.AltitudeAccuracy.Value;
 
+			pos.HasAltitude = position.Coordinate.Point.AltitudeReferenceSystem != AltitudeReferenceSystem.Unspecified;
             pos.Altitude = position.Coordinate.Point.Position.Altitude;
 
             return pos;
