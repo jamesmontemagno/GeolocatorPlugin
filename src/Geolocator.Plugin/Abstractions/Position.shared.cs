@@ -26,12 +26,17 @@ namespace Plugin.Geolocator.Abstractions
                 throw new ArgumentNullException("position");
 
             Timestamp = position.Timestamp;
+			HasLatitudeLongitude = position.HasLatitudeLongitude;
             Latitude = position.Latitude;
             Longitude = position.Longitude;
+			HasAltitude = position.HasAltitude;
             Altitude = position.Altitude;
             AltitudeAccuracy = position.AltitudeAccuracy;
+			HasAccuracy = position.HasAccuracy;
             Accuracy = position.Accuracy;
+			HasHeading = position.HasAccuracy;
             Heading = position.Heading;
+			HasSpeed = position.HasSpeed;
             Speed = position.Speed;
 			IsFromMockProvider = position.IsFromMockProvider;
         }
@@ -44,6 +49,15 @@ namespace Plugin.Geolocator.Abstractions
             get;
             set;
         }
+
+		/// <summary>
+		/// Specifies if the Latitude and Longitude values are valid
+		/// </summary>
+		public bool HasLatitudeLongitude
+		{
+			get;
+			set;
+		}
 
         /// <summary>
         /// Gets or sets the latitude.
@@ -63,19 +77,37 @@ namespace Plugin.Geolocator.Abstractions
             set;
         }
 
-        /// <summary>
-        /// Gets or sets the altitude in meters relative to sea level.
-        /// </summary>
-        public double Altitude
+		/// <summary>
+		/// Specifies if the Altitude value is valid
+		/// </summary>
+		public bool HasAltitude
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Gets or sets the altitude in meters relative to sea level.
+		/// </summary>
+		public double Altitude
         {
             get;
             set;
         }
 
-        /// <summary>
-        /// Gets or sets the potential position error radius in meters.
-        /// </summary>
-        public double Accuracy
+		/// <summary>
+		/// Specifies if the Accuracy value is valid
+		/// </summary>
+		public bool HasAccuracy
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Gets or sets the potential position error radius in meters.
+		/// </summary>
+		public double Accuracy
         {
             get;
             set;
@@ -93,19 +125,37 @@ namespace Plugin.Geolocator.Abstractions
             set;
         }
 
-        /// <summary>
-        /// Gets or sets the heading in degrees relative to true North.
-        /// </summary>
-        public double Heading
+		/// <summary>
+		/// Specifies if the Heading value is valid
+		/// </summary>
+		public bool HasHeading
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Gets or sets the heading in degrees relative to true North.
+		/// </summary>
+		public double Heading
         {
             get;
             set;
         }
 
-        /// <summary>
-        /// Gets or sets the speed in meters per second.
-        /// </summary>
-        public double Speed
+		/// <summary>
+		/// Specifies if the Speed value is valid
+		/// </summary>
+		public bool HasSpeed
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Gets or sets the speed in meters per second.
+		/// </summary>
+		public double Speed
         {
             get;
             set;
