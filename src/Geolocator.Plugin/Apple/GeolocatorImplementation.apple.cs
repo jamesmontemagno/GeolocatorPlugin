@@ -214,13 +214,17 @@ namespace Plugin.Geolocator
 				return null;
 
 			var position = new Position();
+			position.HasAccuracy = true;
 			position.Accuracy = newLocation.HorizontalAccuracy;
+			position.HasAltitude = newLocation.Altitude >= 0;
 			position.Altitude = newLocation.Altitude;
 			position.AltitudeAccuracy = newLocation.VerticalAccuracy;
+			position.HasLatitudeLongitude = newLocation.HorizontalAccuracy >= 0;
 			position.Latitude = newLocation.Coordinate.Latitude;
 			position.Longitude = newLocation.Coordinate.Longitude;
 
 #if !__TVOS__
+			position.HasSpeed = newLocation.Speed >= 0;
 			position.Speed = newLocation.Speed;
 #endif
 
@@ -328,6 +332,7 @@ namespace Plugin.Geolocator
 				var positionList = await geocoder.GeocodeAddressAsync(address);
 				return positionList.Select(p => new Position
 				{
+					HasLatitudeLongitude = true,
 					Latitude = p.Location.Coordinate.Latitude,
 					Longitude = p.Location.Coordinate.Longitude
 				});
@@ -519,26 +524,36 @@ namespace Plugin.Geolocator
 		void UpdatePosition(CLLocation location)
 		{
 			var p = (lastPosition == null) ? new Position() : new Position(this.lastPosition);
+			p.HasAccuracy = true;
 
-			if (location.HorizontalAccuracy > -1)
+			if (location.HorizontalAccuracy >= 0)
 			{
 				p.Accuracy = location.HorizontalAccuracy;
+				p.HasLatitudeLongitude = true;
 				p.Latitude = location.Coordinate.Latitude;
 				p.Longitude = location.Coordinate.Longitude;
 			}
 
-			if (location.VerticalAccuracy > -1)
+			if (location.VerticalAccuracy >= 0)
 			{
+				p.HasAltitude = true;
 				p.Altitude = location.Altitude;
 				p.AltitudeAccuracy = location.VerticalAccuracy;
 			}
 
 #if __IOS__ || __MACOS__
-            if (location.Speed > -1)
-                p.Speed = location.Speed;
+            if (location.Speed >= 0)
+			{
+				p.HasSpeed = true;
+				p.Speed = location.Speed;
+			}
+                
 
-			if (includeHeading && location.Course > -1)
+			if (includeHeading && location.Course >= 0)
+			{
+				p.HasHeading = true;
 				p.Heading = location.Course;
+			}
 #endif
 
 			try
