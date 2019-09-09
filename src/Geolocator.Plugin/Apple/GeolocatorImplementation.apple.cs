@@ -216,15 +216,15 @@ namespace Plugin.Geolocator
 			var position = new Position();
 			position.HasAccuracy = true;
 			position.Accuracy = newLocation.HorizontalAccuracy;
-			position.HasAltitude = newLocation.Altitude >= 0;
+			position.HasAltitude = newLocation.Altitude > -1;
 			position.Altitude = newLocation.Altitude;
 			position.AltitudeAccuracy = newLocation.VerticalAccuracy;
-			position.HasLatitudeLongitude = newLocation.HorizontalAccuracy >= 0;
+			position.HasLatitudeLongitude = newLocation.HorizontalAccuracy > -1;
 			position.Latitude = newLocation.Coordinate.Latitude;
 			position.Longitude = newLocation.Coordinate.Longitude;
 
 #if !__TVOS__
-			position.HasSpeed = newLocation.Speed >= 0;
+			position.HasSpeed = newLocation.Speed > -1;
 			position.Speed = newLocation.Speed;
 #endif
 
@@ -526,7 +526,7 @@ namespace Plugin.Geolocator
 			var p = (lastPosition == null) ? new Position() : new Position(this.lastPosition);
 			p.HasAccuracy = true;
 
-			if (location.HorizontalAccuracy >= 0)
+			if (location.HorizontalAccuracy > -1)
 			{
 				p.Accuracy = location.HorizontalAccuracy;
 				p.HasLatitudeLongitude = true;
@@ -534,7 +534,7 @@ namespace Plugin.Geolocator
 				p.Longitude = location.Coordinate.Longitude;
 			}
 
-			if (location.VerticalAccuracy >= 0)
+			if (location.VerticalAccuracy > -1)
 			{
 				p.HasAltitude = true;
 				p.Altitude = location.Altitude;
@@ -542,14 +542,14 @@ namespace Plugin.Geolocator
 			}
 
 #if __IOS__ || __MACOS__
-            if (location.Speed >= 0)
+            if (location.Speed > -1)
 			{
 				p.HasSpeed = true;
 				p.Speed = location.Speed;
 			}
                 
 
-			if (includeHeading && location.Course >= 0)
+			if (includeHeading && location.Course > -1)
 			{
 				p.HasHeading = true;
 				p.Heading = location.Course;
