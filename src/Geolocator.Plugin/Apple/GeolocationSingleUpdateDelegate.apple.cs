@@ -111,18 +111,18 @@ namespace Plugin.Geolocator
 
 			position.HasAccuracy = true;
             position.Accuracy = newLocation.HorizontalAccuracy;
-			position.HasAltitude = newLocation.VerticalAccuracy >= 0;
+			position.HasAltitude = newLocation.VerticalAccuracy > -1;
 			position.Altitude = newLocation.Altitude;
             position.AltitudeAccuracy = newLocation.VerticalAccuracy;
-			position.HasLatitudeLongitude = newLocation.HorizontalAccuracy >= 0;
+			position.HasLatitudeLongitude = newLocation.HorizontalAccuracy > -1;
 			position.Latitude = newLocation.Coordinate.Latitude;
             position.Longitude = newLocation.Coordinate.Longitude;
 #if __IOS__ || __MACOS__
-			position.HasSpeed = newLocation.Speed >= 0;
+			position.HasSpeed = newLocation.Speed > -1;
 			position.Speed = newLocation.Speed;
 			if (includeHeading)
 			{
-				position.HasHeading = newLocation.Course >= 0;
+				position.HasHeading = newLocation.Course > -1;
 				position.Heading = newLocation.Course;
 			}
 #endif
