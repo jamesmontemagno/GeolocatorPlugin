@@ -42,5 +42,11 @@ namespace Plugin.Geolocator.Abstractions
 		/// </summary>
 		/// <value>The time between updates (default:  5 minutes).</value>
 		public TimeSpan? DeferralTime { get; set; } = TimeSpan.FromMinutes(5);
+
+        /// <summary>
+        /// A Boolean indicating whether the status bar changes its appearance when an app uses location services in the background. (>= iOS 11). Default: false
+        /// </summary>
+        public bool ShowsBackgroundLocationIndicator { get; set; } = false;
+
 	}
 }
