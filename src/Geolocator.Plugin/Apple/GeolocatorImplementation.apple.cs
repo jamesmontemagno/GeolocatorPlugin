@@ -406,6 +406,9 @@ namespace Plugin.Geolocator
 
 			// set background flag
 #if __IOS__
+			if (UIDevice.CurrentDevice.CheckSystemVersion(11, 0))
+				manager.ShowsBackgroundLocationIndicator = listenerSettings.ShowsBackgroundLocationIndicator;
+
 			if (UIDevice.CurrentDevice.CheckSystemVersion(9, 0))
 				manager.AllowsBackgroundLocationUpdates = listenerSettings.AllowBackgroundUpdates;
 
