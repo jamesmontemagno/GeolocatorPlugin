@@ -40,7 +40,7 @@ namespace Plugin.Geolocator
 
 		string[] Providers => Manager.GetProviders(enabledOnly: false).ToArray();
 		string[] IgnoredProviders => new string[] { LocationManager.PassiveProvider, "local_database" };
-		
+
 		/// <summary>
 		/// Gets or sets the location manager providers to ignore when getting postition
 		/// </summary>
@@ -173,7 +173,7 @@ namespace Plugin.Geolocator
 						providers.Add(provider);
 					}
 				}
-				
+
 
 				void SingleListnerFinishCallback()
 				{
@@ -184,9 +184,9 @@ namespace Plugin.Geolocator
 						Manager.RemoveUpdates(singleListener);
 				}
 
-				singleListener = new GeolocationSingleListener(Manager, 
+				singleListener = new GeolocationSingleListener(Manager,
 					(float)DesiredAccuracy,
-					timeoutMilliseconds, 
+					timeoutMilliseconds,
 					providers.Where(Manager.IsProviderEnabled),
 					finishedCallback: SingleListnerFinishCallback);
 
@@ -268,36 +268,36 @@ namespace Plugin.Geolocator
 		public async Task<IEnumerable<Address>> GetAddressesForPositionAsync(Position position, string mapKey = null)
 		{
 			if (position == null)
-                throw new ArgumentNullException(nameof(position));
+				throw new ArgumentNullException(nameof(position));
 
-            using (var geocoder = new Geocoder(Application.Context))
-            {
-                var addressList = await geocoder.GetFromLocationAsync(position.Latitude, position.Longitude, 10);
-                return addressList?.ToAddresses() ?? null;
-            }
+			using (var geocoder = new Geocoder(Application.Context))
+			{
+				var addressList = await geocoder.GetFromLocationAsync(position.Latitude, position.Longitude, 10);
+				return addressList?.ToAddresses() ?? null;
+			}
 		}
 
-        /// <summary>
-        /// Retrieve positions for address.
-        /// </summary>
-        /// <param name="address">Desired address</param>
-        /// <param name="mapKey">Map Key required only on UWP</param>
-        /// <returns>Positions of the desired address</returns>
-        public async Task<IEnumerable<Position>> GetPositionsForAddressAsync(string address, string mapKey = null)
-        {
-            if (address == null)
-                throw new ArgumentNullException(nameof(address));
+		/// <summary>
+		/// Retrieve positions for address.
+		/// </summary>
+		/// <param name="address">Desired address</param>
+		/// <param name="mapKey">Map Key required only on UWP</param>
+		/// <returns>Positions of the desired address</returns>
+		public async Task<IEnumerable<Position>> GetPositionsForAddressAsync(string address, string mapKey = null)
+		{
+			if (address == null)
+				throw new ArgumentNullException(nameof(address));
 
-            using (var geocoder = new Geocoder(Application.Context))
-            {
-                var addressList = await geocoder.GetFromLocationNameAsync(address, 10);
-                return addressList.Select(p => new Position
-                {
-                    Latitude = p.Latitude,
-                    Longitude = p.Longitude
-                });
-            }
-        }
+			using (var geocoder = new Geocoder(Application.Context))
+			{
+				var addressList = await geocoder.GetFromLocationNameAsync(address, 10);
+				return addressList.Select(p => new Position
+				{
+					Latitude = p.Latitude,
+					Longitude = p.Longitude
+				});
+			}
+		}
 
 		List<string> ListeningProviders { get; } = new List<string>();
 		/// <summary>
@@ -332,16 +332,16 @@ namespace Plugin.Geolocator
 			for (var i = 0; i < providers.Length; ++i)
 			{
 				var provider = providers[i];
-				
+
 				//we have limited set of providers
-				if(ProvidersToUseWhileListening != null &&
+				if (ProvidersToUseWhileListening != null &&
 					ProvidersToUseWhileListening.Length > 0)
 				{
 					//the provider is not in the list, so don't use it.
 					if (!ProvidersToUseWhileListening.Contains(provider))
 						continue;
 				}
-				
+
 
 				ListeningProviders.Add(provider);
 				Manager.RequestLocationUpdates(provider, (long)minTimeMilliseconds, (float)minimumDistance, listener, looper);
@@ -354,7 +354,7 @@ namespace Plugin.Geolocator
 			if (listener == null)
 				return Task.FromResult(true);
 
-			if(ListeningProviders == null)
+			if (ListeningProviders == null)
 				return Task.FromResult(true);
 
 			var providers = ListeningProviders;

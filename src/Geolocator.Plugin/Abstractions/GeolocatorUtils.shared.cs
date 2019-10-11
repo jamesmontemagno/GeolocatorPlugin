@@ -5,8 +5,8 @@ namespace Plugin.Geolocator.Abstractions
 	/// <summary>
 	/// Geolocator Plugin Utililities
 	/// </summary>
-    public static class GeolocatorUtils
-    {
+	public static class GeolocatorUtils
+	{
 		/// <summary>
 		/// Calculates the distance in miles
 		/// </summary>
@@ -51,7 +51,7 @@ namespace Plugin.Geolocator.Abstractions
 		public static double CalculateDistance(this Position positionStart, Position positionEnd, DistanceUnits units = DistanceUnits.Miles) =>
 			CalculateDistance(positionStart.Latitude, positionStart.Longitude, positionEnd.Latitude, positionEnd.Longitude, units);
 
-		
+
 
 		/// <summary>
 		/// Convert Miles to Kilometers

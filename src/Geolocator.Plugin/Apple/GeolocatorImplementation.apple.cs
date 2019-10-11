@@ -18,18 +18,18 @@ using Plugin.Permissions.Abstractions;
 
 namespace Plugin.Geolocator
 {
-    /// <summary>
-    /// Implementation for Geolocator
-    /// </summary>
-    [Preserve(AllMembers = true)]
-    public class GeolocatorImplementation : IGeolocator
-    {
-        bool deferringUpdates;
-        readonly CLLocationManager manager;
+	/// <summary>
+	/// Implementation for Geolocator
+	/// </summary>
+	[Preserve(AllMembers = true)]
+	public class GeolocatorImplementation : IGeolocator
+	{
+		bool deferringUpdates;
+		readonly CLLocationManager manager;
 		bool includeHeading;
-        bool isListening;
-        Position lastPosition;
-        ListenerSettings listenerSettings;
+		bool isListening;
+		Position lastPosition;
+		ListenerSettings listenerSettings;
 
 		/// <summary>
 		/// Constructor for implementation
@@ -48,7 +48,7 @@ namespace Plugin.Geolocator
             else
                 manager.UpdatedLocation += OnUpdatedLocation;
 #elif __MACOS__ || __TVOS__
-            manager.LocationsUpdated += OnLocationsUpdated;
+			manager.LocationsUpdated += OnLocationsUpdated;
 #endif
 
 #if __IOS__ || __MACOS__
@@ -68,7 +68,7 @@ namespace Plugin.Geolocator
 #elif __MACOS__
         bool CanDeferLocationUpdate => CLLocationManager.DeferredLocationUpdatesAvailable;
 #elif __TVOS__
-        bool CanDeferLocationUpdate => false;
+		bool CanDeferLocationUpdate => false;
 #endif
 
 #if __IOS__
@@ -142,10 +142,10 @@ namespace Plugin.Geolocator
 		/// </summary>
 		public bool SupportsHeading => true;
 #elif __TVOS__
-        /// <summary>
-        /// Gets if device supports heading
-        /// </summary>
-        public bool SupportsHeading => false;
+		/// <summary>
+		/// Gets if device supports heading
+		/// </summary>
+		public bool SupportsHeading => false;
 #endif
 
 
@@ -183,15 +183,15 @@ namespace Plugin.Geolocator
 #elif __MACOS__
             //nothing to do here.
 #elif __TVOS__
-            var info = NSBundle.MainBundle.InfoDictionary;
+			var info = NSBundle.MainBundle.InfoDictionary;
 
-            if (UIDevice.CurrentDevice.CheckSystemVersion(8, 0))
-            {
-                if (info.ContainsKey(new NSString("NSLocationWhenInUseUsageDescription")))
-                    manager.RequestWhenInUseAuthorization();
-                else
-                    throw new UnauthorizedAccessException("On tvOS 8.0 and higher you must set either NSLocationWhenInUseUsageDescription in your Info.plist file to enable Authorization Requests for Location updates!");
-            }
+			if (UIDevice.CurrentDevice.CheckSystemVersion(8, 0))
+			{
+				if (info.ContainsKey(new NSString("NSLocationWhenInUseUsageDescription")))
+					manager.RequestWhenInUseAuthorization();
+				else
+					throw new UnauthorizedAccessException("On tvOS 8.0 and higher you must set either NSLocationWhenInUseUsageDescription in your Info.plist file to enable Authorization Requests for Location updates!");
+			}
 #endif
 		}
 
@@ -272,11 +272,11 @@ namespace Plugin.Geolocator
 #if __IOS__ || __MACOS__
 				m.StartUpdatingLocation();
 #elif __TVOS__
-                m.RequestLocation();
+				m.RequestLocation();
 #endif
 
-                return await singleListener.Task;
-            }
+				return await singleListener.Task;
+			}
 
 
 			tcs = new TaskCompletionSource<Position>();
@@ -448,11 +448,11 @@ namespace Plugin.Geolocator
 			else
 				manager.StartUpdatingLocation();
 #elif __TVOS__
-            //not supported
+			//not supported
 #endif
 
-            return true;
-        }
+			return true;
+		}
 
 		/// <summary>
 		/// Stop listening
@@ -490,10 +490,10 @@ namespace Plugin.Geolocator
 			return m;
 		}
 
-        void OnLocationsUpdated(object sender, CLLocationsUpdatedEventArgs e)
-        {
-            foreach (var location in e.Locations)
-                UpdatePosition(location);
+		void OnLocationsUpdated(object sender, CLLocationsUpdatedEventArgs e)
+		{
+			foreach (var location in e.Locations)
+				UpdatePosition(location);
 
 			// defer future location updates if requested
 			if ((listenerSettings?.DeferLocationUpdates ?? false) && !deferringUpdates && CanDeferLocationUpdate)
