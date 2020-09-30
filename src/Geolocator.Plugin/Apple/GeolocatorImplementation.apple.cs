@@ -380,7 +380,7 @@ namespace Plugin.Geolocator
 			var hasPermission = false;
 			if (UIDevice.CurrentDevice.CheckSystemVersion(9, 0))
 			{
-				if (listenerSettings.AllowBackgroundUpdates)
+				if (listenerSettings.ListenForSignificantChanges)
 					hasPermission = await CheckAlwaysPermissions();
 				else
 					hasPermission = await CheckWhenInUsePermission();
