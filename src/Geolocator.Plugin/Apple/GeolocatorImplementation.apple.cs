@@ -80,18 +80,7 @@ namespace Plugin.Geolocator
 			{
 				Console.WriteLine("Currently does not have Location permissions, requesting permissions");
 
-				if (UIDevice.CurrentDevice.CheckSystemVersion(14, 0))
-				{
-					//TODO temporary workaround for iOS 14 issues with location permission changes
-					Permissions.CrossPermissions.Current.RequestPermissionAsync<Permissions.LocationWhenInUsePermission>();
-    
-					while ((status = await Permissions.CrossPermissions.Current.CheckPermissionStatusAsync<Permissions.LocationWhenInUsePermission>()) == PermissionStatus.Unknown)
-						await Task.Delay(100);
-				}
-				else
-				{
-					status = await Permissions.CrossPermissions.Current.RequestPermissionAsync<Permissions.LocationWhenInUsePermission>();
-				}
+				status = await Permissions.CrossPermissions.Current.RequestPermissionAsync<Permissions.LocationWhenInUsePermission>();
 
 				if (status != PermissionStatus.Granted)
 				{
