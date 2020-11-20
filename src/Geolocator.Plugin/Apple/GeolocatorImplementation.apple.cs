@@ -378,7 +378,12 @@ namespace Plugin.Geolocator
 #if __IOS__
 
 			var hasPermission = false;
-			if (UIDevice.CurrentDevice.CheckSystemVersion(9, 0))
+
+			if (UIDevice.CurrentDevice.CheckSystemVersion(13, 0))
+			{
+				hasPermission = await CheckWhenInUsePermission();
+			}
+			else if (UIDevice.CurrentDevice.CheckSystemVersion(9, 0))
 			{
 				if (listenerSettings.AllowBackgroundUpdates)
 					hasPermission = await CheckAlwaysPermissions();
