@@ -361,8 +361,6 @@ namespace Plugin.Geolocator
 		/// <param name="listenerSettings">Optional settings (iOS only)</param>
 		public async Task<bool> StartListeningAsync(TimeSpan minimumTime, double minimumDistance, bool includeHeading = false, ListenerSettings listenerSettings = null)
 		{
-
-
 			if (minimumDistance < 0)
 				throw new ArgumentOutOfRangeException(nameof(minimumDistance));
 
@@ -380,10 +378,14 @@ namespace Plugin.Geolocator
 			var hasPermission = false;
 			if (UIDevice.CurrentDevice.CheckSystemVersion(9, 0))
 			{
-				if (listenerSettings.AllowBackgroundUpdates)
+				if (listenerSettings.RequireLocationAlwaysPermission)
+				{
 					hasPermission = await CheckAlwaysPermissions();
+				}
 				else
+				{
 					hasPermission = await CheckWhenInUsePermission();
+				}
 			}
 
 			if (!hasPermission)
