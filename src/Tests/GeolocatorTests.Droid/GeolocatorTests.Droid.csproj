@@ -15,7 +15,7 @@
     <AndroidUseLatestPlatformSdk>False</AndroidUseLatestPlatformSdk>
     <AssemblyName>GeolocatorTests.Droid</AssemblyName>
     <AndroidManifest>Properties\AndroidManifest.xml</AndroidManifest>
-    <TargetFrameworkVersion>v9.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v10.0</TargetFrameworkVersion>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
     <AndroidTlsProvider>
@@ -73,7 +73,7 @@
     <AndroidResource Include="Resources\drawable-xxhdpi\icon.png" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
- <ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\..\Geolocator.Plugin\Geolocator.Plugin.csproj">
       <Project>{36b8dd43-b679-4d13-8ba9-ded633e7b25f}</Project>
       <Name>Geolocator.Plugin</Name>
@@ -84,11 +84,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Plugin.Permissions">
-      <Version>5.0.0-beta</Version>
-    </PackageReference>
     <PackageReference Include="Xamarin.Forms">
-      <Version>4.0.0.425677</Version>
+      <Version>5.0.0.2125</Version>
     </PackageReference>
   </ItemGroup>
- </Project>
+</Project>

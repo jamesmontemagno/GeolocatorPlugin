@@ -49,7 +49,6 @@
 		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
 	</ItemGroup>
 	<ItemGroup>
-		<None Include="..\..\nuget\readme.txt" PackagePath="readme.txt" Pack="true" />
 		<Compile Include="**\*.shared.cs" />
 	</ItemGroup>
 
