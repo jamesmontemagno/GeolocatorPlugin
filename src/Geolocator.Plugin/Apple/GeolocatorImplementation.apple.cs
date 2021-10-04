@@ -43,10 +43,10 @@ namespace Plugin.Geolocator
 
 
 #if __IOS__
-            if (UIDevice.CurrentDevice.CheckSystemVersion(6, 0))
-                manager.LocationsUpdated += OnLocationsUpdated;
-            else
-                manager.UpdatedLocation += OnUpdatedLocation;
+			if (UIDevice.CurrentDevice.CheckSystemVersion(6, 0))
+				manager.LocationsUpdated += OnLocationsUpdated;
+			else
+				manager.UpdatedLocation += OnUpdatedLocation;
 #elif __MACOS__ || __TVOS__
 			manager.LocationsUpdated += OnLocationsUpdated;
 #endif
@@ -471,9 +471,9 @@ namespace Plugin.Geolocator
 
 			isListening = false;
 #if __IOS__
-            // it looks like deferred location updates can apply to the standard service or significant change service. disallow deferral in either case.
-            if ((listenerSettings?.DeferLocationUpdates ?? false) && CanDeferLocationUpdate)
-                manager.DisallowDeferredLocationUpdates();
+			// it looks like deferred location updates can apply to the standard service or significant change service. disallow deferral in either case.
+			if ((listenerSettings?.DeferLocationUpdates ?? false) && CanDeferLocationUpdate)
+				manager.DisallowDeferredLocationUpdates();
 #endif
 
 
@@ -542,12 +542,12 @@ namespace Plugin.Geolocator
 			}
 
 #if __IOS__ || __MACOS__
-            if (location.Speed > -1)
+			if (location.Speed > -1)
 			{
 				p.HasSpeed = true;
 				p.Speed = location.Speed;
 			}
-                
+
 
 			if (includeHeading && location.Course > -1)
 			{

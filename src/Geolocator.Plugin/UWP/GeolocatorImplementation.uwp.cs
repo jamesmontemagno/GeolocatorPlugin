@@ -325,26 +325,26 @@ namespace Plugin.Geolocator
 			return loc.LocationStatus;
 		}
 
-        private static Position GetPosition(Geoposition position)
-        {
+		private static Position GetPosition(Geoposition position)
+		{
 			var pos = new Position
 			{
 				HasAccuracy = true,
-                Accuracy = position.Coordinate.Accuracy,
+				Accuracy = position.Coordinate.Accuracy,
 				HasLatitudeLongitude = true,
-                Latitude = position.Coordinate.Point.Position.Latitude,
-                Longitude = position.Coordinate.Point.Position.Longitude,
-                Timestamp = position.Coordinate.Timestamp.ToUniversalTime(),
-            };
+				Latitude = position.Coordinate.Point.Position.Latitude,
+				Longitude = position.Coordinate.Point.Position.Longitude,
+				Timestamp = position.Coordinate.Timestamp.ToUniversalTime(),
+			};
 
 
-            if (position.Coordinate.Heading != null)
+			if (position.Coordinate.Heading != null)
 			{
 				pos.HasHeading = true;
 				pos.Heading = position.Coordinate.Heading.Value;
 			}
 
-            if (position.Coordinate.Speed != null)
+			if (position.Coordinate.Speed != null)
 			{
 				pos.HasSpeed = true;
 				pos.Speed = position.Coordinate.Speed.Value;
@@ -354,7 +354,7 @@ namespace Plugin.Geolocator
 				pos.AltitudeAccuracy = position.Coordinate.AltitudeAccuracy.Value;
 
 			pos.HasAltitude = position.Coordinate.Point.AltitudeReferenceSystem != AltitudeReferenceSystem.Unspecified;
-            pos.Altitude = position.Coordinate.Point.Position.Altitude;
+			pos.Altitude = position.Coordinate.Point.Position.Altitude;
 
 			return pos;
 		}

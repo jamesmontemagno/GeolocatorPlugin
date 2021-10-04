@@ -58,30 +58,30 @@ namespace Plugin.Geolocator
 			return provider1.Equals(provider2);
 		}
 
-        internal static Position ToPosition(this Location location)
-        {
-            var p = new Position();
-			
+		internal static Position ToPosition(this Location location)
+		{
+			var p = new Position();
+
 			p.HasAccuracy = location.HasAccuracy;
 			if (location.HasAccuracy)
-                p.Accuracy = location.Accuracy;
+				p.Accuracy = location.Accuracy;
 
 			p.HasAltitude = location.HasAltitude;
 			if (location.HasAltitude)
-                p.Altitude = location.Altitude;
+				p.Altitude = location.Altitude;
 
 			p.HasHeading = location.HasBearing;
 			if (location.HasBearing)
-                p.Heading = location.Bearing;
+				p.Heading = location.Bearing;
 
 			p.HasSpeed = location.HasSpeed;
 			if (location.HasSpeed)
-                p.Speed = location.Speed;
+				p.Speed = location.Speed;
 
 			p.HasLatitudeLongitude = true;
 			p.Longitude = location.Longitude;
-            p.Latitude = location.Latitude;
-            p.Timestamp = location.GetTimestamp();
+			p.Latitude = location.Latitude;
+			p.Timestamp = location.GetTimestamp();
 
 			if ((int)Android.OS.Build.VERSION.SdkInt >= 18)
 				p.IsFromMockProvider = location.IsFromMockProvider;
