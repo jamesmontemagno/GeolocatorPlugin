@@ -492,8 +492,10 @@ namespace Plugin.Geolocator
 
 		void OnLocationsUpdated(object sender, CLLocationsUpdatedEventArgs e)
 		{
-			foreach (var location in e.Locations)
-				UpdatePosition(location);
+			if (e.Locations.Any())
+			{
+				UpdatePosition(e.Locations.Last());
+			}
 
 			// defer future location updates if requested
 			if ((listenerSettings?.DeferLocationUpdates ?? false) && !deferringUpdates && CanDeferLocationUpdate)
