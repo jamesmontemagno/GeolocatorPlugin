@@ -8,10 +8,10 @@ using Android.App;
 using Android.OS;
 using System.Linq;
 using Android.Content;
-using Android.Content.PM;
-using Plugin.Permissions;
 using Android.Runtime;
 using Address = Plugin.Geolocator.Abstractions.Address;
+using Xamarin.Essentials;
+using Location = Android.Locations.Location;
 
 namespace Plugin.Geolocator
 {
@@ -98,7 +98,7 @@ namespace Plugin.Geolocator
 		/// <returns>Best and most recent location or null if none found</returns>
 		public async Task<Position> GetLastKnownLocationAsync()
 		{
-			var hasPermission = await CheckPermissions();
+			var hasPermission = await CheckWhenInUsePermission();
 			if (!hasPermission)
 				throw new GeolocationException(GeolocationError.Unauthorized);
 
@@ -114,16 +114,35 @@ namespace Plugin.Geolocator
 
 		}
 
-		async Task<bool> CheckPermissions()
+		async Task<bool> CheckWhenInUsePermission()
 		{
-			var status = await CrossPermissions.Current.CheckPermissionStatusAsync<LocationPermission>();
-			if (status != Permissions.Abstractions.PermissionStatus.Granted)
+			var status = await Permissions.CheckStatusAsync<Permissions.LocationWhenInUse>();
+			if (status != PermissionStatus.Granted)
 			{
 				Console.WriteLine("Currently does not have Location permissions, requesting permissions");
 
-				var request = await CrossPermissions.Current.RequestPermissionAsync<LocationPermission>();
+				status = await Permissions.CheckStatusAsync<Permissions.LocationWhenInUse>();
 
-				if (request != Permissions.Abstractions.PermissionStatus.Granted)
+				if (status != PermissionStatus.Granted)
+				{
+					Console.WriteLine("Location permission denied, can not get positions async.");
+					return false;
+				}
+			}
+
+			return true;
+
+		}
+		async Task<bool> CheckAlwaysPermissions()
+		{
+			var status = await Permissions.CheckStatusAsync<Permissions.LocationAlways>();
+			if (status != PermissionStatus.Granted)
+			{
+				Console.WriteLine("Currently does not have Location permissions, requesting permissions");
+
+				status = await Permissions.CheckStatusAsync<Permissions.LocationAlways>();
+
+				if (status != PermissionStatus.Granted)
 				{
 					Console.WriteLine("Location permission denied, can not get positions async.");
 					return false;
@@ -151,7 +170,7 @@ namespace Plugin.Geolocator
 			if (!cancelToken.HasValue)
 				cancelToken = CancellationToken.None;
 
-			var hasPermission = await CheckPermissions();
+			var hasPermission = await CheckWhenInUsePermission();
 			if (!hasPermission)
 				throw new GeolocationException(GeolocationError.Unauthorized);
 
@@ -309,7 +328,12 @@ namespace Plugin.Geolocator
 		/// <param name="listenerSettings">Optional settings (iOS only)</param>
 		public async Task<bool> StartListeningAsync(TimeSpan minimumTime, double minimumDistance, bool includeHeading = false, ListenerSettings listenerSettings = null)
 		{
-			var hasPermission = await CheckPermissions();
+			var hasPermission = false;
+			if (listenerSettings?.AllowBackgroundUpdates ?? false)
+				hasPermission = await CheckAlwaysPermissions();
+			else
+				hasPermission = await CheckWhenInUsePermission();
+
 			if (!hasPermission)
 				throw new GeolocationException(GeolocationError.Unauthorized);
 

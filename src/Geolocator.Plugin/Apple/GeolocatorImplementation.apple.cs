@@ -13,7 +13,7 @@ using AppKit;
 #endif
 
 #if __IOS__
-using Plugin.Permissions.Abstractions;
+using Xamarin.Essentials;
 #endif
 
 namespace Plugin.Geolocator
@@ -75,12 +75,12 @@ namespace Plugin.Geolocator
 
 		async Task<bool> CheckWhenInUsePermission()
 		{
-			var status = await Permissions.CrossPermissions.Current.CheckPermissionStatusAsync<Permissions.LocationWhenInUsePermission>();
+			var status = await Permissions.CheckStatusAsync<Permissions.LocationWhenInUse>();
 			if (status != PermissionStatus.Granted)
 			{
 				Console.WriteLine("Currently does not have Location permissions, requesting permissions");
 
-				status = await Permissions.CrossPermissions.Current.RequestPermissionAsync<Permissions.LocationWhenInUsePermission>();
+				status = await Permissions.CheckStatusAsync<Permissions.LocationWhenInUse>();
 
 				if (status != PermissionStatus.Granted)
 				{
@@ -94,12 +94,12 @@ namespace Plugin.Geolocator
 		}
 		async Task<bool> CheckAlwaysPermissions()
 		{
-			var status = await Permissions.CrossPermissions.Current.CheckPermissionStatusAsync<Permissions.LocationAlwaysPermission>();
+			var status = await Permissions.CheckStatusAsync<Permissions.LocationAlways>();
 			if (status != PermissionStatus.Granted)
 			{
 				Console.WriteLine("Currently does not have Location permissions, requesting permissions");
 
-				status = await Permissions.CrossPermissions.Current.RequestPermissionAsync<Permissions.LocationAlwaysPermission>();
+				status = await Permissions.CheckStatusAsync<Permissions.LocationAlways>();
 
 				if (status != PermissionStatus.Granted)
 				{
