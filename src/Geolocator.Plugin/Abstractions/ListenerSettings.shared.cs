@@ -48,5 +48,9 @@ namespace Plugin.Geolocator.Abstractions
 		/// </summary>
 		public bool ShowsBackgroundLocationIndicator { get; set; } = false;
 
+		/// <summary>
+		/// A boolean indicating whether Always permission should be required to start location listening
+		/// </summary>
+		public bool RequireLocationAlwaysPermission { get; set; } = false;
 	}
 }
