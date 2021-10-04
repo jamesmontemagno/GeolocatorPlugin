@@ -186,7 +186,7 @@ namespace Plugin.Geolocator
 					//only add providers requested.
 					foreach (var provider in Providers)
 					{
-						if (ProvidersToUse?.Contains(provider) ?? false)
+						if (ProvidersToUse == null || !ProvidersToUse.Contains(provider))
 							continue;
 
 						providers.Add(provider);
@@ -329,7 +329,7 @@ namespace Plugin.Geolocator
 		public async Task<bool> StartListeningAsync(TimeSpan minimumTime, double minimumDistance, bool includeHeading = false, ListenerSettings listenerSettings = null)
 		{
 			var hasPermission = false;
-			if (listenerSettings?.AllowBackgroundUpdates ?? false)
+			if (listenerSettings?.RequireLocationAlwaysPermission ?? false)
 				hasPermission = await CheckAlwaysPermissions();
 			else
 				hasPermission = await CheckWhenInUsePermission();
